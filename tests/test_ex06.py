@@ -1,7 +1,7 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 from ex06_cnf import conjunctive_normal_form
-from utils import print_header, print_result, print_footer, BOLD, NC
+from utils import print_header, print_result, print_final, BOLD, NC
 
 def run():
     print_header(6, "Conjunctive Normal Form")
@@ -20,7 +20,7 @@ def run():
         print_result(f"F: {formula}", res, res)
         print(f"    {BOLD}Lógica:{NC} Debería ser equivalente a {expected}")
 
-    print_footer(6, True)
+    print_final(6, True)
 
 if __name__ == "__main__":
     run()
