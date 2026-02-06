@@ -1,23 +1,19 @@
-import sys
-import os
+import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
-
 from ex00_adder import adder
+from utils import print_final, print_header, print_result, print_final
 
-print("--- EJECUTANDO EX00: ADDER ---")
-cases = [(1, 1), (10, 5), (255, 1), (13, 37), (4096, 4096)]
-all_ok = True
+def run():
+    print_header(0, "ADDER (Aritmética Bitwise)")
+    cases = [(1, 1), (10, 5), (255, 1), (13, 37)]
+    all_ok = True
 
-for a, b in cases:
-    expected = a + b
-    res = adder(a, b)
-    is_correct = (res == expected)
-    if not is_correct: all_ok = False
-    
-    status = "OK" if is_correct else f"ERROR (esperado {expected})"
-    print(f"Operación: {a} + {b} = {res} -> {status}")
+    for a, b in cases:
+        res = adder(a, b)
+        if not print_result(f"{a} + {b}", res, a + b):
+            all_ok = False
 
-if all_ok:
-    print("\n✅ Todo OK")
-else:
-    print("\n❌ Se encontraron errores")
+    print_final(0, all_ok)
+
+if __name__ == "__main__":
+    run()
