@@ -1,4 +1,4 @@
-# tests/utils.py
+import sys  # <--- 1. Importante para poder salir
 
 # Códigos de colores ANSI
 GREEN = "\033[0;32m"
@@ -17,19 +17,12 @@ def print_header(ex_nb, title):
 def print_result(description, result, expected):
     is_correct = (result == expected)
     
-    # Preparamos el status con color
     if is_correct:
         status = f"[{GREEN} OK {NC}]"
     else:
         status = f"[{RED}FAIL{NC}]"
 
-    # Construimos el texto principal: "Descripción: Resultado"
-    # Convertimos result a string por si es un número
     content = f"{description}: {result}"
-
-    # IMPRESIÓN CON TABULACIÓN:
-    # {content:<50} significa: toma la variable 'content', alinéala a la izquierda (<)
-    # y rellena con espacios hasta llegar a 50 caracteres.
     print(f"  {YELLOW}•{NC} {content:<50} {status}")
 
     return is_correct
@@ -38,7 +31,13 @@ def print_final(exercise_nb, all_ok):
     ex_str = f"EX {exercise_nb:02}"
     if all_ok:
         status = f"{GREEN}✅ TODO OK{NC}"
+        print(f"\n{BOLD}{ex_str}:{NC} {status}")
+        print(f"{BLUE}{'-' * 60}{NC}\n")
     else:
         status = f"{RED}❌ ERRORES DETECTADOS{NC}"
-    print(f"\n{BOLD}{ex_str}:{NC} {status}")
-    print(f"{BLUE}{'-' * 60}{NC}\n")
+        print(f"\n{BOLD}{ex_str}:{NC} {status}")
+        print(f"{BLUE}{'-' * 60}{NC}\n")
+        
+        # 2. ESTA ES LA CLAVE: 
+        # Forzamos que el script devuelva error (1) al sistema.
+        sys.exit(1)

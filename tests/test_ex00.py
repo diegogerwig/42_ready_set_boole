@@ -10,7 +10,8 @@ def run():
 
     for a, b in cases:
         res = adder(a, b)
-        if not print_result(f"{a} + {b}", res, a + b):
+        expected = a + b
+        if not print_result(f"{a} + {b}", res, expected):
             all_ok = False
 
     print_final(0, all_ok)
