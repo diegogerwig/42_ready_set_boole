@@ -8,9 +8,9 @@ BOLD = "\033[1m"
 NC = "\033[0m"
 
 def print_header(ex_nb, title):
-    print(f"\n\n{BLUE}{'=' * 40}{NC}")
+    print(f"\n\n{BLUE}{'=' * 50}{NC}")
     print(f"{BLUE}{BOLD}# EX {ex_nb:02} - {title.upper()}{NC}")
-    print(f"{BLUE}{'=' * 40}{NC}")
+    print(f"{BLUE}{'=' * 50}{NC}")
 
 def print_result(description, result, expected):
     is_correct = (result == expected)
@@ -22,4 +22,4 @@ def print_final(exercise_nb, all_ok):
     ex_str = f"EX {exercise_nb:02}"
     status = f"{GREEN}✅ TODO OK{NC}" if all_ok else f"{RED}❌ ERRORES DETECTADOS{NC}"
     print(f"\n{BOLD}{ex_str}:{NC} {status}")
-    print(f"{BLUE}{'-' * 40}{NC}")
+    print(f"{BLUE}{'-' * 50}{NC}")
