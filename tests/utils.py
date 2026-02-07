@@ -1,4 +1,4 @@
-import sys  # <--- 1. Importante para poder salir
+import sys
 
 # Códigos de colores ANSI
 GREEN = "\033[0;32m"
@@ -38,6 +38,4 @@ def print_final(exercise_nb, all_ok):
         print(f"\n{BOLD}{ex_str}:{NC} {status}")
         print(f"{BLUE}{'-' * 60}{NC}\n")
         
-        # 2. ESTA ES LA CLAVE: 
-        # Forzamos que el script devuelva error (1) al sistema.
         sys.exit(1)

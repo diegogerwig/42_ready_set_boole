@@ -20,19 +20,17 @@ if [[ "$KERNEL_RELEASE" == *"Microsoft"* || "$KERNEL_RELEASE" == *"WSL"* ]]; the
     # ESTAMOS EN WINDOWS / WSL
     TARGET_DIR="$USER_HOME"
     VENV_NAME=".ready_set_boole_venv"
-    echo -e "${B_YELLOW}🖥️  Sistema detectado: Windows/WSL${NC}"
-    
+    echo -e "\n${B_YELLOW}🖥️  Sistema detectado: Windows/WSL${NC}"
 elif [[ "$OS_NAME" == "Linux" && -d "$USER_HOME/sgoinfre" ]]; then
     # ESTAMOS EN LINUX (42 / SGOINFRE)
     TARGET_DIR="$USER_HOME/sgoinfre"
     VENV_NAME="ready_set_boole_venv"
-    echo -e "${B_YELLOW}🖥️  Sistema detectado: Linux (42 Campus). Usando sgoinfre.${NC}"
-    
+    echo -e "\n${B_YELLOW}🖥️  Sistema detectado: Linux (42 Campus)${NC}"
 else
-    # FALLBACK
+    # ESTAMOS EN OTRO SISTEMA
     TARGET_DIR="$USER_HOME"
-    VENV_NAME=".ready_set_boole_venv"
-    echo -e "${B_YELLOW}🖥️  Sistema detectado: Estándar${NC}"
+    VENV_NAME="ready_set_boole_venv"
+    echo -e "\n${B_YELLOW}🖥️  Sistema detectado: Otro${NC}"
 fi
 
 VENV_PATH="$TARGET_DIR/$VENV_NAME"
@@ -40,10 +38,10 @@ unset TEST_RESULTS
 declare -a TEST_RESULTS=() 
 ALL_TESTS_PASSED=true
 
-echo -e "${B_BLUE}╔═══════════════════════════════════╗${NC}"
-echo -e "${B_BLUE}║        READY, SET, BOOLE!         ║${NC}"
-echo -e "${B_BLUE}╚═══════════════════════════════════╝${NC}"
-echo -e "${B_CYAN}📂 Ruta del entorno: ${NC}$VENV_PATH"
+echo -e "\n${B_BLUE}╔═══════════════════════════════════╗${NC}"
+echo -e   "${B_BLUE}║        READY, SET, BOOLE!         ║${NC}"
+echo -e   "${B_BLUE}╚═══════════════════════════════════╝${NC}"
+echo -e "\n${B_CYAN}📂 Ruta del entorno: ${NC}$VENV_PATH"
 
 # ==========================================
 # 2. LIMPIEZA SILENCIOSA
@@ -69,6 +67,8 @@ echo -e "${B_GREEN}🐍 Entorno Python Activo.${NC}"
 # ==========================================
 # 4. EJECUCIÓN DE TESTS
 # ==========================================
+export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+
 if [ -d "tests" ]; then
     # CORRECCIÓN 1: Iteración directa sobre el glob (funciona en Zsh y Bash)
     # Los archivos se ordenan alfabéticamente por defecto al expandir el *
