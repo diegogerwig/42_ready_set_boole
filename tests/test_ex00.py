@@ -3,7 +3,9 @@ from utils import print_header, print_result, print_final, CYAN, BLUE, YELLOW, N
 
 def run():
     print_header(0, "ADDER (Aritmética Bitwise)")
+    
     cases = [
+    #   (a, b)
         (0, 0),
         (1, 0),
         (0, 1),
@@ -23,6 +25,7 @@ def run():
         (3, 'x'),
         (3, '3')
         ]
+    
     all_ok = True
 
     for case in cases:

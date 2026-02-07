@@ -2,6 +2,8 @@ def adder(a: int, b: int) -> int:
     """
     Suma dos números naturales usando solo operaciones bit a bit.
     """
+    if not isinstance(a, int) or not isinstance(b, int):
+        raise TypeError("La función solo acepta números enteros.")
     if a < 0 or b < 0:
         raise ValueError("Esta función solo acepta números naturales (positivos).")
     

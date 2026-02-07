@@ -4,6 +4,8 @@ def multiplier(a: int, b: int) -> int:
     """
     Multiplica dos números naturales usando desplazamientos y la función adder.
     """
+    if not isinstance(a, int) or not isinstance(b, int):
+        raise TypeError("La función solo acepta números enteros.")
     if a < 0 or b < 0:
         raise ValueError("Esta función solo acepta números naturales (positivos).")
         

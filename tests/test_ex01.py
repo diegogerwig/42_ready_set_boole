@@ -5,6 +5,7 @@ def run():
     print_header(1, "MULTIPLIER (Aritmética Bitwise)")
     
     cases = [
+    #   (a, b)
         (0, 0),
         (1, 0),
         (0, 1),    
