@@ -5,7 +5,7 @@ def run():
     print_header(2, "GRAY CODE")
     
     cases = [
-    #   (n, expected)     
+    #   (n, expected)
         (0, 0),
         (1, 1),
         (2, 3),
