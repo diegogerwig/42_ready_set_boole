@@ -72,7 +72,7 @@ if [ -f "requirements.txt" ]; then
     pip install -q -r requirements.txt
     echo -e "${B_GREEN}   Dependencias instaladas.${NC}"
 else
-    echo -e "${B_CYAN}ℹ️  No se encontró requirements.txt (Uso de Librería Estándar).${NC}"
+    echo -e "${B_CYAN}ℹ️  No se encontró requirements.txt${NC}"
 fi
 
 # ==========================================
