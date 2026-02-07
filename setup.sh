@@ -99,8 +99,6 @@ if [ -d "tests" ]; then
 
         echo -e "\n${B_CYAN}⌛ Esperando confirmación...${NC}"
         
-        # CORRECCIÓN 2: 'read' compatible con Zsh y Bash
-        # Imprimimos el mensaje primero, luego esperamos el input
         echo -e "${B_YELLOW}Presiona [ENTER] para continuar...${NC}"
         read -r dummy_var
         

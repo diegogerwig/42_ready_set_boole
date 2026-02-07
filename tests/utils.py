@@ -10,7 +10,7 @@ BOLD = "\033[1m"
 NC = "\033[0m"
 
 def print_header(ex_nb, title):
-    print(f"\n\n{BLUE}{'=' * 60}{NC}")
+    print(f"\n{BLUE}{'=' * 60}{NC}")
     print(f"{BLUE}{BOLD}# EX {ex_nb:02} - {title.upper()}{NC}")
     print(f"{BLUE}{'=' * 60}{NC}")
 

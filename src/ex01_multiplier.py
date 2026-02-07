@@ -2,14 +2,17 @@ from ex00_adder import adder
 
 def multiplier(a: int, b: int) -> int:
     """
-    Multiplica dos números usando desplazamientos y tu función adder.
-    Complejidad máxima permitida: O(1) (para un entero de tamaño fijo como u32).
+    Multiplica dos números naturales usando desplazamientos y la función adder.
     """
+    if a < 0 or b < 0:
+        raise ValueError("Esta función solo acepta números naturales (positivos).")
+        
     result = 0
-    # Iteramos sobre los bits de 'b' (asumiendo 32 bits como indica el PDF)
+    
+    # ALGORITMO DE MULTIPLICACIÓN RUSA (PEASANT) / BITWISE: Iteramos bit a bit (máximo 32 bits para simular u32)
     for i in range(32):
-        # Si el bit i-ésimo de 'b' está encendido
+        # Si el bit 'i' de 'b' es 1, sumamos 'a' desplazado 'i' veces (equivale a sumar a * 2^i)
         if (b >> i) & 1:
-            # Sumamos 'a' desplazado 'i' posiciones al resultado
             result = adder(result, a << i)
+            
     return result

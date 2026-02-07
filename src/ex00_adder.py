@@ -1,19 +1,20 @@
 def adder(a: int, b: int) -> int:
+    """
+    Suma dos números naturales usando solo operaciones bit a bit.
+    """
     if a < 0 or b < 0:
         raise ValueError("Esta función solo acepta números naturales (positivos).")
     
     while b != 0:
         
-        # PASO A: Suma Parcial (Sin acarreo)
-        # La operación XOR (^) suma los bits: 1+0=1, 0+1=1, 0+0=0, 1+1=0
+        # Suma Parcial (Sin acarreo): La operación XOR (^) suma los bits: 1+0=1, 0+1=1, 0+0=0, 1+1=0
         suma_parcial = a ^ b
         
-        # PASO B: Calcular el Acarreo (Carry)
+        # Calcular el Acarreo (Carry): La operación AND (&) detecta dónde hay dos unos (1+1).
         # La operación AND (&) detecta dónde hay dos unos (1+1).
         acarreo_crudo = a & b
         
-        # PASO C: Mover el Acarreo
-        # La operación LEFT SHIFT (<<) mueve el acarreo a la columna de la IZQUIERDA.
+        # Mover el Acarreo: La operación LEFT SHIFT (<<) mueve el acarreo a la columna de la IZQUIERDA.
         acarreo_listo = acarreo_crudo << 1
         
         # Actualizamos las variables para la siguiente vuelta:
