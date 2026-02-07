@@ -25,21 +25,21 @@ if [[ "$KERNEL_RELEASE" == *"Microsoft"* || "$KERNEL_RELEASE" == *"WSL"* ]]; the
 elif [[ "$OS_NAME" == "Linux" && -d "$USER_HOME/sgoinfre" ]]; then
     # ESTAMOS EN LINUX (42 / SGOINFRE)
     TARGET_DIR="$USER_HOME/sgoinfre"
-    VENV_NAME="ready_set_boole_venv" # Sin punto para que sea visible en sgoinfre
+    VENV_NAME="ready_set_boole_venv"
     echo -e "${B_YELLOW}🖥️  Sistema detectado: Linux (42 Campus). Usando sgoinfre.${NC}"
     
 else
-    # FALLBACK (Linux normal o Mac sin sgoinfre)
+    # FALLBACK
     TARGET_DIR="$USER_HOME"
     VENV_NAME=".ready_set_boole_venv"
     echo -e "${B_YELLOW}🖥️  Sistema detectado: Estándar${NC}"
 fi
 
 VENV_PATH="$TARGET_DIR/$VENV_NAME"
-declare -a TEST_RESULTS 
+unset TEST_RESULTS
+declare -a TEST_RESULTS=() 
 ALL_TESTS_PASSED=true
 
-clear
 echo -e "${B_BLUE}╔═══════════════════════════════════╗${NC}"
 echo -e "${B_BLUE}║        READY, SET, BOOLE!         ║${NC}"
 echo -e "${B_BLUE}╚═══════════════════════════════════╝${NC}"
@@ -57,7 +57,6 @@ echo -e " ${B_GREEN}Hecho.${NC}"
 # ==========================================
 if [ ! -d "$VENV_PATH" ]; then
     echo -e "${B_YELLOW}⚙️  Creando entorno virtual...${NC}"
-    # Si estamos en sgoinfre, aseguramos que la carpeta base exista
     if [[ "$VENV_PATH" == *"/sgoinfre/"* ]]; then
         mkdir -p "$(dirname "$VENV_PATH")"
     fi
@@ -71,20 +70,28 @@ echo -e "${B_GREEN}🐍 Entorno Python Activo.${NC}"
 # 4. EJECUCIÓN DE TESTS
 # ==========================================
 if [ -d "tests" ]; then
-    test_files=$(ls tests/test_*.py | sort)
-    
-    for file in $test_files; do
+    # CORRECCIÓN 1: Iteración directa sobre el glob (funciona en Zsh y Bash)
+    # Los archivos se ordenan alfabéticamente por defecto al expandir el *
+    for file in tests/test_*.py; do
+        
+        # Ejecutar python
         python3 "$file"
         
+        # Capturar resultado
         if [ $? -eq 0 ]; then
-            TEST_RESULTS+=("${B_GREEN}✔ PASS${NC}  $(basename $file)")
+            TEST_RESULTS+=("${B_GREEN}✔ PASS${NC}  $(basename "$file")")
         else
-            TEST_RESULTS+=("${B_RED}✘ FAIL${NC}  $(basename $file)")
+            TEST_RESULTS+=("${B_RED}✘ FAIL${NC}  $(basename "$file")")
             ALL_TESTS_PASSED=false
         fi
 
         echo -e "\n${B_CYAN}⌛ Esperando confirmación...${NC}"
-        read -p "$(echo -e ${B_YELLOW}"Presiona [ENTER] para continuar..."${NC})"
+        
+        # CORRECCIÓN 2: 'read' compatible con Zsh y Bash
+        # Imprimimos el mensaje primero, luego esperamos el input
+        echo -e "${B_YELLOW}Presiona [ENTER] para continuar...${NC}"
+        read -r dummy_var
+        
         echo "" 
     done
 else
@@ -94,7 +101,6 @@ fi
 # ==========================================
 # 5. RESUMEN FINAL
 # ==========================================
-clear
 echo -e "${B_BLUE}╔═══════════════════════════════════╗${NC}"
 echo -e "${B_BLUE}║          RESUMEN FINAL            ║${NC}"
 echo -e "${B_BLUE}╚═══════════════════════════════════╝${NC}"
