@@ -39,8 +39,6 @@ def run():
         except ValueError as e:
             desc = f"gray_code({n})"
             
-            # 2. Imprimimos ALINEADO a 50 caracteres (igual que print_result)
-            # Usamos RED para el tag de error y el mensaje, igual que Ex 01
             print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}VAL ERROR{NC}]")
             print(f"    {BLUE}└── {e}{NC}")
             
