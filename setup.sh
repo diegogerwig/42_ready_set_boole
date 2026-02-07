@@ -40,6 +40,7 @@ ALL_TESTS_PASSED=true
 echo -e "\n${B_BLUE}╔═══════════════════════════════════╗${NC}"
 echo -e   "${B_BLUE}║        READY, SET, BOOLE!         ║${NC}"
 echo -e   "${B_BLUE}╚═══════════════════════════════════╝${NC}"
+
 echo -e "\n${B_CYAN}📂 Ruta del entorno: ${NC}$VENV_PATH"
 
 # ==========================================
