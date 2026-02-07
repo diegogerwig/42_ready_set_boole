@@ -1,1 +1,1 @@
-source setup_env.sh
+bash setup.sh

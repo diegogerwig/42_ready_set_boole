@@ -1,5 +1,5 @@
 from ex00_adder import adder
-from utils import print_header, print_result, print_final, RED, YELLOW, NC
+from utils import print_header, print_result, print_final, CYAN, BLUE, YELLOW, NC
 
 def run():
     print_header(0, "ADDER (Aritmética Bitwise)")
@@ -42,16 +42,16 @@ def run():
                 all_ok = False
                 
         except ValueError as e:
-            print(f"  {YELLOW}•{NC} {str(case):<50} [{RED}VALUE ERROR{NC}]")
-            print(f"    {RED}└── {e}{NC}")
+            print(f"  {YELLOW}•{NC} {str(case):<50} [{CYAN}VALUE ERROR{NC}]")
+            print(f"    {BLUE}└── {e}{NC}")
             
         except TypeError as e:
-            print(f"  {YELLOW}•{NC} {str(case):<50} [{RED}TYPE ERROR{NC}]")
-            print(f"    {RED}└── {e}{NC}")
+            print(f"  {YELLOW}•{NC} {str(case):<50} [{CYAN}TYPE ERROR{NC}]")
+            print(f"    {BLUE}└── {e}{NC}")
             
         except Exception as e:
-            print(f"  {YELLOW}•{NC} {str(case):<50} [{RED}CRASH{NC}]")
-            print(f"    {RED}└── {e}{NC}")
+            print(f"  {YELLOW}•{NC} {str(case):<50} [{CYAN}CRASH{NC}]")
+            print(f"    {BLUE}└── {e}{NC}")
 
     print_final(0, all_ok)
 
