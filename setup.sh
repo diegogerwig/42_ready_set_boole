@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Paleta de colores para Bash
 B_BLUE='\033[1;34m'
 B_CYAN='\033[1;36m'
 B_GREEN='\033[1;32m'
@@ -62,7 +61,19 @@ if [ ! -d "$VENV_PATH" ]; then
 fi
 
 source "$VENV_PATH/bin/activate"
-echo -e "${B_GREEN}🐍 Entorno Python Activo.${NC}"
+
+PY_VER=$(python3 --version)
+PY_LOC=$(which python3)
+echo -e "${B_GREEN}🐍 Python Activo:${NC} $PY_VER"
+echo -e "   📍 Binario: $PY_LOC"
+
+if [ -f "requirements.txt" ]; then
+    echo -e "${B_YELLOW}📦 Instalando dependencias (requirements.txt)...${NC}"
+    pip install -q -r requirements.txt
+    echo -e "${B_GREEN}   Dependencias instaladas.${NC}"
+else
+    echo -e "${B_CYAN}ℹ️  No se encontró requirements.txt (Uso de Librería Estándar).${NC}"
+fi
 
 # ==========================================
 # 4. EJECUCIÓN DE TESTS
