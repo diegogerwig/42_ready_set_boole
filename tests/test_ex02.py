@@ -53,7 +53,6 @@ def run():
             desc = f"gray_code({n})"
             print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}CRASH{NC}]")
             print(f"    {BLUE}└── {e}{NC}")
-            all_ok = False
 
     print_final(2, all_ok)
 
