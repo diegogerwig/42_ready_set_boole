@@ -61,11 +61,11 @@ def run():
             else:
                 # Si esperábamos tabla y falló -> MAL
                 print(f"  {YELLOW}•{NC} Formula '{formula}' {CYAN}[CRASH]{NC}")
-                print(f"    {RED}└── {e}{NC}")
+                print(f"    {BLUE}└── {e}{NC}")
                 
         except Exception as e:
             print(f"  {YELLOW}•{NC} Formula '{formula}' {CYAN}[UNKNOWN CRASH]{NC}")
-            print(f"    {RED}└── {e}{NC}")
+            print(f"    {BLUE}└── {e}{NC}")
 
     print_final(4, all_ok)
 
