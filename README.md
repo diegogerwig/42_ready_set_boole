@@ -80,12 +80,27 @@ Queremos convertir el 6 (binario `110`).
 
 ```text
 Binario (6):       1   1   0
-                   | / | / |
-                   |/  |/  |  <-- Comparamos con el de la izquierda
-Vecino (6>>1):     0   1   1
-                   --------- (Hacemos XOR)
-Gray (5):          1   0   1
+                   |   |   |
+                   |   |   |  
+Vecino (6>>1):     0   1   1   (SHIFT RIGHT)
+                   ---------   
+Gray (5):          1   0   1   (XOR)
 ```
+
+### 📊 Valores de 0 a 8
+
+Aplicando la fórmula a los valores obligatorios (0-8) para demostrar que coinciden con la tabla del enunciado:
+
+* **0:** `0 ^ 0` = **0**
+* **1:** `1 ^ 0` = **1**
+* **2:** `2 ^ 1` *(10 ^ 01)* = `11` → **3**
+* **3:** `3 ^ 1` *(11 ^ 01)* = `10` → **2**
+* **4:** `4 ^ 2` *(100 ^ 010)* = `110` → **6**
+* **5:** `5 ^ 2` *(101 ^ 010)* = `111` → **7**
+* **6:** `6 ^ 3` *(110 ^ 011)* = `101` → **5**
+* **7:** `7 ^ 3` *(111 ^ 011)* = `100` → **4**
+* **8:** `8 ^ 4` *(1000 ^ 0100)* = `1100` → **12**
 
 ---
 ---
+

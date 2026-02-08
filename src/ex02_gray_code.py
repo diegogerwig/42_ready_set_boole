@@ -14,13 +14,12 @@ def gray_code(n: int) -> int:
     # Movemos los bits una posición a la derecha SHIFT RIGHT (>> 1) para obtener el vecino a la izquierda.
     vecino_izquierda = n >> 1
     
-    # COMPARACIÓN (XOR)
+    # Comparación (XOR)
     # XOR detecta cambios: pone un 1 si los bits son DIFERENTES.
     # 1 vs 0 -> 1
     # 0 vs 1 -> 1
     # 1 vs 1 -> 0
     # 0 vs 0 -> 0
-    # Resultado:         1 0 1  (5 en Gray)
     codigo_gray = original ^ vecino_izquierda
     
     return codigo_gray
