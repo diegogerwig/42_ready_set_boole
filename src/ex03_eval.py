@@ -8,19 +8,19 @@ def eval_formula(formula: str) -> bool:
     stack = []
     
     for char in formula:
-        # 1. Valores (0 o 1)
+        # Valores admitidos (0 ó 1)
         if char == '0':
             stack.append(False)
         elif char == '1':
             stack.append(True)
             
-        # 2. Operador Unario (!)
+        # Operador Unario (!)
         elif char == '!':
             if len(stack) < 1:
                 raise ValueError("Formato inválido: Falta operando para '!'.")
             stack.append(not stack.pop())
             
-        # 3. Operadores Binarios (&, |, ^, >, =)
+        # Operadores Binarios (&, |, ^, >, =)
         elif char in "&|^>=":
             if len(stack) < 2:
                 raise ValueError(f"Formato inválido: Faltan operandos para '{char}'.")
@@ -41,7 +41,7 @@ def eval_formula(formula: str) -> bool:
             elif char == '=':
                 stack.append(left == right)
         
-        # 4. Caracteres desconocidos
+        # Caracteres desconocidos
         else:
             raise ValueError(f"Carácter inválido encontrado: '{char}'")
             
