@@ -1,5 +1,5 @@
 from ex02_gray_code import gray_code
-from utils import RED, print_header, print_result, print_final, CYAN, BLUE, YELLOW, NC
+from utils import print_header, print_result, print_final, CYAN, BLUE, YELLOW, NC
 
 def run():
     print_header(2, "GRAY CODE")

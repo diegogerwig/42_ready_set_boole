@@ -1,25 +1,52 @@
 def eval_formula(formula: str) -> bool:
     """
-    Evalúa una fórmula booleana en notación RPN.
-    Complejidad máxima: O(n)[cite: 239].
+    Evalúa una fórmula booleana en notación RPN (Reverse Polish Notation).
     """
+    if not isinstance(formula, str):
+        raise TypeError("El input debe ser una cadena de texto (str).")
+        
     stack = []
     
     for char in formula:
+        # 1. Valores (0 o 1)
         if char == '0':
             stack.append(False)
         elif char == '1':
             stack.append(True)
+            
+        # 2. Operador Unario (!)
         elif char == '!':
+            if len(stack) < 1:
+                raise ValueError("Formato inválido: Falta operando para '!'.")
             stack.append(not stack.pop())
-        else:
-            # Operadores binarios
+            
+        # 3. Operadores Binarios (&, |, ^, >, =)
+        elif char in "&|^>=":
+            if len(stack) < 2:
+                raise ValueError(f"Formato inválido: Faltan operandos para '{char}'.")
+            
+            # OJO: En RPN, el último en entrar es el operando de la DERECHA
             right = stack.pop()
             left = stack.pop()
-            if char == '&': stack.append(left and right)       # AND
-            elif char == '|': stack.append(left or right)        # OR
-            elif char == '^': stack.append(left != right)        # XOR
-            elif char == '>': stack.append(not left or right)   # IMPLY [cite: 331]
-            elif char == '=': stack.append(left == right)       # EQUIV [cite: 333]
             
+            if char == '&':
+                stack.append(left and right)
+            elif char == '|':
+                stack.append(left or right)
+            elif char == '^':
+                stack.append(left != right)
+            elif char == '>':
+                # Material Implication: False solo si T -> F. Equivale a (!A o B)
+                stack.append(not left or right)
+            elif char == '=':
+                stack.append(left == right)
+        
+        # 4. Caracteres desconocidos
+        else:
+            raise ValueError(f"Carácter inválido encontrado: '{char}'")
+            
+    # Si la fórmula es correcta, debe quedar EXACTAMENTE un valor en la pila.
+    if len(stack) != 1:
+        raise ValueError("Fórmula inválida: sobran o faltan operadores.")
+        
     return stack[0]
