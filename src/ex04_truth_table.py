@@ -1,42 +1,100 @@
+import sys
+
 def eval_formula_with_vars(formula: str, var_values: dict) -> bool:
+    """
+    Evalúa una fórmula RPN sustituyendo las variables por sus valores booleanos.
+    """
     stack = []
+    
     for char in formula:
-        if char in "01":
-            stack.append(char == '1')
+        # 1. Constantes
+        if char == '0':
+            stack.append(False)
+        elif char == '1':
+            stack.append(True)
+            
+        # 2. Variables (A-Z)
         elif char.isalpha():
+            # Asumimos que var_values ya contiene la variable (se prepara antes)
             stack.append(var_values[char])
+            
+        # 3. Operador Unario (!)
         elif char == '!':
+            if len(stack) < 1: raise ValueError("Falta operando para '!'")
             stack.append(not stack.pop())
-        else:
+            
+        # 4. Operadores Binarios
+        elif char in "&|^>=":
+            if len(stack) < 2: raise ValueError(f"Faltan operandos para '{char}'")
             right = stack.pop()
             left = stack.pop()
+            
             if char == '&': stack.append(left and right)
             elif char == '|': stack.append(left or right)
             elif char == '^': stack.append(left != right)
             elif char == '>': stack.append(not left or right)
             elif char == '=': stack.append(left == right)
+        
+        else:
+            raise ValueError(f"Carácter desconocido: {char}")
+
+    if len(stack) != 1:
+        raise ValueError("Fórmula inválida: El resultado no es único.")
+        
     return stack[0]
 
 def print_truth_table(formula: str):
-    # Obtener variables únicas y ordenarlas alfabéticamente 
+    """
+    Imprime la tabla de verdad de una fórmula RPN.
+    Genera 2^n combinaciones para n variables.
+    """
+    if not isinstance(formula, str):
+        raise TypeError("Input debe ser string.")
+    
+    # 1. Extraer variables únicas y ordenarlas (A, B, C...)
+    # Usamos set() para quitar duplicados y sorted() para orden alfabético
     variables = sorted(list(set([c for c in formula if c.isalpha()])))
     n = len(variables)
     
-    # Imprimir cabecera [cite: 308]
-    header = " | ".join(variables) + " | = |"
+    # 2. Validar antes de empezar
+    # Hacemos una prueba rápida con todo a False para ver si la fórmula explota
+    try:
+        dummy_map = {v: False for v in variables}
+        eval_formula_with_vars(formula, dummy_map)
+    except ValueError as e:
+        print(f"Error en la fórmula: {e}")
+        return
+
+    # 3. Imprimir Cabecera
+    # Ejemplo: | A | B | = |
+    if n > 0:
+        header = "| " + " | ".join(variables) + " | = |"
+    else:
+        header = "| = |" # Caso sin variables ("10&")
+        
     print(header)
-    print("-" * len(header))
-    
-    # Generar 2^n combinaciones (de 1 a 0 como en el ejemplo del PDF) [cite: 311-318]
+    print("|---" * (n + 1) + "|")
+
+    # 4. Generar 2^n combinaciones
+    # Iteramos desde 0 hasta 2^n - 1 (Ej: 00, 01, 10, 11)
     for i in range(1 << n):
-        # Creamos los valores para esta fila (usando bits para iterar combinaciones)
-        # El ejemplo del PDF empieza con 1s, así que invertimos el rango o ajustamos la lógica
-        combination = [(i >> (n - 1 - j)) & 1 == 0 for j in range(n)]
-        var_values = dict(zip(variables, combination))
+        current_vars = {}
+        row_str = "|"
         
-        # Evaluar
-        res = eval_formula_with_vars(formula, var_values)
-        
-        # Imprimir fila
-        row = " | ".join(["1" if val else "0" for val in combination])
-        print(f" {row} | {1 if res else 0} |")
+        # Mapeamos los bits del número 'i' a las variables
+        for j in range(n):
+            # (n - 1 - j) invierte el orden para que la primera variable sea el bit más significativo
+            # Esto genera el orden estándar: 00, 01, 10, 11
+            val = (i >> (n - 1 - j)) & 1
+            current_vars[variables[j]] = bool(val)
+            row_str += f" {val} |"
+            
+        # Evaluamos
+        try:
+            res = eval_formula_with_vars(formula, current_vars)
+            res_int = 1 if res else 0
+            row_str += f" {res_int} |"
+            print(row_str)
+        except ValueError:
+            # No debería pasar si la validación inicial pasó, pero por seguridad
+            print(f"| Error en fila {i} |")
