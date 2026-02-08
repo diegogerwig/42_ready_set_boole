@@ -1,6 +1,7 @@
 # 🧮 Ready, Set, Boole! 
 
 ---
+---
 
 ## EX00 - Adder (Sumador a nivel de bits)
 
@@ -14,7 +15,8 @@ Para sumar dos números en binario, igual que en papel, sumamos las columnas y s
    La operación XOR suma los bits pero ignora lo que te llevas. 
    * `1 ^ 0` es 1
    * `0 ^ 1` es 1
-   * `1 ^ 1` es 0 *(Aquí se genera un acarreo que XOR ignora)*.
+   * `0 ^ 0` es 0 *(No se genera acarreo)*
+   * `1 ^ 1` es 0 *(Se genera acarreo)*.
 2. **Detectar el Acarreo (AND `&`)**: 
    La operación AND solo da 1 cuando ambos bits son 1. Nos dice exactamente dónde ocurrió un $1+1$.
 3. **Mover el Acarreo (SHIFT `<< 1`)**: 
@@ -22,6 +24,7 @@ Para sumar dos números en binario, igual que en papel, sumamos las columnas y s
 
 **El algoritmo repite estos pasos hasta que no haya acarreos pendientes (`b == 0`).**
 
+---
 ---
 
 ## EX01 - Multiplier (Multiplicador)
@@ -49,3 +52,6 @@ En cada paso, `a` se duplica y `b` se divide. Solo sumamos `a` al resultado cuan
 | 1 | 24 | 2 | No | No sumo nada | 12 |
 | 2 | **48** | **1** | **SÍ** | Sumo 48 | **60** |
 | 3 | 96 | 0 | - | Fin del bucle | **60** |
+
+---
+---
