@@ -43,7 +43,7 @@ Descomponemos la multiplicación de `a * b` evaluando los bits de `b`.
    * **Duplicamos `a`**: Hacemos un Shift Left (`a << 1`). Equivale a multiplicar por 2.
    * **Dividimos `b`**: Hacemos un Shift Right (`b >> 1`). Equivale a dividir entre 2 y descartar el resto.
 
-### 📊 Ejemplo de traza mental: 12 * 5
+### 📊 Ejemplo: 12 * 5
 En cada paso, `a` se duplica y `b` se divide. Solo sumamos `a` al resultado cuando `b` es impar.
 
 | Vuelta | a (Duplica) | b (Divide) | ¿b es Impar? | Suma al Resultado | Total |
@@ -52,6 +52,40 @@ En cada paso, `a` se duplica y `b` se divide. Solo sumamos `a` al resultado cuan
 | 1 | 24 | 2 | No | No sumo nada | 12 |
 | 2 | **48** | **1** | **SÍ** | Sumo 48 | **60** |
 | 3 | 96 | 0 | - | Fin del bucle | **60** |
+
+---
+---
+
+## EX02 - Gray Code (Código Gray)
+
+### 💡 El Concepto
+El Código Gray es un sistema de numeración binaria alternativo donde dos números consecutivos **solo se diferencian en un único bit**. 
+
+Esto es fundamental en el mundo del hardware y la robótica (como en sensores de posición o *encoders*) para evitar errores de lectura. Si usáramos binario normal, al pasar de 3 (`011`) a 4 (`100`) cambiarían 3 bits a la vez, y una lectura en el momento justo del cambio podría dar cualquier valor erróneo intermedio. En Gray, solo cambia uno, garantizando estabilidad.
+
+### 🧠 La Lógica Paso a Paso
+La fórmula mágica para convertir un binario normal a Gray es muy compacta: `n ^ (n >> 1)`.
+
+Para explicarla fácilmente, usa la regla de los **Vecinos**:
+**"Cada bit del Código Gray es el resultado de comparar el bit original con su vecino de la izquierda."**
+
+1.  **`n`**: Tomamos el número original.
+2.  **`n >> 1`**: Creamos una copia desplazada a la derecha. Esto alinea visualmente cada bit con su vecino superior.
+3.  **`^` (XOR)**: Comparamos ambas versiones.
+    * Si el bit y su vecino son **iguales** (0 y 0, ó 1 y 1) -> **0**.
+    * Si el bit y su vecino son **diferentes** (0 y 1, ó 1 y 0) -> **1**.
+
+### 📊 Ejemplo: Convertir 6 a Gray
+Queremos convertir el 6 (binario `110`).
+
+```text
+Binario (6):       1   1   0
+                   | / | / |
+                   |/  |/  |  <-- Comparamos con el de la izquierda
+Vecino (6>>1):     0   1   1
+                   --------- (Hacemos XOR)
+Gray (5):          1   0   1
+```
 
 ---
 ---

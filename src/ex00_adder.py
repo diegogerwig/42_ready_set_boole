@@ -10,7 +10,11 @@ def adder(a: int, b: int) -> int:
     
     while b != 0:
         
-        # Suma Parcial (Sin acarreo): La operación XOR (^) suma los bits: 1+0=1, 0+1=1, 0+0=0, 1+1=0
+        # Suma Parcial (Sin acarreo): La operación XOR (^) suma los bits:
+        # 1 vs 0 -> 1
+        # 0 vs 1 -> 1
+        # 1 vs 1 -> 0
+        # 0 vs 0 -> 0
         suma_parcial = a ^ b
         
         # Calcular el Acarreo (Carry): La operación AND (&) detecta dónde hay dos unos (1+1).
