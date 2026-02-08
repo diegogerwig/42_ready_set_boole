@@ -133,7 +133,7 @@ Al final, si la fórmula es correcta, **solo debe quedar un plato** en la pila. 
 | **0** | Empuja False | `[True, False]` |
 | **&** | Saca dos (`T`, `F`) -> Calcula `T & F` = `F` -> Empuja | `[False]` |
 | **1** | Empuja True | `[False, True]` |
-| **|** | Saca dos (`F`, `T`) -> Calcula `F | T` = `T` -> Empuja | `[True]` |
+| **\|** | Saca dos (`F`, `T`) -> Calcula `F \| T` = `T` -> Empuja | `[True]` |
 
 **Resultado Final:** `True`.
 
