@@ -6,15 +6,25 @@ def multiplier(a: int, b: int) -> int:
     """
     if not isinstance(a, int) or not isinstance(b, int):
         raise TypeError("La función solo acepta números enteros.")
+    
     if a < 0 or b < 0:
         raise ValueError("Esta función solo acepta números naturales (positivos).")
         
     result = 0
     
-    # ALGORITMO DE MULTIPLICACIÓN RUSA (PEASANT) / BITWISE: Iteramos bit a bit (máximo 32 bits para simular u32)
-    for i in range(32):
-        # Si el bit 'i' de 'b' es 1, sumamos 'a' desplazado 'i' veces (equivale a sumar a * 2^i)
-        if (b >> i) & 1:
-            result = adder(result, a << i)
+    while b != 0:
+        
+        # METEODO DE MULTIPLICACION RUSA
+        # Miramos si 'b' es IMPAR (si su último bit es 1).
+        # Si es impar, significa que el valor actual de 'a' forma parte de la suma total.
+        if (b & 1):
+            result = adder(result, a)
+            
+        # Evolución de las variables para la siguiente vuelta
+        # DUPLICAMOS 'a' (Shift Left << 1 es multiplicar por 2)
+        a = a << 1
+        
+        # DIVIDIMOS 'b' por la mitad (Shift Right >> 1 es división entera por 2)
+        b = b >> 1
             
     return result
