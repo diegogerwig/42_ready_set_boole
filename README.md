@@ -104,3 +104,46 @@ Aplicando la fórmula a los valores obligatorios (0-8) para demostrar que coinci
 ---
 ---
 
+---
+
+## EX03 - Boolean Evaluation (RPN)
+
+### 💡 El Concepto
+Evaluamos fórmulas booleanas escritas en **RPN (Reverse Polish Notation)**.
+En esta notación, el operador va *después* de los números (ej. `10&` en vez de `1&0`). Esto es genial para los ordenadores porque **elimina la necesidad de paréntesis**.
+
+### 🧠 La Lógica Paso a Paso
+Imagina una pila de platos vacía (`stack`).
+
+1.  Recorremos la cadena carácter por carácter.
+2.  **Si vemos un número (0 o 1):** Lo ponemos encima de la pila.
+3.  **Si vemos un operador (&, |, >, =):**
+    * Sacamos los **dos** platos de arriba (`pop`).
+    * Hacemos la operación matemática con ellos.
+    * Ponemos el resultado (el nuevo plato) en la pila.
+4.  **Si vemos un negador (!):** Sacamos solo **un** plato, le cambiamos el valor, y lo devolvemos.
+
+Al final, si la fórmula es correcta, **solo debe quedar un plato** en la pila. Ese es el resultado final.
+
+### 📊 Ejemplo: `10&1|` (Equivale a `(1 AND 0) OR 1`)
+
+| Carácter | Acción | Estado de la Pila `[]` |
+| :--- | :--- | :--- |
+| **1** | Empuja True | `[True]` |
+| **0** | Empuja False | `[True, False]` |
+| **&** | Saca dos (`T`, `F`) -> Calcula `T & F` = `F` -> Empuja | `[False]` |
+| **1** | Empuja True | `[False, True]` |
+| **|** | Saca dos (`F`, `T`) -> Calcula `F | T` = `T` -> Empuja | `[True]` |
+
+**Resultado Final:** `True`.
+
+### 🔑 Claves de los Operadores
+* `&` (AND): Ambos deben ser verdaderos.
+* `|` (OR): Basta que uno sea verdadero.
+* `^` (XOR): Deben ser **diferentes**.
+* `=` (EQUIV): Deben ser **iguales**.
+* `>` (IMPLICACIÓN): La única forma de que sea falso es `True > False`. En el resto de casos es verdadero.
+
+---
+---
+
