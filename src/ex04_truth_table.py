@@ -7,23 +7,23 @@ def eval_formula_with_vars(formula: str, var_values: dict) -> bool:
     stack = []
     
     for char in formula:
-        # 1. Constantes
+        # Valores admitidos (0 ó 1)
         if char == '0':
             stack.append(False)
         elif char == '1':
             stack.append(True)
             
-        # 2. Variables (A-Z)
+        # Variables (A-Z)
         elif char.isalpha():
             # Asumimos que var_values ya contiene la variable (se prepara antes)
             stack.append(var_values[char])
             
-        # 3. Operador Unario (!)
+        # Operador Unario (!)
         elif char == '!':
             if len(stack) < 1: raise ValueError("Falta operando para '!'")
             stack.append(not stack.pop())
             
-        # 4. Operadores Binarios
+        # Operadores Binarios
         elif char in "&|^>=":
             if len(stack) < 2: raise ValueError(f"Faltan operandos para '{char}'")
             right = stack.pop()
@@ -46,17 +46,16 @@ def eval_formula_with_vars(formula: str, var_values: dict) -> bool:
 def print_truth_table(formula: str):
     """
     Imprime la tabla de verdad de una fórmula RPN.
-    Genera 2^n combinaciones para n variables.
     """
     if not isinstance(formula, str):
         raise TypeError("Input debe ser string.")
     
-    # 1. Extraer variables únicas y ordenarlas (A, B, C...)
+    # Extraer variables únicas y ordenarlas (A, B, C...)
     # Usamos set() para quitar duplicados y sorted() para orden alfabético
     variables = sorted(list(set([c for c in formula if c.isalpha()])))
     n = len(variables)
     
-    # 2. Validar antes de empezar
+    # Validar antes de empezar
     # Hacemos una prueba rápida con todo a False para ver si la fórmula explota
     try:
         dummy_map = {v: False for v in variables}
@@ -65,7 +64,7 @@ def print_truth_table(formula: str):
         print(f"Error en la fórmula: {e}")
         return
 
-    # 3. Imprimir Cabecera
+    # Imprimir Cabecera
     # Ejemplo: | A | B | = |
     if n > 0:
         header = "| " + " | ".join(variables) + " | = |"
@@ -75,7 +74,7 @@ def print_truth_table(formula: str):
     print(header)
     print("|---" * (n + 1) + "|")
 
-    # 4. Generar 2^n combinaciones
+    # Generar 2^n combinaciones
     # Iteramos desde 0 hasta 2^n - 1 (Ej: 00, 01, 10, 11)
     for i in range(1 << n):
         current_vars = {}
@@ -89,7 +88,7 @@ def print_truth_table(formula: str):
             current_vars[variables[j]] = bool(val)
             row_str += f" {val} |"
             
-        # Evaluamos
+        # Evaluar la fórmula con los valores actuales de las variables
         try:
             res = eval_formula_with_vars(formula, current_vars)
             res_int = 1 if res else 0
