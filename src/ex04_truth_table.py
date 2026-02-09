@@ -4,6 +4,12 @@ def eval_formula_with_vars(formula: str, var_values: dict) -> bool:
     """
     Evalúa una fórmula RPN sustituyendo las variables por sus valores booleanos.
     """
+    if not isinstance(formula, str):
+        raise TypeError("El input debe ser una cadena de texto (str).")
+    
+    if not isinstance(var_values, dict):
+        raise TypeError("var_values debe ser un diccionario.")
+
     stack = []
     
     for char in formula:
