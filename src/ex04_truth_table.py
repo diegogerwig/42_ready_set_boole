@@ -71,7 +71,6 @@ def print_truth_table(formula: str):
         return
 
     # Imprimir Cabecera
-    # Ejemplo: | A | B | = |
     if n > 0:
         header = "| " + " | ".join(variables) + " | = |"
     else:
@@ -101,5 +100,4 @@ def print_truth_table(formula: str):
             row_str += f" {res_int} |"
             print(row_str)
         except ValueError:
-            # No debería pasar si la validación inicial pasó, pero por seguridad
             print(f"| Error en fila {i} |")
