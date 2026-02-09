@@ -43,7 +43,7 @@ def run():
     print_header(4, "TRUTH TABLE")
     
     cases = [
-    #   (formula, expected_validity)
+        #   (formula, expected_validity)
         # True = Debe imprimir tabla válida | None = Debe dar error
         ('A', True),
         ('A!', True),
@@ -83,6 +83,15 @@ def run():
             exception_occurred = e
             
         output = f.getvalue()
+        
+        # --- MODIFICACIÓN: IMPRIMIR LA TABLA SI SE GENERA ---
+        if expected is True and output.strip():
+            print(f"\n{CYAN}┌──────────────────────────────────────────┐{NC}")
+            print(f"{CYAN}│ Testing Formula: {YELLOW}{str(formula):<24}{CYAN}│{NC}")
+            print(f"{CYAN}└──────────────────────────────────────────┘{NC}")
+            print(output) # Aquí mostramos lo que se capturó
+        # ----------------------------------------------------
+
         is_error_printed = "Error" in output
 
         # Verificar Resultados con Formato ex03
