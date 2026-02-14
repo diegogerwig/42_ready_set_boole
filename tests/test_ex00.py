@@ -1,8 +1,3 @@
-import sys, os
-
-# Configuración de path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
-
 from ex00_adder import adder
 from utils import print_header, print_result, print_final, print_error, CYAN, BLUE, YELLOW, NC
 

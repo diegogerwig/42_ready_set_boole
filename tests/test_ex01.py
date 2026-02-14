@@ -1,5 +1,5 @@
 from ex01_multiplier import multiplier
-from utils import print_header, print_result, print_final, CYAN, BLUE, YELLOW, NC
+from utils import print_header, print_result, print_final, print_error, CYAN, BLUE, YELLOW, NC
 
 def run():
     print_header(1, "MULTIPLIER (Aritmética Bitwise)")
@@ -20,18 +20,20 @@ def run():
     # --- Casos de error ---
         (-5, 10),
         (10, -5),
-        ('a', 2)
+        (3, 4, 5),   # Más de 2 argumentos
+        (3,),        # Un solo argumento
+        (3, 'x'),    # Tipos incorrectos (str)
+        ('a', 2)     # Tipos incorrectos (str)
     ]
     
     all_ok = True
 
     for case in cases:
         try:
-            if len(case) != 2:
-                raise ValueError(f"Formato inválido: {case}")
+            if not isinstance(case, tuple) or len(case) != 2:
+                raise ValueError(f"Se esperaban 2 argumentos, se recibió: {case}")
             
             a, b = case
-            
             res = multiplier(a, b)
             
             if isinstance(a, int) and isinstance(b, int):
@@ -43,16 +45,14 @@ def run():
                 all_ok = False
 
         except ValueError as e:
-            print(f"  {YELLOW}•{NC} {str(case):<50} [{CYAN}VAL ERROR{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            print_error(str(case), "VALUE ERROR", str(e))
             
         except TypeError as e:
-            print(f"  {YELLOW}•{NC} {str(case):<50} [{CYAN}TYPE ERR{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            print_error(str(case), "TYPE ERROR", str(e))
             
         except Exception as e:
-            print(f"  {YELLOW}•{NC} {str(case):<50} [{CYAN}CRASH{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            print_error(str(case), "CRASH", str(e))
+            all_ok = False
 
     print_final(1, all_ok)
 

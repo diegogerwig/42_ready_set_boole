@@ -1,6 +1,5 @@
 import sys
 
-# Códigos de colores ANSI
 GREEN = "\033[0;32m"
 RED = "\033[0;31m"
 BLUE = "\033[0;34m"
@@ -9,7 +8,6 @@ YELLOW = "\033[1;33m"
 BOLD = "\033[1m"
 NC = "\033[0m"
 
-# Constante global para alinear todas las columnas en todos los tests
 PAD_LENGTH = 70
 
 def print_header(ex_nb, title):
@@ -31,17 +29,9 @@ def print_result(description, result, expected):
     return is_correct
 
 def print_error(description, error_type, error_msg):
-    """
-    Imprime un error formateado y alineado con la misma anchura que print_result.
-    error_type: Ej. "VAL ERROR", "TYPE ERROR", "CRASH".
-    error_msg: El mensaje de la excepción.
-    """
-    # Formateamos el tag de error
     status = f"[{CYAN}{error_type}{NC}]"
     
-    # Imprimimos la línea principal (alineada)
     print(f" {YELLOW}•{NC} {description:<{PAD_LENGTH}} {status}")
-    # Imprimimos el árbol con el mensaje de error
     print(f"   {BLUE}└── {error_msg}{NC}")
 
 def print_final(exercise_nb, all_ok):
