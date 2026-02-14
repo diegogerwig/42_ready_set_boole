@@ -104,7 +104,6 @@ Aplicando la fórmula a los valores obligatorios (0-8) para demostrar que coinci
 ---
 ---
 
----
 
 ## EX03 - Boolean Evaluation (RPN)
 

@@ -46,7 +46,7 @@ echo -e "\n${B_CYAN}📂 Ruta del entorno: ${NC}$VENV_PATH"
 # ==========================================
 # 2. LIMPIEZA SILENCIOSA
 # ==========================================
-echo -ne "${B_CYAN}🧹 Limpiando caches...${NC}"
+echo -ne "${B_CYAN}🧹 Limpiando...${NC}"
 find . -type d -name "__pycache__" -exec rm -rf {} +
 echo -e " ${B_GREEN}Hecho.${NC}"
 
