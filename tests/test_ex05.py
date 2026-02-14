@@ -83,7 +83,7 @@ def run():
             elif expected is True:
                 is_valid, msg = check_nnf_logic(formula, res)
                 
-                disp_res = (res[:30] + '...') if len(res) > 30 else res
+                disp_res = (res[:40] + '...') if len(res) > 40 else res
                 desc = f"NNF('{formula}') -> {disp_res}"
                 
                 if is_valid:
