@@ -83,14 +83,13 @@ def run():
             elif expected is True:
                 is_valid, msg = check_nnf_logic(formula, res)
                 
-                # Recortamos el string si es muy largo para que no ensucie la terminal
                 disp_res = (res[:30] + '...') if len(res) > 30 else res
                 desc = f"NNF('{formula}') -> {disp_res}"
                 
                 if is_valid:
-                    print(f"  {YELLOW}•{NC} {desc:<60} [{GREEN} OK {NC}]")
+                    print(f"  {YELLOW}•{NC} {desc:<50} [{GREEN} OK {NC}]")
                 else:
-                    print(f"  {YELLOW}•{NC} {desc:<60} [{RED}FAIL{NC}]")
+                    print(f"  {YELLOW}•{NC} {desc:<50} [{RED}FAIL{NC}]")
                     print(f"    {RED}└── {msg}{NC}")
                     all_ok = False
 
