@@ -1,5 +1,10 @@
+import sys, os
+
+# Configuración de path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
 from ex00_adder import adder
-from utils import print_header, print_result, print_final, CYAN, BLUE, YELLOW, NC
+from utils import print_header, print_result, print_final, print_error, CYAN, BLUE, YELLOW, NC
 
 def run():
     print_header(0, "ADDER (Aritmética Bitwise)")
@@ -22,20 +27,19 @@ def run():
     # --- Casos de error ---
         (100, -1),
         (3, 4, 5),
-        (3),
+        (3), 
         (3, 'x'),
         (3, '3')
-        ]
+    ]
     
     all_ok = True
 
     for case in cases:
         try:
-            if len(case) != 2:
-                raise ValueError(f"Se esperaban 2 argumentos, se recibieron {len(case)}")
+            if not isinstance(case, tuple) or len(case) != 2:
+                raise ValueError(f"Se esperaban 2 argumentos, se recibió: {case}")
             
             a, b = case
-
             res = adder(a, b)
             
             if isinstance(a, int) and isinstance(b, int):
@@ -47,16 +51,14 @@ def run():
                 all_ok = False
                 
         except ValueError as e:
-            print(f"  {YELLOW}•{NC} {str(case):<50} [{CYAN}VALUE ERROR{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            print_error(str(case), "VALUE ERROR", str(e))
             
         except TypeError as e:
-            print(f"  {YELLOW}•{NC} {str(case):<50} [{CYAN}TYPE ERROR{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            print_error(str(case), "TYPE ERROR", str(e))
             
         except Exception as e:
-            print(f"  {YELLOW}•{NC} {str(case):<50} [{CYAN}CRASH{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            print_error(str(case), "CRASH", str(e))
+            all_ok = False 
 
     print_final(0, all_ok)
 
