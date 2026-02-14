@@ -21,7 +21,7 @@ def to_ast(formula: str) -> Node:
             raise ValueError(f"Carácter inválido: {char}")
             
     if len(stack) != 1:
-        raise ValueError("Fórmula inválida ( sobran/faltan operadores )")
+        raise ValueError("Fórmula inválida (sobran/faltan operadores)")
         
     return stack.pop()
 
