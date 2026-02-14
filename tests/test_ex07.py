@@ -4,11 +4,6 @@ from utils import print_header, print_final, RED, CYAN, BLUE, YELLOW, NC, GREEN
 def run():
     print_header(7, "SAT (SATISFIABILITY)")
     
-    # Imprimimos la justificación de complejidad requerida en la evaluación
-    print(f"{CYAN}ℹ️  Complejidad de Tiempo: O(2^n) donde 'n' es el número de variables.{NC}")
-    print(f"{CYAN}   El algoritmo evalúa la tabla de verdad (hasta 2^n combinaciones) y aplica{NC}")
-    print(f"{CYAN}   'short-circuit' deteniéndose en el momento en que encuentra el primer True.{NC}\n")
-    
     cases = [
     #   (formula, expected value)
         ('A', True),
