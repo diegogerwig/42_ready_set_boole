@@ -264,3 +264,36 @@ Existen algoritmos súper complejos para resolver esto eficientemente (los famos
 ---
 ---
 
+## EX08 - Powerset (Conjunto Potencia)
+
+### 💡 Descripción
+En la teoría de conjuntos, el **Conjunto Potencia** de un conjunto $S$, denotado como $P(S)$, es el conjunto que contiene **absolutamente todos los subconjuntos posibles** de $S$, incluyendo el conjunto vacío (`[]`) y el propio conjunto $S$.
+
+La regla matemática de oro aquí es la cardinalidad (el tamaño). Si tu conjunto original tiene $n$ elementos, tu conjunto potencia tendrá exactamente **$2^n$** elementos. 
+* Ejemplo: Si tienes 3 elementos, habrá $2^3 = 8$ subconjuntos.
+
+### 🧠 Lógica
+El algoritmo iterativo es la forma más elegante y eficiente de resolver esto (con complejidad $O(2^n)$ real). 
+
+En lugar de generar combinaciones complejas, usamos la lógica de **"duplicar y añadir"**:
+
+1. **Empezamos con la base:** Nuestro conjunto potencia inicial solo contiene el conjunto vacío: `[ [] ]`.
+2. **Iteramos sobre el input:** Cogemos el primer elemento del input (ej: `1`).
+3. **Duplicamos lo que tenemos:** Cogemos todo lo que hay en nuestro conjunto potencia actual (`[]`), hacemos una copia, y a esa copia le inyectamos el nuevo elemento `1` -> `[1]`.
+4. **Unimos:** Guardamos los originales y los nuevos: `[ [], [1] ]`.
+5. **Siguiente iteración:** Cogemos el siguiente elemento (ej: `2`). Duplicamos lo que tenemos e inyectamos el `2`:
+   * Copia de `[]` + `2` = `[2]`
+   * Copia de `[1]` + `2` = `[1, 2]`
+   * Total acumulado: `[ [], [1], [2], [1, 2] ]`.
+
+### 📊 Ejemplo: `powerset([1, 2, 3])`
+
+| Iteración (Elemento) | Subconjuntos Previos (A) | Nuevos (A + elemento) | Total Acumulado |
+| :---: | :--- | :--- | :--- |
+| **Inicio** | `[ [] ]` | - | `[ [] ]` |
+| **1** | `[ [] ]` | `[ [1] ]` | `[ [], [1] ]` |
+| **2** | `[ [], [1] ]` | `[ [2], [1, 2] ]` | `[ [], [1], [2], [1, 2] ]` |
+| **3** | `[ [], [1], [2], [1, 2] ]`| `[ [3], [1, 3], [2, 3], [1, 2, 3] ]` | **Total: 8 subconjuntos** |
+
+---
+---

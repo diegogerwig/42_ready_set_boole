@@ -1,33 +1,95 @@
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
 from ex08_powerset import powerset
-from utils import print_header, print_result, print_final
+from utils import print_header, print_final, RED, CYAN, BLUE, YELLOW, NC, GREEN
+
+def compare_powersets(res: list[list[int]], expected: list[list[int]]) -> bool:
+    """
+    Compara dos conjuntos potencia ignorando el orden de los subconjuntos 
+    y el orden de los elementos dentro de ellos.
+    """
+    if not isinstance(res, list): return False
+    
+    # Ordenamos cada subconjunto internamente, y luego ordenamos la lista principal
+    res_sorted = sorted([sorted(list(sub)) for sub in res])
+    exp_sorted = sorted([sorted(list(sub)) for sub in expected])
+    
+    return res_sorted == exp_sorted
 
 def run():
-    print_header(8, "Powerset")
+    print_header(8, "POWERSET (CONJUNTO POTENCIA)")
+    
+    cases = [
+    #   (Input, Expected_Output)
+        ([], [[]]),
+        ([0], [[], [0]]),
+        ([0, 1], [[], [0], [1], [0, 1]]),
+        ([0, 1, 2], [
+            [], [0], [1], [2], 
+            [0, 1], [1, 2], [0, 2], 
+            [0, 1, 2]
+        ]),
+        
+        ([1, 1], [[], [1]]), 
+        
+    # --- Casos de error ---
+        (None, None),
+        ("123", None) # String en vez de lista
+    ]
     
     all_ok = True
-    
-    # Caso 1: Conjunto Vacío -> [[]]
-    res = powerset([])
-    if not print_result("Powerset([])", res, [[]]): all_ok = False
-    
-    # Caso 2: Un elemento -> [[], [1]]
-    res = powerset([1])
-    # Ordenamos para asegurar la comparación (aunque el algoritmo es determinista)
-    res.sort(key=len)
-    if not print_result("Powerset([1])", res, [[], [1]]): all_ok = False
-    
-    # Caso 3: Verificar Cardinalidad (Tamaño 3 -> 2^3 = 8 subconjuntos)
-    s = [1, 2, 3]
-    res_large = powerset(s)
-    expected_len = 2 ** len(s)
-    
-    # Mostramos el resultado visualmente
-    print(f"  Subconjuntos de {s}: {res_large}")
-    
-    if not print_result(f"Cardinalidad de P({s})", len(res_large), expected_len):
-        all_ok = False
+
+    for case in cases:
+        input_set, expected = case
+        input_str = str(input_set) if input_set is not None else "None"
+            
+        try:
+            res = powerset(input_set)
+            
+            # Formateo visual (Recortamos si es muy largo)
+            disp_res = (str(res)[:40] + '...') if len(str(res)) > 40 else str(res)
+            content = f"powerset({input_str}): {disp_res}"
+            
+            if expected is None:
+                print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
+                print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
+                all_ok = False
+
+            else:
+                # Calculamos 'n' (ignorando duplicados como en un Set real)
+                n = len(set(input_set))
+                expected_len = 2 ** n
+                
+                # Verificación Doble: Coincidencia + Cardinalidad 2^n
+                is_correct = compare_powersets(res, expected)
+                is_right_size = len(res) == expected_len
+                
+                if is_correct and is_right_size:
+                    # Incluimos en la impresión que la cardinalidad coincide
+                    print(f"  {YELLOW}•{NC} {content:<50} [{GREEN} OK {NC}] (n={expected_len})")
+                else:
+                    print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
+                    if not is_right_size:
+                        print(f"    {RED}└── Cardinalidad incorrecta. Esperada: {expected_len}, Obtenida: {len(res)}{NC}")
+                    if not is_correct:
+                        print(f"    {RED}└── Los subconjuntos no coinciden con lo esperado.{NC}")
+                        print(f"    {RED}    Esperado: {expected}{NC}")
+                    all_ok = False
+
+        except (ValueError, TypeError) as e:
+            content = f"powerset({input_str})"
+            if expected is None:
+                print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}TYPE ERROR OK{NC}]")
+                print(f"    {BLUE}└── {e}{NC}")
+            else:
+                print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}CRASH{NC}]")
+                print(f"    {BLUE}└── {e}{NC}")
+                all_ok = False
+                
+        except Exception as e:
+            content = f"powerset({input_str})"
+            print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}UNKNOWN CRASH{NC}]")
+            print(f"    {BLUE}└── {e}{NC}")
+            all_ok = False
 
     print_final(8, all_ok)
 
