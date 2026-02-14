@@ -105,7 +105,7 @@ def run():
             elif is_error_printed:
                 # Error impreso -> ERROR HANDLED (Variante válida de error)
                 print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}ERROR MSG{NC}]")
-                print(f"    {BLUE}└── La función imprimió mensaje de error (Correcto).{NC}")
+                print(f"    {BLUE}└── La función imprimió el mensaje de error esperado.{NC}")
             else:
                 # Ni excepción ni mensaje de error -> FAIL
                 print(f"  {YELLOW}•{NC} {desc:<50} {RED}[FAIL]{NC}")
