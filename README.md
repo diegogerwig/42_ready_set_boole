@@ -5,10 +5,10 @@
 
 ## EX00 - Adder (Sumador a nivel de bits)
 
-### 💡 El Concepto
+### 💡 Descripción
 Este ejercicio simula cómo los procesadores suman números físicamente usando un circuito llamado **Half Adder** (Medio Sumador), utilizando exclusivamente operadores bit a bit (bitwise), sin usar el operador matemático `+`.
 
-### 🧠 La Lógica Paso a Paso
+### 🧠 Lógica
 Para sumar dos números en binario, igual que en papel, sumamos las columnas y si nos pasamos (ej. $1+1$), nos "llevamos" una (acarreo o *carry*).
 
 1. **La Suma Parcial (XOR `^`)**: 
@@ -29,12 +29,12 @@ Para sumar dos números en binario, igual que en papel, sumamos las columnas y s
 
 ## EX01 - Multiplier (Multiplicador)
 
-### 💡 El Concepto
+### 💡 Descripción
 Implementamos la multiplicación utilizando el método de **"Duplicar y Dividir"**, históricamente conocido como la **Multiplicación Rusa** o del Campesino Ruso (*Peasant Multiplication*). 
 
 Este algoritmo es brillante porque descompone cualquier multiplicación usando solo sumas, multiplicaciones por 2 y divisiones entre 2. A nivel de bits, esto encaja a la perfección con la arquitectura de los ordenadores.
 
-### 🧠 La Lógica Paso a Paso
+### 🧠 Lógica
 Descomponemos la multiplicación de `a * b` evaluando los bits de `b`.
 
 1. **El Bucle**: Evaluamos mientras quede algo en `b` (`b != 0`).
@@ -58,12 +58,12 @@ En cada paso, `a` se duplica y `b` se divide. Solo sumamos `a` al resultado cuan
 
 ## EX02 - Gray Code (Código Gray)
 
-### 💡 El Concepto
+### 💡 Descripción
 El Código Gray es un sistema de numeración binaria alternativo donde dos números consecutivos **solo se diferencian en un único bit**. 
 
 Esto es fundamental en el mundo del hardware y la robótica (como en sensores de posición o *encoders*) para evitar errores de lectura. Si usáramos binario normal, al pasar de 3 (`011`) a 4 (`100`) cambiarían 3 bits a la vez, y una lectura en el momento justo del cambio podría dar cualquier valor erróneo intermedio. En Gray, solo cambia uno, garantizando estabilidad.
 
-### 🧠 La Lógica Paso a Paso
+### 🧠 Lógica
 La fórmula mágica para convertir un binario normal a Gray es muy compacta: `n ^ (n >> 1)`.
 
 Para explicarla fácilmente, usa la regla de los **Vecinos**:
@@ -107,11 +107,11 @@ Aplicando la fórmula a los valores obligatorios (0-8) para demostrar que coinci
 
 ## EX03 - Boolean Evaluation (RPN)
 
-### 💡 El Concepto
+### 💡 Descripción
 Evaluamos fórmulas booleanas escritas en **RPN (Reverse Polish Notation)**.
 En esta notación, el operador va *después* de los números (ej. `10&` en vez de `1&0`). Esto es genial para los ordenadores porque **elimina la necesidad de paréntesis**.
 
-### 🧠 La Lógica Paso a Paso
+### 🧠 Lógica
 Imagina una pila de platos vacía (`stack`).
 
 1.  Recorremos la cadena carácter por carácter.
@@ -146,3 +146,62 @@ Al final, si la fórmula es correcta, **solo debe quedar un plato** en la pila. 
 ---
 ---
 
+## EX04 - Truth Table (Tabla de Verdad)
+
+### 💡 Descripción
+Una tabla de verdad es una representación visual que muestra **todos los posibles resultados** de una fórmula booleana para todas las combinaciones posibles de sus variables de entrada. 
+
+Si una fórmula tiene `n` variables únicas (por ejemplo, A, B y C son 3 variables), la tabla tendrá exactamente $2^n$ filas de combinaciones posibles.
+
+### 🧠 Lógica
+El reto principal es generar todas esas combinaciones de True/False dinámicamente sin saber de antemano cuántas variables habrá.
+
+1.  **Identificar Variables**: Escaneamos la fórmula y extraemos todas las letras únicas. Las ordenamos alfabéticamente (ej: `['A', 'B']`). La cantidad de letras nos da la `n`.
+2.  **El Contador Binario**: En lugar de hacer bucles anidados complicados, usamos un simple contador que va desde `0` hasta `(2^n) - 1`.
+    * Si tenemos 2 variables (A y B), el contador va de 0 a 3.
+    * En binario, esto es: `00`, `01`, `10`, `11`. ¡Estas son exactamente las combinaciones que necesitamos!
+3.  **Extracción de Bits**: Para cada fila, leemos los bits del número actual usando un desplazamiento a la derecha (`>>`). Si el bit es `1`, la variable es `True`; si es `0`, es `False`.
+4.  **Evaluación RPN**: Con las variables mapeadas (ej. `A=False, B=True`), usamos el mismo evaluador de pila (stack) que construimos en el EX03 para calcular el resultado final de esa fila y lo imprimimos.
+
+### 📊 Ejemplo: `AB|` (A OR B)
+Variables detectadas: `A`, `B` ($n = 2$). Total de filas: $2^2 = 4$.
+
+| i (Decimal) | Bits | A | B | `AB|` (Resultado) |
+| :---: | :---: | :---: | :---: | :---: |
+| 0 | `00` | 0 | 0 | **0** |
+| 1 | `01` | 0 | 1 | **1** |
+| 2 | `10` | 1 | 0 | **1** |
+| 3 | `11` | 1 | 1 | **1** |
+
+---
+---
+
+## EX05 - Negation Normal Form (NNF)
+
+### 💡 Descripción
+La Forma Normal Negativa (NNF) es una manera de reescribir una fórmula lógica con una regla estricta: **el operador de negación (`!`) solo puede aplicarse directamente a variables**. No puede haber negaciones aplicadas a paréntesis o a grupos de operaciones.
+
+Es como "empujar" las negaciones hacia adentro hasta que tocan fondo.
+
+### 🧠 Lógica
+Dado que modificar una cadena RPN directamente con expresiones regulares es frágil, la forma correcta y matemática de hacerlo es usando un **Árbol de Sintaxis Abstracta (AST)**.
+
+1.  **Parsear a Árbol (AST):** Convertimos la cadena RPN en una estructura de nodos jerárquicos. 
+    * Por ejemplo, `AB&!` se convierte en un nodo `!` en la raíz, que tiene como hijo un nodo `&`, el cual tiene como hojas a `A` y `B`.
+2.  **Transformar (Recursión):** Recorremos el árbol desde la raíz hacia las hojas, aplicando las reglas lógicas para bajar el `!`.
+    * **Doble Negación:** `!!A` se convierte simplemente en `A`.
+    * **Leyes de De Morgan:** * `!(A & B)` se transforma en `!A | !B`. (La AND se vuelve OR y la negación se divide).
+        * `!(A | B)` se transforma en `!A & !B`. (La OR se vuelve AND).
+    * **Implicación y Equivalencia:** Transformamos operaciones complejas a básicas. Por ejemplo, `A > B` se reescribe como `!A | B`.
+3.  **Serializar a RPN:** Una vez que el árbol está en formato NNF, lo recorremos en "post-orden" (izquierda, derecha, raíz) para reconstruir la cadena RPN final.
+
+### 📊 Ejemplo: `AB&!` (equivale a `!(A & B)`)
+
+| Estado | Fórmula Visual | Explicación |
+| :--- | :--- | :--- |
+| **Original** | `!(A & B)` | La negación afecta a toda la operación AND. |
+| **De Morgan**| `!A | !B` | Invertimos `&` por `|` y bajamos la negación a las variables. |
+| **Final RPN**| `A!B!|` | Ya cumple con NNF (los `!` están junto a las letras). |
+
+---
+---
