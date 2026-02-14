@@ -8,7 +8,7 @@ def check_nnf_logic(original, result):
     1. Formato: '!' solo puede estar delante de variables (o constantes).
     2. Lógica: La tabla de verdad de 'original' y 'result' debe ser idéntica.
     """
-    # 1. VERIFICAR FORMATO NNF
+    # VERIFICAR FORMATO NNF
     for i, char in enumerate(result):
         if char == '!':
             if i == 0: return False, "Empieza por '!'"
@@ -16,7 +16,7 @@ def check_nnf_logic(original, result):
             if not (prev.isalpha() or prev in "01"):
                 return False, f"'!' después de '{prev}' (no permitido)"
 
-    # 2. VERIFICAR EQUIVALENCIA LÓGICA
+    # VERIFICAR EQUIVALENCIA LÓGICA
     # Extraemos variables de ambas fórmulas
     vars_set = set([c for c in original if c.isalpha()] + [c for c in result if c.isalpha()])
     variables = sorted(list(vars_set))
@@ -41,9 +41,8 @@ def run():
     
     cases = [
     #   (formula, expected)
-        # expected = String exacto O True (para validación lógica automática)
+    #   expected = String exacto O True (para validación lógica automática)
         
-        # --- BASIC TESTS (Strings exactos conocidos) ---
         ('A', 'A'),
         ('A!', 'A!'),
         ('AB&!', 'A!B!|'),       # !(A & B) -> !A | !B
@@ -51,16 +50,15 @@ def run():
         ('AB>!', 'AB!&'),        # !(A > B) -> A & !B
         ('AB=!', 'A!B!|AB|&'),   # !(A = B) -> (!A|!B) & (A|B) (XOR logic)
 
-        # --- COMPOSITION (Complejos -> Usamos True para Auto-Check) ---
-        ('ABC||', True),         # Validar lógica y formato
+        ('ABC||', True),
         ('ABC||!', True),
         ('ABC|&', True),
         ('ABC&|', True),
         ('ABC&|!', True),
-        ('ABC^^', True),         # Expansión muy larga para escribirla a mano
+        ('ABC^^', True),      
         ('ABC>>', True),
         
-        # --- CASOS DE ERROR ---
+    # --- Casos de error ---
         ("", None),             # Vacío
         ("AB", None),           # Falta operador
         ("&", None),            # Faltan operandos
@@ -75,13 +73,13 @@ def run():
 
             res = negation_normal_form(formula)
             
-            # CASO 1: Esperamos Error (None)
+            # Esperamos Error (None)
             if expected is None:
                 print(f"  {YELLOW}•{NC} '{formula}' {RED}[FAIL]{NC}")
                 print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
                 all_ok = False
 
-            # CASO 2: Verificación Automática (True)
+            # Verificación Automática (True)
             elif expected is True:
                 is_valid, msg = check_nnf_logic(formula, res)
                 
@@ -96,7 +94,7 @@ def run():
                     print(f"    {RED}└── {msg}{NC}")
                     all_ok = False
 
-            # CASO 3: Comparación Exacta de String
+            # Comparación Exacta de String
             else:
                 if not print_result(f"NNF('{formula}')", res, expected):
                     all_ok = False

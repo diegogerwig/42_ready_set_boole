@@ -33,7 +33,7 @@ def run():
         ('01&1&1&', False),
         ('0111&&&', False),
         
-        # --- Casos de Error ---
+    # --- Casos de Error ---
         ("", None),         # Vacío
         ("1&", None),       # Falta operando
         ("11", None),       # Sobra operando (falta operador)

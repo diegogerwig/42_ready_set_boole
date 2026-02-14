@@ -19,7 +19,7 @@ def run():
         (1001, 9999),
         (13, 37),
         
-        # --- Casos que provocarán errores ---
+    # --- Casos de error ---
         (100, -1),
         (3, 4, 5),
         (3),

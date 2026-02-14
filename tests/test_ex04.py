@@ -43,8 +43,8 @@ def run():
     print_header(4, "TRUTH TABLE")
     
     cases = [
-        #   (formula, expected_validity)
-        # True = Debe imprimir tabla válida | None = Debe dar error
+    #   (formula, expected_validity)
+    #   True = Debe imprimir tabla válida | None = Debe dar error
         ('A', True),
         ('A!', True),
         ('AB|', True),
@@ -58,7 +58,7 @@ def run():
         ('AB>C>', True),
         ('AB>A>A>', True), 
         
-        # --- Casos de Error ---
+    # --- Casos de Error ---
         ('ABC====', None),
         ("", None),
         ("AB", None),

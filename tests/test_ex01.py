@@ -17,7 +17,7 @@ def run():
         (12, 12),
         (1024, 2),
         
-        # --- Casos que provocarán errores ---
+    # --- Casos de error ---
         (-5, 10),
         (10, -5),
         ('a', 2)
