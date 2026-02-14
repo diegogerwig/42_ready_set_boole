@@ -66,7 +66,7 @@ source "$VENV_PATH/bin/activate"
 PY_VER=$(python3 --version)
 PY_LOC=$(which python3)
 echo -e "${B_GREEN}🐍 Python Activo:${NC} $PY_VER"
-echo -e "  └── $PY_LOC"
+echo -e "   └── $PY_LOC"
 
 if [ -f "requirements.txt" ]; then
     echo -e "${B_YELLOW}📦 Instalando dependencias (requirements.txt)...${NC}"
