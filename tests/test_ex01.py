@@ -1,5 +1,5 @@
 from ex01_multiplier import multiplier
-from utils import print_header, print_result, print_final, print_error, CYAN, BLUE, YELLOW, NC
+from utils import print_header, print_result, print_final, print_error
 
 def run():
     print_header(1, "MULTIPLIER (Aritmética Bitwise)")

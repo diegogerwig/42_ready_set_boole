@@ -1,5 +1,5 @@
 from ex02_gray_code import gray_code
-from utils import print_header, print_result, print_final, CYAN, BLUE, YELLOW, NC
+from utils import print_header, print_result, print_final, print_error
 
 def run():
     print_header(2, "GRAY CODE")
@@ -18,39 +18,37 @@ def run():
         
     # --- Casos de error ---
         (-1, None),      
-        ('a', None)     
-        ]
+        ('a', None),
+        (3, 4, 5),
+        (3,)
+    ]
     
     all_ok = True
 
     for case in cases:
-        try:
+        n = case[0] if isinstance(case, tuple) and len(case) > 0 else case
+        desc = f"gray_code({n})"
 
-            if len(case) != 2:
-                raise ValueError(f"Formato inválido: {case}")
+        try:
+            if not isinstance(case, tuple) or len(case) != 2:
+                raise ValueError(f"Se esperaban 2 argumentos (n, expected), se recibió: {case}")
             
-            n, expected = case
+            _, expected = case
 
             res = gray_code(n)
             
-            if not print_result(f"gray_code({n})", res, expected):
+            if not print_result(desc, res, expected):
                 all_ok = False
 
         except ValueError as e:
-            desc = f"gray_code({n})"
-            
-            print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}VAL ERROR{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            print_error(desc, "VALUE ERROR", str(e))
             
         except TypeError as e:
-            desc = f"gray_code({n})"
-            print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}TYPE ERR{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            print_error(desc, "TYPE ERROR", str(e))
             
         except Exception as e:
-            desc = f"gray_code({n})"
-            print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}CRASH{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            print_error(desc, "CRASH", str(e))
+            all_ok = False
 
     print_final(2, all_ok)
 

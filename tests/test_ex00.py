@@ -1,5 +1,5 @@
 from ex00_adder import adder
-from utils import print_header, print_result, print_final, print_error, CYAN, BLUE, YELLOW, NC
+from utils import print_header, print_result, print_final, print_error
 
 def run():
     print_header(0, "ADDER (Aritmética Bitwise)")
@@ -22,7 +22,7 @@ def run():
     # --- Casos de error ---
         (100, -1),
         (3, 4, 5),
-        (3), 
+        (3,), 
         (3, 'x'),
         (3, '3')
     ]
