@@ -92,11 +92,11 @@ def run():
             formula, expected = case
             res = conjunctive_normal_form(formula)
             
-            disp_res = (res[:40] + '...') if len(res) > 40 else res
+            disp_res = (res[:30] + '...') if len(res) > 30 else res
             content = f"CNF('{formula}'): {disp_res}"
             
             if expected is None:
-                print(f"  {YELLOW}•{NC} {content:<{PAD}} [{RED}FAIL{NC}]")
+                print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
                 print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
                 all_ok = False
 
@@ -104,33 +104,33 @@ def run():
                 is_valid, msg = check_cnf_logic(formula, res)
                 
                 if is_valid:
-                    print(f"  {YELLOW}•{NC} {content:<{PAD}} [{GREEN} OK {NC}]")
+                    print(f"  {YELLOW}•{NC} {content:<50} [{GREEN} OK {NC}]")
                 else:
-                    print(f"  {YELLOW}•{NC} {content:<{PAD}} [{RED}FAIL{NC}]")
+                    print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
                     print(f"    {RED}└── {msg}{NC}")
                     all_ok = False
 
             else:
                 if res == expected:
-                    print(f"  {YELLOW}•{NC} {content:<{PAD}} [{GREEN} OK {NC}]")
+                    print(f"  {YELLOW}•{NC} {content:<50} [{GREEN} OK {NC}]")
                 else:
-                    print(f"  {YELLOW}•{NC} {content:<{PAD}} [{RED}FAIL{NC}]")
+                    print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
                     print(f"    {RED}└── Esperado: {expected}{NC}")
                     all_ok = False
 
         except (ValueError, TypeError) as e:
             content = f"Formula '{formula}'"
             if expected is None:
-                print(f"  {YELLOW}•{NC} {content:<{PAD}} [{CYAN}VAL ERROR{NC}]")
+                print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}VAL ERROR{NC}]")
                 print(f"    {BLUE}└── {e}{NC}")
             else:
-                print(f"  {YELLOW}•{NC} {content:<{PAD}} [{CYAN}CRASH{NC}]")
+                print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}CRASH{NC}]")
                 print(f"    {BLUE}└── {e}{NC}")
                 all_ok = False
                 
         except Exception as e:
             content = f"Formula '{formula}'"
-            print(f"  {YELLOW}•{NC} {content:<{PAD}} [{CYAN}UNKNOWN CRASH{NC}]")
+            print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}UNKNOWN CRASH{NC}]")
             print(f"    {BLUE}└── {e}{NC}")
             all_ok = False
 

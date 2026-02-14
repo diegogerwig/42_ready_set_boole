@@ -205,3 +205,32 @@ Dado que modificar una cadena RPN directamente con expresiones regulares es frá
 
 ---
 ---
+
+## EX06 - Conjunctive Normal Form (CNF)
+
+### 💡 Descripción
+La Forma Normal Conjuntiva (CNF) es un formato estandarizado donde una fórmula se representa como un gran **AND de ORs**. 
+Es decir, son cláusulas (agrupaciones unidas por `|`) que se unen todas juntas mediante `&`. 
+
+Esta forma es extremadamente importante en ciencias de la computación porque muchos algoritmos de Inteligencia Artificial (como los solucionadores SAT que veremos en el EX07) exigen que el input esté exclusivamente en este formato.
+
+### 🧠 Lógica
+Para llegar a CNF, seguimos 2 grandes pasos:
+1. **Pasar a NNF:** Reutilizamos nuestro algoritmo del EX05 para empujar todas las negaciones (`!`) hasta las variables y eliminar operaciones complejas (`>`, `=`, `^`).
+2. **Aplicar Distributividad:** Si tenemos un operador OR compitiendo con un AND, el AND debe "subir" en el árbol. 
+   Usamos la regla matemática: `A | (B & C)  =>  (A | B) & (A | C)`.
+
+Para implementarlo sin romper las referencias de memoria de Python (y sin hacer trucos "sucios" como clonados profundos de objetos), utilizamos un enfoque **puramente funcional**:
+* Parseamos la fórmula NNF en un árbol (AST).
+* En lugar de modificar los nodos existentes para hacer el cruce distributivo, **creamos nodos completamente nuevos** en cada paso de la recursión (`Node('|', a, b)`).
+* De esta forma, las hojas (`A`, `B`, `C`) pueden compartirse entre múltiples ramas sin peligro. En memoria, el resultado es un Grafo Acíclico Dirigido (DAG), ¡pero a la hora de serializarlo a RPN se lee perfectamente como un árbol expandido!
+
+### 📊 Ejemplo: `AB&C|` (Equivale a `(A & B) | C`)
+
+1. Al construir el árbol original NNF, la raíz es un `|`, su hijo izquierdo es un `&` (con A y B), y su hijo derecho es `C`.
+2. Como detectamos el patrón prohibido `(A & B) | C` (un AND dentro de un OR), aplicamos la regla de distributividad.
+3. Creamos una nueva raíz `&`. Su hijo izquierdo será el nuevo nodo `A | C` y su hijo derecho será el nuevo nodo `B | C`.
+4. Al serializarlo de nuevo a RPN, esto se lee como `AC|BC|&`. ¡El `&` ha subido al final, operando sobre las cláusulas!
+
+---
+---
