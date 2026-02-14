@@ -1,23 +1,76 @@
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 from ex07_sat import sat
-from utils import print_header, print_result, print_final
+from utils import print_header, print_final, RED, CYAN, BLUE, YELLOW, NC, GREEN
 
 def run():
-    print_header(7, "SAT (Satisfiability)")
+    print_header(7, "SAT (SATISFIABILITY)")
     
-    # Casos basados en lógica estándar y el PDF [cite: 438-442]
+    # Imprimimos la justificación de complejidad requerida en la evaluación
+    print(f"{CYAN}ℹ️  Complejidad de Tiempo: O(2^n) donde 'n' es el número de variables.{NC}")
+    print(f"{CYAN}   El algoritmo evalúa la tabla de verdad (hasta 2^n combinaciones) y aplica{NC}")
+    print(f"{CYAN}   'short-circuit' deteniéndose en el momento en que encuentra el primer True.{NC}\n")
+    
     cases = [
-        ("AB|", True),     # A OR B -> Satisfacible (basta que uno sea 1)
-        ("AB&", True),     # A AND B -> Satisfacible (si A=1, B=1)
-        ("AA!&", False),   # A AND !A -> Contradicción (Nunca es verdad)
-        ("AA!|", True)     # A OR !A -> Tautología (Siempre es verdad)
+    #   (formula, expected value)
+        ('A', True),
+        ('A!', True),
+        ('AA|', True),
+        ('AA&', True),
+        ('AA!&', False),
+        ('AA^', False),
+        ('AB^', True),
+        ('AB=', True),
+        ('AA>', True),
+        ('AA!>', True),
+
+        ('ABC||', True),
+        ('AB&A!B!&&', False),
+        ('ABCDE&&&&', True),
+        ('AAA^^', True),
+        ('ABCDE^^^^', True),
+
+    # --- Casos de error ---
+        ("", None),
+        ("AB", None),
+        ("&", None),
+        ("A+", None)
     ]
     
     all_ok = True
-    for formula, expected in cases:
-        res = sat(formula)
-        if not print_result(f"Sat({formula})", res, expected):
+
+    for case in cases:
+        try:
+            formula, expected = case
+            res = sat(formula)
+            
+            content = f"sat('{formula}'): {res}"
+            
+            if expected is None:
+                print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
+                print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
+                all_ok = False
+
+            else:
+                if res == expected:
+                    print(f"  {YELLOW}•{NC} {content:<50} [{GREEN} OK {NC}]")
+                else:
+                    print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
+                    print(f"    {RED}└── Esperado: {expected}{NC}")
+                    all_ok = False
+
+        except (ValueError, TypeError) as e:
+            content = f"Formula '{formula}'"
+            if expected is None:
+                print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}VAL ERROR{NC}]")
+                print(f"    {BLUE}└── {e}{NC}")
+            else:
+                print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}CRASH{NC}]")
+                print(f"    {BLUE}└── {e}{NC}")
+                all_ok = False
+                
+        except Exception as e:
+            content = f"Formula '{formula}'"
+            print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}UNKNOWN CRASH{NC}]")
+            print(f"    {BLUE}└── {e}{NC}")
             all_ok = False
 
     print_final(7, all_ok)

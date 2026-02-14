@@ -234,3 +234,33 @@ Para implementarlo sin romper las referencias de memoria de Python (y sin hacer 
 
 ---
 ---
+
+## EX07 - SAT (Satisfiability)
+
+### 💡 Descripción
+El problema de satisfacibilidad booleana (SAT) es la madre de todos los problemas en Ciencias de la Computación (es el primer problema demostrado como **NP-Completo**). 
+
+La pregunta que responde es simple: **¿Existe al menos una combinación de entradas (`True`/`False`) que haga que esta fórmula devuelva `True`?**
+* Si existe, la fórmula es **Satisfacible** (`True`).
+* Si sin importar lo que hagamos siempre da `False` (una contradicción lógica), es **Insatisfacible** (`False`).
+
+### 🧠 Lógica
+Existen algoritmos súper complejos para resolver esto eficientemente (los famosos "SAT Solvers"), pero para este nivel, la forma más robusta es el ataque de **Fuerza Bruta**, evaluando la Tabla de Verdad completa que creamos en el EX04.
+
+1. Identificamos cuántas variables únicas hay ($n$) para saber que existen $2^n$ combinaciones posibles.
+2. Usamos el truco de manipulación de bits (shift `>>`) iterando desde $0$ hasta $(2^n)-1$ para generar todas las combinaciones imaginables.
+3. Le pasamos cada combinación a la función `eval_formula` (reutilizada del EX04).
+4. **Short-circuit (Cortocircuito):** ¡No necesitamos generar la tabla completa! En el mismo milisegundo en el que la función nos devuelva un `True`, sabemos que la respuesta es afirmativa, por lo que **cortamos el bucle y devolvemos `True` inmediatamente**.
+5. Si agotamos los $2^n$ intentos sin ver ni un solo `True`, entonces confirmamos que es matemáticamente imposible y devolvemos `False`.
+
+### 📊 Ejemplos
+
+| Fórmula (RPN) | Fórmula Matemática | SAT | Razón |
+| :--- | :--- | :---: | :--- |
+| `AB|` | $A \lor B$ | **True** | Basta con poner A=1 para que sea verdad. |
+| `AA!&` | $A \land \neg A$ | **False** | Es una contradicción pura. $A$ no puede ser 1 y 0 a la vez. |
+| `AA!|`| $A \lor \neg A$ | **True** | Es una tautología. Siempre es verdad pase lo que pase. |
+
+---
+---
+
