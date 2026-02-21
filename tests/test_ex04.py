@@ -2,7 +2,7 @@ import io
 from contextlib import redirect_stdout
 
 from ex04_truth_table import print_truth_table, eval_formula_with_vars
-from utils import print_header, print_final, print_error, RED, CYAN, BLUE, YELLOW, GREEN, NC
+from utils import *
 
 def verify_printed_table(formula: str, output: str) -> tuple[bool, str]:
     """

@@ -1,6 +1,6 @@
 from ex05_nnf import negation_normal_form
 from ex04_truth_table import eval_formula_with_vars 
-from utils import print_header, print_result, print_final, print_error, PAD_LENGTH, RED, CYAN, BLUE, YELLOW, NC, GREEN
+from utils import *
 
 def check_nnf_logic(original, result):
     """

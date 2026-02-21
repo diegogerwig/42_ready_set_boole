@@ -1,5 +1,5 @@
 from ex02_gray_code import gray_code
-from utils import print_header, print_result, print_final, print_error
+from utils import *
 
 def run():
     print_header(2, "GRAY CODE")

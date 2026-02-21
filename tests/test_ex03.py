@@ -1,5 +1,5 @@
 from ex03_eval import eval_formula
-from utils import print_header, print_result, print_final, print_error, RED, CYAN, BLUE, YELLOW, NC
+from utils import *
 
 def run():
     print_header(3, "BOOLEAN EVALUATION (RPN)")
