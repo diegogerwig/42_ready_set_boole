@@ -1,6 +1,5 @@
-
 from ex08_powerset import powerset
-from utils import print_header, print_final, RED, CYAN, BLUE, YELLOW, NC, GREEN
+from utils import *
 
 def compare_powersets(res: list[list[int]], expected: list[list[int]]) -> bool:
     """
@@ -50,7 +49,7 @@ def run():
             content = f"powerset({input_str}): {disp_res}"
             
             if expected is None:
-                print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
+                print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{RED}FAIL{NC}]")
                 print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
                 all_ok = False
 
@@ -65,9 +64,9 @@ def run():
                 
                 if is_correct and is_right_size:
                     # Incluimos en la impresión que la cardinalidad coincide
-                    print(f"  {YELLOW}•{NC} {content:<50} [{GREEN} OK {NC}] (n={expected_len})")
+                    print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{GREEN} OK {NC}] (n={expected_len})")
                 else:
-                    print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
+                    print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{RED}FAIL{NC}]")
                     if not is_right_size:
                         print(f"    {RED}└── Cardinalidad incorrecta. Esperada: {expected_len}, Obtenida: {len(res)}{NC}")
                     if not is_correct:
@@ -78,17 +77,14 @@ def run():
         except (ValueError, TypeError) as e:
             content = f"powerset({input_str})"
             if expected is None:
-                print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}TYPE ERROR OK{NC}]")
-                print(f"    {BLUE}└── {e}{NC}")
+                print_error(content, "TYPE ERROR", str(e))
             else:
-                print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}CRASH{NC}]")
-                print(f"    {BLUE}└── {e}{NC}")
+                print_error(content, "CRASH", str(e))
                 all_ok = False
                 
         except Exception as e:
             content = f"powerset({input_str})"
-            print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}UNKNOWN CRASH{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            print_error(content, "UNKNOWN CRASH", str(e))
             all_ok = False
 
     print_final(8, all_ok)
