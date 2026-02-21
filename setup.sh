@@ -41,15 +41,14 @@ echo -e   "${B_BLUE}╚═══════════════════
 echo -e "\n${B_CYAN}📂 Ruta del entorno: ${NC}$VENV_PATH"
 
 # ==========================================
-# 2. LIMPIEZA INICIAL
+# 2. LIMPIEZA
 # ==========================================
 echo -ne "${B_CYAN}🧹 Limpiando cachés...${NC}"
 find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null
 echo -e " ${B_GREEN}Hecho.${NC}"
 
-# FORZAR REINICIO DEL ENTORNO SI ESTÁ ROTO EN SGOINFRE
 if [ -d "$VENV_PATH" ]; then
-    echo -ne "${B_YELLOW}⚙️  Borrando entorno virtual antiguo (para prevenir corrupciones en NFS)...${NC}"
+    echo -ne "${B_YELLOW}⚙️  Borrando entorno virtual antiguo...${NC}"
     rm -rf "$VENV_PATH"
     echo -e " ${B_GREEN}Hecho.${NC}"
 fi
@@ -57,11 +56,10 @@ fi
 # ==========================================
 # 3. CREACIÓN Y ACTIVACIÓN DEL VENV
 # ==========================================
-echo -e "${B_YELLOW}⚙️  Creando entorno virtual fresco...${NC}"
+echo -e "${B_YELLOW}⚙️  Creando entorno virtual...${NC}"
 mkdir -p "$TARGET_DIR"
 python3 -m venv "$VENV_PATH"
 
-# Verificar que la creación fue exitosa
 if [ ! -f "$VENV_PATH/bin/activate" ]; then
     echo -e "${B_RED}❌ Error crítico: No se pudo crear el entorno virtual en $VENV_PATH.${NC}"
     echo -e "${B_RED}   Prueba a cambiar TARGET_DIR a /tmp o a tu $HOME normal si sgoinfre falla.${NC}"
@@ -75,13 +73,11 @@ PY_LOC=$(which python3)
 echo -e "${B_GREEN}🐍 Python Activo:${NC} $PY_VER"
 echo -e "   └── $PY_LOC"
 
-# Forzar actualización de pip de forma segura
 echo -e "${B_CYAN}🔄 Actualizando pip...${NC}"
 python3 -m pip install --upgrade pip > /dev/null 2>&1
 
 if [ -f "requirements.txt" ]; then
     echo -e "${B_YELLOW}📦 Instalando dependencias (requirements.txt)...${NC}"
-    # Usar python3 -m pip en lugar de solo pip evita muchos bugs de pathing
     python3 -m pip install -r requirements.txt
     if [ $? -eq 0 ]; then
         echo -e "${B_GREEN}   Dependencias instaladas correctamente.${NC}"
@@ -90,7 +86,7 @@ if [ -f "requirements.txt" ]; then
         exit 1
     fi
 else
-    echo -e "${B_CYAN}ℹ️  No se encontró requirements.txt (o está vacío)${NC}"
+    echo -e "${B_CYAN}ℹ️  No se encontró requirements.txt${NC}"
 fi
 
 # ==========================================
@@ -102,7 +98,7 @@ if [ -d "tests" ]; then
     # Iteración robusta asegurando orden alfabético
     for file in $(ls tests/test_*.py | sort); do
         
-        echo -e "\n${B_CYAN}▶️ Ejecutando: $(basename "$file")${NC}"
+        echo -e "\n${B_CYAN}▶️  Ejecutando: $(basename "$file")${NC}"
         # Ejecutar python
         python3 "$file"
         
