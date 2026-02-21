@@ -298,5 +298,41 @@ En lugar de generar combinaciones complejas, usamos la lógica de **"duplicar y 
 ---
 ---
 
+## EX09 - Set Evaluation (Evaluación de Conjuntos)
+
+### 💡 Descripción
+En la teoría matemática, la **Lógica Booleana** (True/False) y la **Teoría de Conjuntos** son sistemas isomorfos. Esto significa que operan bajo exactamente las mismas reglas estructurales. 
+
+En este ejercicio, en lugar de evaluar si una variable es verdadera o falsa, evaluamos qué **elementos numéricos** (que pertenecen a esa variable) sobreviven a las operaciones lógicas.
+* Un **False lógico** equivale al **Conjunto Vacío** (`[]`).
+* Un **True lógico** equivale al **Universo** (la unión de todos los elementos únicos introducidos).
+
+### 🧠 Lógica
+Reutilizamos nuestro evaluador RPN del `EX03`, pero con algunas modificaciones clave:
+
+1. **Definir el Universo:** Antes de empezar, iteramos por todas las listas de entrada y metemos todos los números en un conjunto (`set()`). Esto representará nuestro "True" absoluto.
+2. **Mapeo de Variables:** Las variables (`A`, `B`, `C`...) se asocian a las listas en el orden en el que se introducen (`A` es la lista 0, `B` la 1...).
+3. **Pila de Sets:** La pila (stack) ahora no guarda booleanos, guarda objetos `set()` nativos de Python.
+4. **Traducción de Operadores:**
+    * **`&` (AND)** -> **Intersección (`a & b`)**: Solo los números que están en ambas listas.
+    * **`|` (OR)** -> **Unión (`a | b`)**: Juntamos los números de ambas listas (sin duplicados).
+    * **`!` (NOT)** -> **Complemento (`U - a`)**: Restamos al Universo los números de nuestra lista `a`. (Todos los números que existen *excepto* los nuestros).
+    * **`^` (XOR)** -> **Diferencia Simétrica (`a ^ b`)**: Números que están en `a` o en `b`, pero *no en ambos*.
+    * **`>` (IMPLIES)** -> Usamos la equivalencia lógica `!A | B` para traducirlo a conjuntos: `(U - a) | b`.
+
+### 📊 Ejemplo: `A!B&` con `A=[1,2,3]` y `B=[2,3,4]`
+
+1.  **Universo (U):** `[1, 2, 3, 4]` (La combinación única de todos los elementos).
+2.  Leemos `A`: Metemos en la pila `[1, 2, 3]`.
+3.  Leemos `!`: Reemplazamos `A` por su complemento (U - A).
+    * `[1, 2, 3, 4] - [1, 2, 3] = [4]`.
+    * En la pila queda: `[4]`.
+4.  Leemos `B`: Metemos en la pila `[2, 3, 4]`.
+5.  Leemos `&`: Hacemos la intersección de `[4]` y `[2, 3, 4]`.
+    * El único elemento en común es el `4`.
+6.  **Resultado final:** `[4]`.
+
+---
+---
 
 
