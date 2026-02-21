@@ -361,3 +361,28 @@ El algoritmo lo consigue dividiendo el espacio en 4 cuadrantes grandes, luego di
 ---
 ---
 
+## EX11 - Inverse (Hilbert Unmap)
+
+### 💡 Descripción
+Si en el ejercicio anterior (Curve) convertíamos una coordenada 2D en una distancia 1D, aquí hacemos exactamente lo contrario: **dada una distancia `d` a lo largo de la Curva de Hilbert (entre 0.0 y 1.0), ¿cuáles son las coordenadas `(x, y)` exactas en la cuadrícula 2D?**
+
+Esta operación es vital en bases de datos espaciales y gráficos por computadora porque nos permite recuperar información de ubicación bidimensional a partir de un índice unidimensional súper rápido.
+
+### 🧠 Lógica
+El algoritmo de decodificación de Hilbert funciona al revés que el de codificación. En lugar de dividir el espacio de mayor a menor, reconstruimos el punto **de menor a mayor (Fine to Coarse)**.
+
+1. **Desnormalización:** Tomamos el `float` que va de `0.0` a `1.0` y lo multiplicamos por el máximo valor de celdas ($2^{32} - 1$). Usamos `round()` para proteger la precisión flotante de Python y obtenemos un entero de 32 bits que representa la distancia absoluta `d`.
+2. **Reconstrucción Bottom-Up:** Iniciamos un bucle que representa el tamaño del cuadrante, empezando por $s = 1$ (el píxel más pequeño) y subiendo hasta $s = 32768$.
+3. **Decodificación de Bits:** * Tomamos `d` y extraemos los 2 últimos bits usando lógica binaria (`rx = 1 & (d // 2)`).
+    * Estos dos bits nos indican en cuál de los 4 sub-cuadrantes relativos nos encontrábamos en ese nivel de recursión.
+4. **Deshacer la Rotación:** Si la curva había rotado o se había invertido en ese nivel, aplicamos la transformación geométrica opuesta (`x = s - 1 - x`, y un *swap* `x, y = y, x`).
+5. **Acumular:** Desplazamos nuestras coordenadas `x` e `y` basándonos en el cuadrante actual.
+6. **Subir de nivel:** Tiramos a la basura los 2 bits de distancia que acabamos de leer (`d //= 4`) y duplicamos el tamaño de nuestro lienzo (`s *= 2`).
+
+Al terminar el ciclo, las variables `x` e `y` contienen la coordenada exacta y perfecta de 16 bits original.
+
+### 📊 Ejemplo: Round-Trip
+La evaluación de 42 requiere que verifiquemos esto matemáticamente:
+`reverse_map(map_coords(x, y)) == (x, y)`
+
+Gracias a que hemos evitado la pérdida de precisión flotante en Python usando `round()`, nuestro test genera **10,000 coordenadas aleatorias**, las codifica en `d`, las vuelve a decodificar, y garantiza un 100% de exactitud en la recuperación para cada una de ellas.
