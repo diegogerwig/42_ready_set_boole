@@ -1,5 +1,10 @@
+import sys, os
+
+# Configuración de path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
 from ex03_eval import eval_formula
-from utils import print_header, print_result, print_final, RED, CYAN, BLUE, YELLOW, NC
+from utils import print_header, print_result, print_final, print_error, RED, CYAN, BLUE, YELLOW, NC
 
 def run():
     print_header(3, "BOOLEAN EVALUATION (RPN)")
@@ -46,11 +51,11 @@ def run():
     for case in cases:
         try:
             formula, expected = case
-
             res = eval_formula(formula)
             
             if expected is None:
-                print(f"  {YELLOW}•{NC} '{formula}' {RED}[FAIL]{NC}")
+                desc = f"Formula '{formula}'"
+                print(f"  {YELLOW}•{NC} {desc:<70} [{RED}FAIL{NC}]")
                 print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
                 all_ok = False
             else:
@@ -59,17 +64,17 @@ def run():
                     all_ok = False
 
         except (ValueError, TypeError) as e:
+            desc = f"Formula '{formula}'"
             if expected is None:
-                desc = f"Formula '{formula}'"
-                print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}VAL ERROR{NC}]")
-                print(f"    {BLUE}└── {e}{NC}")
+                print_error(desc, "VAL ERROR", str(e))
             else:
-                print(f"  {YELLOW}•{NC} Formula '{formula}' {CYAN}[CRASH]{NC}")
-                print(f"    {BLUE}└── {e}{NC}")
+                print_error(desc, "CRASH", str(e))
+                all_ok = False
                 
         except Exception as e:
-            print(f"  {YELLOW}•{NC} Formula '{formula}' {CYAN}[UNKNOWN CRASH]{NC}")
-            print(f"    {BLUE}└── {e}{NC}")
+            desc = f"Formula '{formula}'"
+            print_error(desc, "UNKNOWN CRASH", str(e))
+            all_ok = False
 
     print_final(3, all_ok)
 
