@@ -1,8 +1,3 @@
-import sys, os
-
-# Configuración de path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
-
 from ex03_eval import eval_formula
 from utils import print_header, print_result, print_final, print_error, RED, CYAN, BLUE, YELLOW, NC
 

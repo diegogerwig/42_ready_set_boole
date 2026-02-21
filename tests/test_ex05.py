@@ -1,6 +1,6 @@
 from ex05_nnf import negation_normal_form
 from ex04_truth_table import eval_formula_with_vars 
-from utils import print_header, print_result, print_final, RED, CYAN, BLUE, YELLOW, NC, GREEN
+from utils import print_header, print_result, print_final, print_error, PAD_LENGTH, RED, CYAN, BLUE, YELLOW, NC, GREEN
 
 def check_nnf_logic(original, result):
     """
@@ -28,11 +28,13 @@ def check_nnf_logic(original, result):
         for j in range(n):
             values[variables[j]] = bool((i >> j) & 1)
         
-        res_orig = eval_formula_with_vars(original, values)
-        res_new = eval_formula_with_vars(result, values)
-        
-        if res_orig != res_new:
-            return False, f"Difieren para {values}"
+        try:
+            res_orig = eval_formula_with_vars(original, values)
+            res_new = eval_formula_with_vars(result, values)
+            if res_orig != res_new:
+                return False, f"Difieren para {values}"
+        except Exception:
+            return False, "Error evaluando fórmula"
             
     return True, "OK"
 
@@ -70,12 +72,13 @@ def run():
     for case in cases:
         try:
             formula, expected = case
-
             res = negation_normal_form(formula)
+            desc = f"NNF('{formula}')"
             
             # Esperamos Error (None)
             if expected is None:
-                print(f"  {YELLOW}•{NC} '{formula}' {RED}[FAIL]{NC}")
+                content = f"{desc}: {res}"
+                print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{RED}FAIL{NC}]")
                 print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
                 all_ok = False
 
@@ -84,33 +87,31 @@ def run():
                 is_valid, msg = check_nnf_logic(formula, res)
                 
                 disp_res = (res[:40] + '...') if len(res) > 40 else res
-                desc = f"NNF('{formula}') -> {disp_res}"
+                content = f"{desc}: {disp_res}"
                 
                 if is_valid:
-                    print(f"  {YELLOW}•{NC} {desc:<50} [{GREEN} OK {NC}]")
+                    print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{GREEN} OK {NC}]")
                 else:
-                    print(f"  {YELLOW}•{NC} {desc:<50} [{RED}FAIL{NC}]")
+                    print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{RED}FAIL{NC}]")
                     print(f"    {RED}└── {msg}{NC}")
                     all_ok = False
 
             # Comparación Exacta de String
             else:
-                if not print_result(f"NNF('{formula}')", res, expected):
+                if not print_result(desc, res, expected):
                     all_ok = False
 
         except (ValueError, TypeError) as e:
+            desc = f"Formula '{formula}'"
             if expected is None:
-                desc = f"Formula '{formula}'"
-                print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}VAL ERROR{NC}]")
-                print(f"    {BLUE}└── {e}{NC}")
+                print_error(desc, "VAL ERROR", str(e))
             else:
-                print(f"  {YELLOW}•{NC} Formula '{formula}' {CYAN}[CRASH]{NC}")
-                print(f"    {BLUE}└── {e}{NC}")
+                print_error(desc, "CRASH", str(e))
                 all_ok = False
                 
         except Exception as e:
-            print(f"  {YELLOW}•{NC} Formula '{formula}' {CYAN}[UNKNOWN CRASH]{NC}")
-            print(f"    {BLUE}└── {e}{NC}")
+            desc = f"Formula '{formula}'"
+            print_error(desc, "UNKNOWN CRASH", str(e))
             all_ok = False
 
     print_final(5, all_ok)

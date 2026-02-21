@@ -1,10 +1,5 @@
 import io
-import sys
-import os
 from contextlib import redirect_stdout
-
-# Configuración de path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 
 from ex04_truth_table import print_truth_table, eval_formula_with_vars
 from utils import print_header, print_final, print_error, RED, CYAN, BLUE, YELLOW, GREEN, NC
