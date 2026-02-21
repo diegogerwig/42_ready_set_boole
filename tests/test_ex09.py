@@ -1,10 +1,5 @@
-import sys, os
-
-# Configuración de path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
-
 from ex09_eval_set import eval_set
-from utils import print_header, print_result, print_final, print_error, PAD_LENGTH, RED, CYAN, BLUE, YELLOW, NC, GREEN
+from utils import *
 
 def run():
     print_header(9, "SET EVALUATION")
