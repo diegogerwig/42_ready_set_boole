@@ -16,17 +16,14 @@ USER_HOME=$HOME
 
 # Lógica para decidir dónde crear el entorno
 if [[ "$KERNEL_RELEASE" == *"Microsoft"* || "$KERNEL_RELEASE" == *"WSL"* ]]; then
-    # ESTAMOS EN WINDOWS / WSL
     TARGET_DIR="$USER_HOME"
     VENV_NAME=".ready_set_boole_venv"
     echo -e "\n${B_YELLOW}🖥️  Sistema detectado: Windows/WSL${NC}"
 elif [[ "$OS_NAME" == "Linux" && -d "$USER_HOME/sgoinfre" ]]; then
-    # ESTAMOS EN LINUX (42 / SGOINFRE)
     TARGET_DIR="$USER_HOME/sgoinfre"
     VENV_NAME="ready_set_boole_venv"
     echo -e "\n${B_YELLOW}🖥️  Sistema detectado: Linux (42 Campus)${NC}"
 else
-    # ESTAMOS EN OTRO SISTEMA
     TARGET_DIR="$USER_HOME"
     VENV_NAME="ready_set_boole_venv"
     echo -e "\n${B_YELLOW}🖥️  Sistema detectado: Otro${NC}"
@@ -44,21 +41,31 @@ echo -e   "${B_BLUE}╚═══════════════════
 echo -e "\n${B_CYAN}📂 Ruta del entorno: ${NC}$VENV_PATH"
 
 # ==========================================
-# 2. LIMPIEZA SILENCIOSA
+# 2. LIMPIEZA INICIAL
 # ==========================================
-echo -ne "${B_CYAN}🧹 Limpiando...${NC}"
-find . -type d -name "__pycache__" -exec rm -rf {} +
+echo -ne "${B_CYAN}🧹 Limpiando cachés...${NC}"
+find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null
 echo -e " ${B_GREEN}Hecho.${NC}"
 
+# FORZAR REINICIO DEL ENTORNO SI ESTÁ ROTO EN SGOINFRE
+if [ -d "$VENV_PATH" ]; then
+    echo -ne "${B_YELLOW}⚙️  Borrando entorno virtual antiguo (para prevenir corrupciones en NFS)...${NC}"
+    rm -rf "$VENV_PATH"
+    echo -e " ${B_GREEN}Hecho.${NC}"
+fi
+
 # ==========================================
-# 3. GESTIÓN DEL VENV
+# 3. CREACIÓN Y ACTIVACIÓN DEL VENV
 # ==========================================
-if [ ! -d "$VENV_PATH" ]; then
-    echo -e "${B_YELLOW}⚙️  Creando entorno virtual...${NC}"
-    if [[ "$VENV_PATH" == *"/sgoinfre/"* ]]; then
-        mkdir -p "$(dirname "$VENV_PATH")"
-    fi
-    python3 -m venv "$VENV_PATH"
+echo -e "${B_YELLOW}⚙️  Creando entorno virtual fresco...${NC}"
+mkdir -p "$TARGET_DIR"
+python3 -m venv "$VENV_PATH"
+
+# Verificar que la creación fue exitosa
+if [ ! -f "$VENV_PATH/bin/activate" ]; then
+    echo -e "${B_RED}❌ Error crítico: No se pudo crear el entorno virtual en $VENV_PATH.${NC}"
+    echo -e "${B_RED}   Prueba a cambiar TARGET_DIR a /tmp o a tu $HOME normal si sgoinfre falla.${NC}"
+    exit 1
 fi
 
 source "$VENV_PATH/bin/activate"
@@ -68,12 +75,22 @@ PY_LOC=$(which python3)
 echo -e "${B_GREEN}🐍 Python Activo:${NC} $PY_VER"
 echo -e "   └── $PY_LOC"
 
+# Forzar actualización de pip de forma segura
+echo -e "${B_CYAN}🔄 Actualizando pip...${NC}"
+python3 -m pip install --upgrade pip > /dev/null 2>&1
+
 if [ -f "requirements.txt" ]; then
     echo -e "${B_YELLOW}📦 Instalando dependencias (requirements.txt)...${NC}"
-    pip install -q -r requirements.txt
-    echo -e "${B_GREEN}   Dependencias instaladas.${NC}"
+    # Usar python3 -m pip en lugar de solo pip evita muchos bugs de pathing
+    python3 -m pip install -r requirements.txt
+    if [ $? -eq 0 ]; then
+        echo -e "${B_GREEN}   Dependencias instaladas correctamente.${NC}"
+    else
+        echo -e "${B_RED}❌ Error instalando dependencias. Revisa los permisos.${NC}"
+        exit 1
+    fi
 else
-    echo -e "${B_CYAN}ℹ️  No se encontró requirements.txt${NC}"
+    echo -e "${B_CYAN}ℹ️  No se encontró requirements.txt (o está vacío)${NC}"
 fi
 
 # ==========================================
@@ -82,10 +99,10 @@ fi
 export PYTHONPATH=$PYTHONPATH:$(pwd)/src
 
 if [ -d "tests" ]; then
-    # CORRECCIÓN 1: Iteración directa sobre el glob (funciona en Zsh y Bash)
-    # Los archivos se ordenan alfabéticamente por defecto al expandir el *
-    for file in tests/test_*.py; do
+    # Iteración robusta asegurando orden alfabético
+    for file in $(ls tests/test_*.py | sort); do
         
+        echo -e "\n${B_CYAN}▶️ Ejecutando: $(basename "$file")${NC}"
         # Ejecutar python
         python3 "$file"
         
@@ -98,11 +115,9 @@ if [ -d "tests" ]; then
         fi
 
         echo -e "\n${B_CYAN}⌛ Esperando confirmación...${NC}"
-        
         echo -e "${B_YELLOW}Presiona [ENTER] para continuar...${NC}"
         read -r dummy_var
         
-        echo "" 
     done
 else
     echo -e "${B_RED}❌ Error: No existe el directorio 'tests/'${NC}"
@@ -111,19 +126,17 @@ fi
 # ==========================================
 # 5. RESUMEN FINAL
 # ==========================================
-echo -e "${B_BLUE}╔═══════════════════════════════════╗${NC}"
+echo -e "\n${B_BLUE}╔═══════════════════════════════════╗${NC}"
 echo -e "${B_BLUE}║          RESUMEN FINAL            ║${NC}"
-echo -e "${B_BLUE}╚═══════════════════════════════════╝${NC}"
+echo -e "${B_BLUE}╚═══════════════════════════════════╝${NC}\n"
 
-echo ""
 for result in "${TEST_RESULTS[@]}"; do
     echo -e "  $result"
 done
-echo ""
 
-if [ "$ALL_TESTS_PASSED" = true ]; then
-    echo -e "${B_GREEN}✅ RESULTADO GLOBAL: TODO OK${NC}"
-else
-    echo -e "${B_RED}❌ RESULTADO GLOBAL: ALGUNOS TESTS FALLARON${NC}"
-fi
 echo ""
+if [ "$ALL_TESTS_PASSED" = true ]; then
+    echo -e "${B_GREEN}✅ RESULTADO GLOBAL: TODO OK${NC}\n"
+else
+    echo -e "${B_RED}❌ RESULTADO GLOBAL: ALGUNOS TESTS FALLARON${NC}\n"
+fi

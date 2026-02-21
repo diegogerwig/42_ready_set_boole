@@ -1,9 +1,8 @@
 # 🧮 Ready, Set, Boole! 
 
 ---
----
 
-## EX00 - Adder (Sumador a nivel de bits)
+## EX00 - Adder (Sumar a nivel de bits)
 
 ### 💡 Descripción
 Este ejercicio simula cómo los procesadores suman números físicamente usando un circuito llamado **Half Adder** (Medio Sumador), utilizando exclusivamente operadores bit a bit (bitwise), sin usar el operador matemático `+`.
@@ -24,10 +23,24 @@ Para sumar dos números en binario, igual que en papel, sumamos las columnas y s
 
 **El algoritmo repite estos pasos hasta que no haya acarreos pendientes (`b == 0`).**
 
+### 📊 Ejemplo: 5 + 3 (En binario: 101 + 011)
+
+En cada vuelta, calculamos la suma sin llevar (`a ^ b`) y el acarreo (`(a & b) << 1`).
+
+| Vuelta | a (Suma parcial `^`) | b (Acarreo `& << 1`) | Binario `a` | Binario `b` |
+| :---: | :--- | :--- | :--- | :--- |
+| **Inicio** | **5** | **3** | `0101` | `0011` |
+| 1 | 6 | 2 | `0110` | `0010` |
+| 2 | 4 | 4 | `0100` | `0100` |
+| 3 | 0 | 8 | `0000` | `1000` |
+| 4 | **8** | **0** | `1000` | `0000` |
+
+*(Como `b` ha llegado a 0, el bucle termina y el resultado final es `a = 8`)*
+
 ---
 ---
 
-## EX01 - Multiplier (Multiplicador)
+## EX01 - Multiplier (Multiplicar a nivel de bits)
 
 ### 💡 Descripción
 Implementamos la multiplicación utilizando el método de **"Duplicar y Dividir"**, históricamente conocido como la **Multiplicación Rusa** o del Campesino Ruso (*Peasant Multiplication*). 
@@ -47,7 +60,7 @@ Descomponemos la multiplicación de `a * b` evaluando los bits de `b`.
 En cada paso, `a` se duplica y `b` se divide. Solo sumamos `a` al resultado cuando `b` es impar.
 
 | Vuelta | a (Duplica) | b (Divide) | ¿b es Impar? | Suma al Resultado | Total |
-| :--- | :--- | :--- | :--- | :--- | :--- |
+| :---: | :--- | :--- | :--- | :--- | :--- |
 | **Inicio** | **12** | **5** | **SÍ** | Sumo 12 | **12** |
 | 1 | 24 | 2 | No | No sumo nada | 12 |
 | 2 | **48** | **1** | **SÍ** | Sumo 48 | **60** |

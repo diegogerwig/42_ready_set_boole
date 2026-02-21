@@ -11,23 +11,23 @@ def adder(a: int, b: int) -> int:
     while b != 0:
         
         # Suma Parcial (Sin acarreo): La operación XOR (^) suma los bits:
-        # 1 vs 0 -> 1
-        # 0 vs 1 -> 1
-        # 1 vs 1 -> 0
-        # 0 vs 0 -> 0
+        #   1 vs 0 -> 1
+        #   0 vs 1 -> 1
+        #   1 vs 1 -> 0
+        #   0 vs 0 -> 0
         suma_parcial = a ^ b
         
         # Calcular el Acarreo (Carry): La operación AND (&) detecta dónde hay dos unos (1+1).
         # La operación AND (&) detecta dónde hay dos unos (1+1).
-        acarreo_crudo = a & b
+        acarreo = a & b
         
         # Mover el Acarreo: La operación LEFT SHIFT (<<) mueve el acarreo a la columna de la IZQUIERDA.
-        acarreo_listo = acarreo_crudo << 1
+        acarreo_desp = acarreo << 1
         
         # Actualizamos las variables para la siguiente vuelta:
         # 'a' se convierte en la suma parcial acumulada.
         # 'b' se convierte en el acarreo que falta por sumar.
         a = suma_parcial
-        b = acarreo_listo
+        b = acarreo_desp
         
     return a
