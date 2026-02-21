@@ -1,5 +1,5 @@
 from ex07_sat import sat
-from utils import print_header, print_final, RED, CYAN, BLUE, YELLOW, NC, GREEN
+from utils import *
 
 def run():
     print_header(7, "SAT (SATISFIABILITY)")
@@ -36,36 +36,29 @@ def run():
         try:
             formula, expected = case
             res = sat(formula)
-            
-            content = f"sat('{formula}'): {res}"
+            desc = f"sat('{formula}')"
             
             if expected is None:
-                print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
+                content = f"{desc}: {res}"
+                print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{RED}FAIL{NC}]")
                 print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
                 all_ok = False
 
             else:
-                if res == expected:
-                    print(f"  {YELLOW}•{NC} {content:<50} [{GREEN} OK {NC}]")
-                else:
-                    print(f"  {YELLOW}•{NC} {content:<50} [{RED}FAIL{NC}]")
-                    print(f"    {RED}└── Esperado: {expected}{NC}")
+                if not print_result(desc, res, expected):
                     all_ok = False
 
         except (ValueError, TypeError) as e:
-            content = f"Formula '{formula}'"
+            desc = f"Formula '{formula}'"
             if expected is None:
-                print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}VAL ERROR{NC}]")
-                print(f"    {BLUE}└── {e}{NC}")
+                print_error(desc, "VAL ERROR", str(e))
             else:
-                print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}CRASH{NC}]")
-                print(f"    {BLUE}└── {e}{NC}")
+                print_error(desc, "CRASH", str(e))
                 all_ok = False
                 
         except Exception as e:
-            content = f"Formula '{formula}'"
-            print(f"  {YELLOW}•{NC} {content:<50} [{CYAN}UNKNOWN CRASH{NC}]")
-            print(f"    {BLUE}└── {e}{NC}")
+            desc = f"Formula '{formula}'"
+            print_error(desc, "UNKNOWN CRASH", str(e))
             all_ok = False
 
     print_final(7, all_ok)
