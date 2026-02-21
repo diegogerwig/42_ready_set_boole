@@ -1,7 +1,13 @@
 import io
+import sys
+import os
 from contextlib import redirect_stdout
+
+# Configuración de path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
 from ex04_truth_table import print_truth_table, eval_formula_with_vars
-from utils import print_header, print_final, RED, CYAN, BLUE, YELLOW, GREEN, NC
+from utils import print_header, print_final, print_error, RED, CYAN, BLUE, YELLOW, GREEN, NC
 
 def verify_printed_table(formula: str, output: str) -> tuple[bool, str]:
     """
@@ -87,39 +93,36 @@ def run():
         # --- MODIFICACIÓN: IMPRIMIR LA TABLA SI SE GENERA ---
         if expected is True and output.strip():
             print(f"\n{CYAN}┌──────────────────────────────────────────┐{NC}")
-            print(f"{CYAN}│ Testing Formula: {YELLOW}{str(formula):<24}{CYAN}│{NC}")
-            print(f"{CYAN}└──────────────────────────────────────────┘{NC}")
+            print(  f"{CYAN}│ Testing Formula: {YELLOW}{str(formula):<24}{CYAN}│{NC}")
+            print(  f"{CYAN}└──────────────────────────────────────────┘{NC}")
             print(output) # Aquí mostramos lo que se capturó
         # ----------------------------------------------------
 
         is_error_printed = "Error" in output
 
-        # Verificar Resultados con Formato ex03
+        # Verificar Resultados
 
         if expected is None:
             # CASO: ESPERAMOS ERROR (None)
             if exception_occurred:
-                # Excepción capturada -> VAL ERROR (Como en ex03)
-                print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}VAL ERROR{NC}]")
-                print(f"    {BLUE}└── {exception_occurred}{NC}")
+                # Excepción capturada -> VAL ERROR
+                print_error(desc, "VAL ERROR", str(exception_occurred))
             elif is_error_printed:
                 # Error impreso -> ERROR HANDLED (Variante válida de error)
-                print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}ERROR MSG{NC}]")
-                print(f"    {BLUE}└── La función imprimió el mensaje de error esperado.{NC}")
+                print_error(desc, "ERROR MSG", "La función imprimió el mensaje de error esperado.")
             else:
                 # Ni excepción ni mensaje de error -> FAIL
-                print(f"  {YELLOW}•{NC} {desc:<50} {RED}[FAIL]{NC}")
+                print(f" {YELLOW}•{NC} {desc:<70} [{RED}FAIL{NC}]")
                 print(f"    {RED}└── Se esperaba un error, pero la función continuó.{NC}")
                 all_ok = False
 
         else: 
             # CASO: ESPERAMOS ÉXITO (True)
             if exception_occurred:
-                print(f"  {YELLOW}•{NC} {desc:<50} [{CYAN}CRASH]{NC}")
-                print(f"    {BLUE}└── {exception_occurred}{NC}")
+                print_error(desc, "CRASH", str(exception_occurred))
                 all_ok = False
             elif is_error_printed:
-                print(f"  {YELLOW}•{NC} {desc:<50} {RED}[FAIL]{NC}")
+                print(f" {YELLOW}•{NC} {desc:<70} [{RED}FAIL{NC}]")
                 print(f"    {RED}└── La función imprimió un mensaje de error inesperado.{NC}")
                 all_ok = False
             else:
@@ -127,9 +130,9 @@ def run():
                 is_valid, msg = verify_printed_table(formula, output)
                 
                 if is_valid:
-                    print(f"  {YELLOW}•{NC} {desc:<50} [{GREEN} OK {NC}]")
+                    print(f" {YELLOW}•{NC} {desc:<70} [{GREEN} OK {NC}]")
                 else:
-                    print(f"  {YELLOW}•{NC} {desc:<50} {RED}[FAIL]{NC}")
+                    print(f" {YELLOW}•{NC} {desc:<70} [{RED}FAIL{NC}]")
                     print(f"    {RED}└── {msg}{NC}")
                     all_ok = False
 
