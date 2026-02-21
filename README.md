@@ -335,4 +335,29 @@ Reutilizamos nuestro evaluador RPN del `EX03`, pero con algunas modificaciones c
 ---
 ---
 
+## EX10 - Curve (Space-Filling Curve / Hilbert Curve)
+
+### 💡 Descripción
+Imagina que tienes una pantalla cuadrada de 2D llena de píxeles, y tienes un solo hilo muy largo que debe pasar por **todos y cada uno de los píxeles** sin cruzar sobre sí mismo, hasta llenar completamente el cuadrado.
+
+Eso es una **Curva que llena el espacio** (Space-Filling Curve). La más famosa es la **Curva de Hilbert**. 
+Esta función mapea unas coordenadas `(X, Y)` en un espacio $2^{16} \times 2^{16}$ y nos dice exactamente **en qué porcentaje de recorrido** (de 0.0 a 1.0) está ese punto en la curva.
+
+### 🧠 Justificación: ¿Por qué es Continua?
+Una pregunta clásica en la evaluación es justificar su continuidad.
+La curva de Hilbert es continua porque **preserva la localidad de los datos**. Esto significa que dos coordenadas `(X, Y)` que estén muy pegadas en el tablero 2D, tendrán valores `[0, 1]` extremadamente cercanos en la línea 1D.
+
+El algoritmo lo consigue dividiendo el espacio en 4 cuadrantes grandes, luego divide cada cuadrante en otros 4, y así sucesivamente (de forma recursiva). Cuando la curva pasa de un cuadrante al siguiente, la rotación de los ejes garantiza que el salto se haga entre los píxeles limítrofes directos, por lo que **jamás da saltos bruscos ("teletransportes")**, asegurando la continuidad matemática.
+
+### 📊 Lógica
+1. **Espacio inicial:** Operamos en un tablero de $65536 \times 65536$ celdas (16 bits). El máximo valor posible del hilo sería $2^{32} - 1$ (4294967295).
+2. **Desplazamiento a nivel de Bit (`s`):** Empezamos inspeccionando el cuadrante más grande (el bit 15: `s = 32768`) y vamos bajando hasta 0.
+3. **Rotación:** Con los operadores bit a bit (`&`, `^`) calculamos en qué sub-cuadrante está nuestro punto. Si el recorrido requiere cambiar de dirección (para no cruzarse), aplicamos una transformación matemática intercambiando e invirtiendo `x` e `y`.
+4. **Normalización:** Al terminar el bucle, tenemos una variable `d` que nos dice la posición exacta del punto en la línea (entre 0 y 4294967295). Lo dividimos entre el máximo y obtenemos un elegante `float` de 0.0 a 1.0.
+
+* **Inicio `(0, 0)`** $\rightarrow$ Devuelve `0.0`.
+* **Final `(65535, 0)`** $\rightarrow$ Devuelve `1.0`.
+
+---
+---
 
