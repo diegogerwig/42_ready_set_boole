@@ -1,6 +1,7 @@
 from ex05_nnf import negation_normal_form
-from ex04_truth_table import eval_formula_with_vars 
+from ex04_truth_table import eval_formula_with_vars
 from utils import *
+
 
 def check_nnf_logic(original, result):
     """
@@ -10,24 +11,27 @@ def check_nnf_logic(original, result):
     """
     # VERIFICAR FORMATO NNF
     for i, char in enumerate(result):
-        if char == '!':
-            if i == 0: return False, "Empieza por '!'"
-            prev = result[i-1]
+        if char == "!":
+            if i == 0:
+                return False, "Empieza por '!'"
+            prev = result[i - 1]
             if not (prev.isalpha() or prev in "01"):
                 return False, f"'!' después de '{prev}' (no permitido)"
 
     # VERIFICAR EQUIVALENCIA LÓGICA
     # Extraemos variables de ambas fórmulas
-    vars_set = set([c for c in original if c.isalpha()] + [c for c in result if c.isalpha()])
+    vars_set = set(
+        [c for c in original if c.isalpha()] + [c for c in result if c.isalpha()]
+    )
     variables = sorted(list(vars_set))
     n = len(variables)
-    
+
     # Probamos todas las combinaciones (Tablas de verdad)
     for i in range(1 << n):
         values = {}
         for j in range(n):
             values[variables[j]] = bool((i >> j) & 1)
-        
+
         try:
             res_orig = eval_formula_with_vars(original, values)
             res_new = eval_formula_with_vars(result, values)
@@ -35,38 +39,36 @@ def check_nnf_logic(original, result):
                 return False, f"Difieren para {values}"
         except Exception:
             return False, "Error evaluando fórmula"
-            
+
     return True, "OK"
+
 
 def run():
     print_header(5, "NEGATION NORMAL FORM (NNF)")
-    
-    cases = [
-    #   (formula, expected)
-    #   expected = String exacto O True (para validación lógica automática)
-        
-        ('A', 'A'),
-        ('A!', 'A!'),
-        ('AB&!', 'A!B!|'),       # !(A & B) -> !A | !B
-        ('AB|!', 'A!B!&'),       # !(A | B) -> !A & !B
-        ('AB>!', 'AB!&'),        # !(A > B) -> A & !B
-        ('AB=!', 'A!B!|AB|&'),   # !(A = B) -> (!A|!B) & (A|B) (XOR logic)
 
-        ('ABC||', True),
-        ('ABC||!', True),
-        ('ABC|&', True),
-        ('ABC&|', True),
-        ('ABC&|!', True),
-        ('ABC^^', True),      
-        ('ABC>>', True),
-        
-    # --- Casos de error ---
-        ("", None),             # Vacío
-        ("AB", None),           # Falta operador
-        ("&", None),            # Faltan operandos
-        ("A+", None)            # Carácter inválido
+    cases = [
+        #   (formula, expected)
+        #   expected = String exacto O True (para validación lógica automática)
+        ("A", "A"),
+        ("A!", "A!"),
+        ("AB&!", "A!B!|"),  # !(A & B) -> !A | !B
+        ("AB|!", "A!B!&"),  # !(A | B) -> !A & !B
+        ("AB>!", "AB!&"),  # !(A > B) -> A & !B
+        ("AB=!", "A!B!|AB|&"),  # !(A = B) -> (!A|!B) & (A|B) (XOR logic)
+        ("ABC||", True),
+        ("ABC||!", True),
+        ("ABC|&", True),
+        ("ABC&|", True),
+        ("ABC&|!", True),
+        ("ABC^^", True),
+        ("ABC>>", True),
+        # --- Casos de error ---
+        ("", None),  # Vacío
+        ("AB", None),  # Falta operador
+        ("&", None),  # Faltan operandos
+        ("A+", None),  # Carácter inválido
     ]
-    
+
     all_ok = True
 
     for case in cases:
@@ -74,7 +76,7 @@ def run():
             formula, expected = case
             res = negation_normal_form(formula)
             desc = f"NNF('{formula}')"
-            
+
             # Esperamos Error (None)
             if expected is None:
                 content = f"{desc}: {res}"
@@ -85,10 +87,10 @@ def run():
             # Verificación Automática (True)
             elif expected is True:
                 is_valid, msg = check_nnf_logic(formula, res)
-                
-                disp_res = (res[:40] + '...') if len(res) > 40 else res
+
+                disp_res = (res[:40] + "...") if len(res) > 40 else res
                 content = f"{desc}: {disp_res}"
-                
+
                 if is_valid:
                     print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{GREEN} OK {NC}]")
                 else:
@@ -108,13 +110,14 @@ def run():
             else:
                 print_error(desc, "CRASH", str(e))
                 all_ok = False
-                
+
         except Exception as e:
             desc = f"Formula '{formula}'"
             print_error(desc, "UNKNOWN CRASH", str(e))
             all_ok = False
 
     print_final(5, all_ok)
+
 
 if __name__ == "__main__":
     run()

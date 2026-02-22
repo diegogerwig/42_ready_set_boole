@@ -1,61 +1,61 @@
 from ex00_adder import adder
 from utils import *
 
+
 def run():
     print_header(0, "ADDER (Aritmética Bitwise)")
-    
+
     cases = [
-    #   (a, b)
+        #   (a, b)
         (0, 0),
         (1, 0),
         (0, 1),
         (1, 1),
         (1, 2),
         (2, 2),
-        
-        (3, 4), 
-        (10, 5), 
-        (255, 1), 
+        (3, 4),
+        (10, 5),
+        (255, 1),
         (1001, 9999),
         (13, 37),
-        
-    #   Casos de error
+        #   Casos de error
         (100, -1),
         (3, 4, 5),
-        (3,), 
-        (3, 'x'),
-        (3, '3')
+        (3,),
+        (3, "x"),
+        (3, "3"),
     ]
-    
+
     all_ok = True
 
     for case in cases:
         try:
             if not isinstance(case, tuple) or len(case) != 2:
                 raise ValueError(f"Se esperaban 2 argumentos, se recibió: {case}")
-            
+
             a, b = case
             res = adder(a, b)
-            
+
             if isinstance(a, int) and isinstance(b, int):
-                 expected = a + b
+                expected = a + b
             else:
-                 expected = None 
+                expected = None
 
             if not print_result(f"{a} + {b}", res, expected):
                 all_ok = False
-                
+
         except ValueError as e:
             print_error(str(case), "VALUE ERROR", str(e))
-            
+
         except TypeError as e:
             print_error(str(case), "TYPE ERROR", str(e))
-            
+
         except Exception as e:
             print_error(str(case), "CRASH", str(e))
-            all_ok = False 
+            all_ok = False
 
     print_final(0, all_ok)
+
 
 if __name__ == "__main__":
     run()

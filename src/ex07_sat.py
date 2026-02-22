@@ -1,5 +1,6 @@
 from ex04_truth_table import eval_formula_with_vars
 
+
 def sat(formula: str) -> bool:
     """
     Determina si la fórmula booleana es satisfacible (SAT).
@@ -7,7 +8,7 @@ def sat(formula: str) -> bool:
     """
     if not isinstance(formula, str):
         raise TypeError("El input debe ser un string.")
-        
+
     if not formula:
         raise ValueError("La fórmula no puede estar vacía.")
 
@@ -28,7 +29,7 @@ def sat(formula: str) -> bool:
         # Generar combinación de bits para las variables
         for j in range(n):
             var_values[variables[j]] = bool((i >> j) & 1)
-            
+
         # 3. Evaluar y aplicar Short-circuit (cortar si encontramos un True)
         try:
             if eval_formula_with_vars(formula, var_values):
@@ -36,6 +37,6 @@ def sat(formula: str) -> bool:
         except ValueError as e:
             # Capturamos el error del evaluador si la fórmula tiene sintaxis inválida
             raise ValueError(str(e))
-            
+
     # Si probamos todas las combinaciones y ninguna dio True, es una contradicción.
     return False
