@@ -8,6 +8,20 @@ B_RED='\033[1;31m'
 NC='\033[0m'
 
 # ==========================================
+# 0. LECTURA DE ARGUMENTOS
+# ==========================================
+# Si no se pasa argumento, por defecto será 'test'
+MODE=${1:-test}
+
+if [[ "$MODE" != "test" && "$MODE" != "venv" ]]; then
+    echo -e "${B_RED}❌ Argumento inválido: $MODE${NC}"
+    echo -e "${B_YELLOW}Uso correcto:${NC}"
+    echo -e "  bash setup.sh test  -> Crea venv, ejecuta tests y sale."
+    echo -e "  bash setup.sh venv  -> Crea venv y lo deja activado en la terminal."
+    exit 1
+fi
+
+# ==========================================
 # 1. DETECCIÓN DE ENTORNO Y RUTA DEL VENV
 # ==========================================
 OS_NAME=$(uname -s)
@@ -39,6 +53,7 @@ echo -e   "${B_BLUE}║        READY, SET, BOOLE!         ║${NC}"
 echo -e   "${B_BLUE}╚═══════════════════════════════════╝${NC}"
 
 echo -e "\n${B_CYAN}📂 Ruta del entorno: ${NC}$VENV_PATH"
+echo -e "${B_CYAN}⚙️  Modo seleccionado: ${NC}$MODE"
 
 # ==========================================
 # 2. LIMPIEZA
@@ -56,15 +71,28 @@ fi
 # ==========================================
 # 3. CREACIÓN Y ACTIVACIÓN DEL VENV
 # ==========================================
-echo -e "${B_YELLOW}⚙️  Creando entorno virtual...${NC}"
+echo -ne "${B_YELLOW}⚙️  Buscando Python moderno...${NC}"
+
+# Buscar desde la versión más nueva a la más vieja
+PYTHON_BIN="python3"
+for py_ver in python3.13 python3.12 python3.11 python3.10 python3.9; do
+    if command -v $py_ver >/dev/null 2>&1; then
+        PYTHON_BIN=$py_ver
+        break
+    fi
+done
+
+echo -e " ${B_GREEN}Seleccionado: $PYTHON_BIN${NC}"
+
+echo -ne "${B_YELLOW}⚙️  Creando entorno virtual...${NC}"
 mkdir -p "$TARGET_DIR"
-python3 -m venv "$VENV_PATH"
+$PYTHON_BIN -m venv "$VENV_PATH"
 
 if [ ! -f "$VENV_PATH/bin/activate" ]; then
-    echo -e "${B_RED}❌ Error crítico: No se pudo crear el entorno virtual en $VENV_PATH.${NC}"
-    echo -e "${B_RED}   Prueba a cambiar TARGET_DIR a /tmp o a tu $HOME normal si sgoinfre falla.${NC}"
+    echo -e "\n${B_RED}❌ Error crítico: No se pudo crear el entorno virtual en $VENV_PATH.${NC}"
     exit 1
 fi
+echo -e " ${B_GREEN}Hecho.${NC}"
 
 source "$VENV_PATH/bin/activate"
 
@@ -73,16 +101,17 @@ PY_LOC=$(which python3)
 echo -e "${B_GREEN}🐍 Python Activo:${NC} $PY_VER"
 echo -e "   └── $PY_LOC"
 
-echo -e "${B_CYAN}🔄 Actualizando pip...${NC}"
+echo -ne "${B_CYAN}🔄 Actualizando pip...${NC}"
 python3 -m pip install --upgrade pip > /dev/null 2>&1
+echo -e " ${B_GREEN}Hecho.${NC}"
 
 if [ -f "requirements.txt" ]; then
-    echo -e "${B_YELLOW}📦 Instalando dependencias (requirements.txt)...${NC}"
-    python3 -m pip install -r requirements.txt
+    echo -ne "${B_YELLOW}📦 Instalando dependencias (requirements.txt)...${NC}"
+    python3 -m pip install -r requirements.txt > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo -e "${B_GREEN}   Dependencias instaladas correctamente.${NC}"
+        echo -e " ${B_GREEN}Hecho.${NC}"
     else
-        echo -e "${B_RED}❌ Error instalando dependencias. Revisa los permisos.${NC}"
+        echo -e "\n${B_RED}❌ Error instalando dependencias. Revisa los permisos.${NC}"
         exit 1
     fi
 else
@@ -90,49 +119,65 @@ else
 fi
 
 # ==========================================
-# 4. EJECUCIÓN DE TESTS
+# RAMIFICACIÓN SEGÚN EL MODO ELEGIDO
 # ==========================================
-export PYTHONPATH=$PYTHONPATH:$(pwd)/src
 
-if [ -d "tests" ]; then
-    # Iteración robusta asegurando orden alfabético
-    for file in $(ls tests/test_*.py | sort); do
-        
-        echo -e "\n${B_CYAN}▶️  Ejecutando: $(basename "$file")${NC}"
-        # Ejecutar python
-        python3 "$file"
-        
-        # Capturar resultado
-        if [ $? -eq 0 ]; then
-            TEST_RESULTS+=("${B_GREEN}✔ PASS${NC}  $(basename "$file")")
-        else
-            TEST_RESULTS+=("${B_RED}✘ FAIL${NC}  $(basename "$file")")
-            ALL_TESTS_PASSED=false
-        fi
+if [[ "$MODE" == "venv" ]]; then
+    # --- MODO VENV: Deja el entorno abierto ---
+    echo -e "\n${B_GREEN}✅ Entorno virtual preparado y listo para usar.${NC}"
+    echo -e "${B_CYAN}🚀 Entrando al entorno interactivo...${NC}"
+    echo -e "${B_YELLOW}(Escribe 'exit' o presiona Ctrl+D para salir y desactivarlo)${NC}\n"
 
-        echo -e "\n${B_CYAN}⌛ Esperando confirmación...${NC}"
-        echo -e "${B_YELLOW}Presiona [ENTER] para continuar...${NC}"
-        read -r dummy_var
-        
+    # Creamos un archivo temporal para cargar tu bashrc habitual + el entorno virtual
+    TMP_RC=$(mktemp)
+    cat ~/.bashrc > "$TMP_RC" 2>/dev/null
+    echo "source '$VENV_PATH/bin/activate'" >> "$TMP_RC"
+    echo "rm -f '$TMP_RC'" >> "$TMP_RC" # Autodestrucción del archivo temporal
+
+    # Reemplazamos el subproceso actual por una nueva terminal bash interactiva
+    exec bash --rcfile "$TMP_RC"
+
+else
+    # --- MODO TEST: Ejecuta los tests y sale ---
+    export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+
+    if [ -d "tests" ]; then
+        for file in $(ls tests/test_*.py | sort); do
+            
+            echo -e "\n${B_CYAN}▶️  Ejecutando: $(basename "$file")${NC}"
+            python3 "$file"
+            
+            if [ $? -eq 0 ]; then
+                TEST_RESULTS+=("${B_GREEN}✔ PASS${NC}  $(basename "$file")")
+            else
+                TEST_RESULTS+=("${B_RED}✘ FAIL${NC}  $(basename "$file")")
+                ALL_TESTS_PASSED=false
+            fi
+
+            echo -e "\n${B_CYAN}⌛ Esperando confirmación...${NC}"
+            echo -e "${B_YELLOW}Presiona [ENTER] para continuar...${NC}"
+            read -r dummy_var
+            
+        done
+    else
+        echo -e "${B_RED}❌ Error: No existe el directorio 'tests/'${NC}"
+    fi
+
+    # ==========================================
+    # 5. RESUMEN FINAL
+    # ==========================================
+    echo -e "\n${B_BLUE}╔═══════════════════════════════════╗${NC}"
+    echo -e "${B_BLUE}║          RESUMEN FINAL            ║${NC}"
+    echo -e "${B_BLUE}╚═══════════════════════════════════╝${NC}\n"
+
+    for result in "${TEST_RESULTS[@]}"; do
+        echo -e "  $result"
     done
-else
-    echo -e "${B_RED}❌ Error: No existe el directorio 'tests/'${NC}"
-fi
 
-# ==========================================
-# 5. RESUMEN FINAL
-# ==========================================
-echo -e "\n${B_BLUE}╔═══════════════════════════════════╗${NC}"
-echo -e "${B_BLUE}║          RESUMEN FINAL            ║${NC}"
-echo -e "${B_BLUE}╚═══════════════════════════════════╝${NC}\n"
-
-for result in "${TEST_RESULTS[@]}"; do
-    echo -e "  $result"
-done
-
-echo ""
-if [ "$ALL_TESTS_PASSED" = true ]; then
-    echo -e "${B_GREEN}✅ RESULTADO GLOBAL: TODO OK${NC}\n"
-else
-    echo -e "${B_RED}❌ RESULTADO GLOBAL: ALGUNOS TESTS FALLARON${NC}\n"
+    echo ""
+    if [ "$ALL_TESTS_PASSED" = true ]; then
+        echo -e "${B_GREEN}✅ RESULTADO GLOBAL: TODO OK${NC}\n"
+    else
+        echo -e "${B_RED}❌ RESULTADO GLOBAL: ALGUNOS TESTS FALLARON${NC}\n"
+    fi
 fi
