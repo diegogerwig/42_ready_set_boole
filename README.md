@@ -2,6 +2,35 @@
 
 ---
 
+## 🛠️ Guía de Uso del Entorno
+
+Este proyecto utiliza un entorno automatizado para gestionar dependencias y garantizar que las pruebas se ejecuten de forma idéntica en cualquier sistema (WSL, Linux 42, etc.).
+
+### 1. El Script Maestro: `setup.sh`
+El archivo `setup.sh` detecta automáticamente tu sistema operativo y la versión de Python más reciente disponible para configurar el entorno virtual.
+
+| Comando | Descripción |
+| :--- | :--- |
+| **`bash setup.sh test`** | **(Opción por defecto)** Crea/limpia el entorno, instala dependencias y ejecuta **todos** los tests de la carpeta `tests/` en orden. |
+| **`bash setup.sh venv`** | Configura el entorno y abre una terminal interactiva con el `venv` activado y el `PYTHONPATH` configurado para reconocer la carpeta `src/`. |
+
+### 2. Ejecución Individual de Tests
+Si deseas ejecutar las pruebas de un solo ejercicio de forma aislada, primero activa tu entorno virtual (puedes usar `setup.sh venv`) y ejecuta el archivo de prueba directamente:
+
+```bash
+python3 tests/test_ex00.py
+```
+
+### 3. Ejecución Manual del Código
+Si quieres probar el código de un ejercicio sin ejecutar los tests, ejecuta el script correspondiente en la carpeta `src/` con los argumentos necesarios. Por ejemplo:
+
+```bash
+python3 src/ex00.py <args>
+```
+
+---
+---
+
 ## EX00 - Adder (Sumar a nivel de bits)
 
 ### 💡 Descripción
