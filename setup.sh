@@ -10,8 +10,7 @@ NC='\033[0m'
 # ==========================================
 # 0. LECTURA DE ARGUMENTOS
 # ==========================================
-# Si no se pasa argumento, por defecto será 'test'
-MODE=${1:-test}
+MODE=${1:-test} # Si no se pasa argumento, por defecto se ejecuta en modo "test"
 
 if [[ "$MODE" != "test" && "$MODE" != "venv" ]]; then
     echo -e "${B_RED}❌ Argumento inválido: $MODE${NC}"
