@@ -90,13 +90,11 @@ def run():
 
         output = f.getvalue()
 
-        # --- MODIFICACIÓN: IMPRIMIR LA TABLA SI SE GENERA ---
         if expected is True and output.strip():
             print(f"\n{CYAN}┌──────────────────────────────────────────┐{NC}")
-            print(f"{CYAN}│ Testing Formula: {YELLOW}{str(formula):<24}{CYAN}│{NC}")
-            print(f"{CYAN}└──────────────────────────────────────────┘{NC}")
-            print(output)  # Aquí mostramos lo que se capturó
-        # ----------------------------------------------------
+            print(  f"{CYAN}│ Testing Formula: {YELLOW}{str(formula):<24}{CYAN}│{NC}")
+            print(  f"{CYAN}└──────────────────────────────────────────┘{NC}")
+            print(output)
 
         is_error_printed = "Error" in output
 

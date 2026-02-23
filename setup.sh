@@ -132,6 +132,7 @@ if [[ "$MODE" == "venv" ]]; then
     TMP_RC=$(mktemp)
     cat ~/.bashrc > "$TMP_RC" 2>/dev/null
     echo "source '$VENV_PATH/bin/activate'" >> "$TMP_RC"
+    echo "export PYTHONPATH=\"\$PYTHONPATH:$(pwd)/src\"" >> "$TMP_RC"
     echo "rm -f '$TMP_RC'" >> "$TMP_RC" # Autodestrucción del archivo temporal
 
     # Reemplazamos el subproceso actual por una nueva terminal bash interactiva
