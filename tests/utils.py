@@ -50,44 +50,48 @@ def print_final(exercise_nb, all_ok):
         print(f"{BLUE}{'-' * 80}{NC}\n")
         sys.exit(1)
 
-def run_cases(ex_num: int, funcion_a_testear, casos: list, funcion_esperada=None, simbolo=""):
+def run_cases(ex_num: int, funcion_a_testear, casos: list, custom_desc_func=None):
     """
-    Motor genérico para ejecutar casos de prueba, atrapar errores y formatear la salida.
+    Motor universal: 
+    - Formato de cada caso: ( (inputs), esperado )
+    - inputs: Debe ser una tupla (arg1, arg2, ...)
+    - esperado: El valor que debe devolver o None si se espera un error.
     """
     all_ok = True
 
-    for case in casos:
+    for inputs, expected in casos:
+        # Forzamos que inputs sea una tupla para poder usar *args
+        args = inputs if isinstance(inputs, tuple) else (inputs,)
+        
+        # Descripción visual: usa la función personalizada o una por defecto
+        if custom_desc_func:
+            desc = custom_desc_func(*args)
+        else:
+            desc = f"{funcion_a_testear.__name__}{args}"
+
         try:
-            # 1. Aseguramos que los argumentos se puedan desempaquetar
-            if not isinstance(case, tuple):
-                case = (case,)
-                
-            # 2. Llamamos a tu función con los argumentos desempaquetados (*case)
-            res = funcion_a_testear(*case)
+            # Ejecución con desempaquetado de argumentos
+            res = funcion_a_testear(*args)
 
-            # 3. Calculamos el resultado esperado (si nos pasaron una función de referencia y no hay letras)
-            expected = None
-            if funcion_esperada and all(isinstance(arg, int) for arg in case):
-                expected = funcion_esperada(*case)
-
-            # 4. Generamos la descripción (ej: "3 + 4" o "gray_code(5)")
-            if len(case) == 2 and simbolo:
-                desc = f"{case[0]} {simbolo} {case[1]}"
-            else:
-                desc = f"{funcion_a_testear.__name__}{case}"
-
-            # 5. Comparamos
-            if not print_result(desc, res, expected):
+            if expected is None:
+                # Si no esperábamos que la función tuviera éxito
+                print(f" {YELLOW}•{NC} {desc:<70} [{RED}FAIL{NC}]")
+                print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
                 all_ok = False
+            else:
+                if not print_result(desc, res, expected):
+                    all_ok = False
 
-        except ValueError as e:
-            print_error(str(case), "VALUE ERROR", str(e))
-            
-        except TypeError as e:
-            print_error(str(case), "TYPE ERROR", str(e))
-            
+        except (ValueError, TypeError) as e:
+            if expected is None:
+                # Éxito: La función lanzó el error que queríamos
+                print_error(desc, "ERROR CAPTURADO", str(e))
+            else:
+                # Fallo: La función lanzó un error cuando esperábamos un resultado
+                print_error(desc, "CRASH INESPERADO", str(e))
+                all_ok = False
         except Exception as e:
-            print_error(str(case), "CRASH", str(e))
+            print_error(desc, "UNKNOWN CRASH", str(e))
             all_ok = False
 
     print_final(ex_num, all_ok)
