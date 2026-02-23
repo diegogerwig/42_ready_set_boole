@@ -26,6 +26,11 @@ Si quieres probar el código de un ejercicio sin ejecutar los tests, ejecuta el 
 
 ```bash
 python3 src/ex00.py <args>
+
+python3 src/ex00_adder.py 13 37
+python3 src/ex01_multiplier.py 10 5
+python3 src/ex02_gray_code.py 5
+python3 src/ex03_eval.py "10&1|"
 ```
 
 ---
