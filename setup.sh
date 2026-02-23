@@ -45,7 +45,7 @@ fi
 
 VENV_PATH="$TARGET_DIR/$VENV_NAME"
 unset TEST_RESULTS
-declare -a TEST_RESULTS=() 
+declare -a TEST_RESULTS=()
 ALL_TESTS_PASSED=true
 
 echo -e "\n${B_BLUE}╔═══════════════════════════════════╗${NC}"
