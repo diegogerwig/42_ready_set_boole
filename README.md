@@ -164,7 +164,7 @@ Imagina una pila de platos vacía (`stack`).
 
 1.  Recorremos la cadena carácter por carácter.
 2.  **Si vemos un número (0 o 1):** Lo ponemos encima de la pila.
-3.  **Si vemos un operador (&, |, >, =):**
+3.  **Si vemos un operador (&, |, ^, >, =):**
     * Sacamos los **dos** platos de arriba (`pop`).
     * Hacemos la operación matemática con ellos.
     * Ponemos el resultado (el nuevo plato) en la pila.
@@ -185,11 +185,14 @@ Al final, si la fórmula es correcta, **solo debe quedar un plato** en la pila. 
 **Resultado Final:** `True`.
 
 ### 🔑 Claves de los Operadores
+* `0` (FALSE)
+* `1` (TRUE)
+* `!` (NEGATION): El valor contrario.
 * `&` (AND): Ambos deben ser verdaderos.
 * `|` (OR): Basta que uno sea verdadero.
 * `^` (XOR): Deben ser **diferentes**.
-* `=` (EQUIV): Deben ser **iguales**.
 * `>` (IMPLICACIÓN): La única forma de que sea falso es `True > False`. En el resto de casos es verdadero.
+* `=` (EQUIV): Deben ser **iguales**.
 
 ---
 ---

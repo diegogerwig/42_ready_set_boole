@@ -44,7 +44,6 @@ def run():
         ex_num=3,
         funcion_a_testear=eval_formula,
         casos=cases,
-        # custom_desc_func=lambda f: f"Formula '{f}'"
     )
 
 
