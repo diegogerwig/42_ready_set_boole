@@ -63,18 +63,15 @@ def run_cases(ex_num: int, funcion_a_testear, casos: list, custom_desc_func=None
         # Forzamos que inputs sea una tupla para poder usar *args
         args = inputs if isinstance(inputs, tuple) else (inputs,)
         
-        # Descripción visual: usa la función personalizada o una por defecto
         if custom_desc_func:
             desc = custom_desc_func(*args)
         else:
             desc = f"{funcion_a_testear.__name__}{args}"
 
         try:
-            # Ejecución con desempaquetado de argumentos
             res = funcion_a_testear(*args)
 
             if expected is None:
-                # Si no esperábamos que la función tuviera éxito
                 print(f" {YELLOW}•{NC} {desc:<70} [{RED}FAIL{NC}]")
                 print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
                 all_ok = False
@@ -84,10 +81,8 @@ def run_cases(ex_num: int, funcion_a_testear, casos: list, custom_desc_func=None
 
         except (ValueError, TypeError) as e:
             if expected is None:
-                # Éxito: La función lanzó el error que queríamos
                 print_error(desc, "ERROR CAPTURADO", str(e))
             else:
-                # Fallo: La función lanzó un error cuando esperábamos un resultado
                 print_error(desc, "CRASH INESPERADO", str(e))
                 all_ok = False
         except Exception as e:
