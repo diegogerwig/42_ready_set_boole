@@ -57,15 +57,15 @@ if __name__ == "__main__":
         if "invalid literal" in str(e):
             print("❌ Error: Los argumentos por terminal deben ser números válidos.")
         else:
-            print(f"❌ Error de Valor: {e}")
+            print(f"❌ Error: {e}")
         sys.exit(1)
 
     except TypeError as e:
         # Atrapa si la función se queja de los tipos
-        print(f"❌ Error de Tipo: {e}")
+        print(f"❌ Error: {e}")
         sys.exit(1)
 
     except Exception as e:
         # Por si ocurre algo catastrófico e inesperado
-        print(f"💥 Error inesperado: {e}")
+        print(f"💥 Error: {e}")
         sys.exit(1)
