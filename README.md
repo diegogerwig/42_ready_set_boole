@@ -87,8 +87,8 @@ Descomponemos la multiplicación de `a * b` evaluando los bits de `b`.
 1. **El Bucle**: Evaluamos mientras quede algo en `b` (`b != 0`).
 2. **¿Debemos sumar? (AND `& 1`)**: Comprobamos si `b` es impar mirando su último bit (`b & 1`). Si es impar, significa que el valor actual de `a` forma parte de la suma total, así que lo sumamos al `resultado` usando nuestra función `adder`.
 3. **Evolución de variables**:
-   * **Duplicamos `a`**: Hacemos un Shift Left (`a << 1`). Equivale a multiplicar por 2.
-   * **Dividimos `b`**: Hacemos un Shift Right (`b >> 1`). Equivale a dividir entre 2 y descartar el resto.
+   * **Duplicamos `a`**: Hacemos un Left Shift (`a << 1`). Equivale a multiplicar por 2.
+   * **Dividimos `b`**: Hacemos un Right Shift (`b >> 1`). Equivale a dividir entre 2 y descartar el resto.
 
 ### 📊 Ejemplo: 12 * 5
 En cada paso, `a` se duplica y `b` se divide. Solo sumamos `a` al resultado cuando `b` es impar.
@@ -129,7 +129,7 @@ Queremos convertir el 6 (binario `110`).
 Binario (6):       1   1   0
                    |   |   |
                    |   |   |  
-Vecino (6>>1):     0   1   1   (SHIFT RIGHT)
+Vecino (6>>1):     0   1   1   (RIGHT SHIFT )
                    ---------   
 Gray (5):          1   0   1   (XOR)
 ```

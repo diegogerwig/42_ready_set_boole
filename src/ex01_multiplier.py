@@ -19,6 +19,7 @@ def multiplier(a: int, b: int) -> int:
         # METEODO DE MULTIPLICACION RUSA
         # Miramos si 'b' es IMPAR (si su último bit es 1).
         # Si es impar, significa que el valor actual de 'a' forma parte de la suma total.
+        # 1 & 1 -> true, resto de opciones -> false
         if b & 1:
             result = adder(result, a)
 
@@ -44,7 +45,7 @@ if __name__ == "__main__":
         a = int(sys.argv[1])
         b = int(sys.argv[2])
         
-        # 3. Llamamos a la función matemática
+        # 3. Llamamos a la función
         res = multiplier(a, b)
         print(f"✅ Resultado: {a} * {b} = {res}")
 

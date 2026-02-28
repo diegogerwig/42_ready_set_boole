@@ -48,7 +48,7 @@ if __name__ == "__main__":
         a = int(sys.argv[1])
         b = int(sys.argv[2])
 
-        # 3. Llamamos a la función matemática
+        # 3. Llamamos a la función
         res = adder(a, b)
         print(f"✅ Resultado: {a} + {b} = {res}")
 
