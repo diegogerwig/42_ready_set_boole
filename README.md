@@ -147,6 +147,8 @@ Aplicando la fórmula a los valores obligatorios (0-8) para demostrar que coinci
 * **7:** `7 ^ 3` *(111 ^ 011)* = `100` → **4**
 * **8:** `8 ^ 4` *(1000 ^ 0100)* = `1100` → **12**
 
+[Decimal to Gray Converter](https://tools.namlabs.com/decimal-gray/)
+
 ---
 ---
 

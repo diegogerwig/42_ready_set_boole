@@ -1,3 +1,6 @@
+import sys
+
+
 def eval_formula(formula: str) -> bool:
     """
     Evalúa una fórmula booleana en notación RPN (Reverse Polish Notation).
@@ -50,3 +53,31 @@ def eval_formula(formula: str) -> bool:
         raise ValueError("Fórmula inválida: sobran o faltan operadores.")
 
     return stack[0]
+
+
+if __name__ == "__main__":
+    # 1. Verificamos que haya exactamente 1 argumento (sys.argv[0] es el script)
+    if len(sys.argv) != 2:
+        print("❌ Error: Se esperaba 1 argumento.")
+        print('💡 Uso: python ex03_eval.py "10&1|"')
+        sys.exit(1)
+
+    try:
+        # 2. Tomamos el texto de la terminal
+        formula = sys.argv[1]
+        
+        # 3. Llamamos a la función
+        res = eval_formula(formula)
+        print(f"✅ Resultado: eval_formula('{formula}') = {res}")
+
+    except ValueError as e:
+        print(f"❌ Error: {e}")
+        sys.exit(1)
+        
+    except TypeError as e:
+        print(f"❌ Error: {e}")
+        sys.exit(1)
+        
+    except Exception as e:
+        print(f"💥 Error: {e}")
+        sys.exit(1)
