@@ -111,9 +111,9 @@ El Código Gray es un sistema de numeración binaria alternativo donde dos núme
 Esto es fundamental en el mundo del hardware y la robótica (como en sensores de posición o *encoders*) para evitar errores de lectura. Si usáramos binario normal, al pasar de 3 (`011`) a 4 (`100`) cambiarían 3 bits a la vez, y una lectura en el momento justo del cambio podría dar cualquier valor erróneo intermedio. En Gray, solo cambia uno, garantizando estabilidad.
 
 ### 🧠 Lógica
-La fórmula mágica para convertir un binario normal a Gray es muy compacta: `n ^ (n >> 1)`.
+La fórmula para convertir un binario normal a Gray es muy compacta: `n ^ (n >> 1)`.
 
-Para explicarla fácilmente, usa la regla de los **Vecinos**:
+Usa la regla de los **Vecinos**:
 **"Cada bit del Código Gray es el resultado de comparar el bit original con su vecino de la izquierda."**
 
 1.  **`n`**: Tomamos el número original.
@@ -127,7 +127,6 @@ Queremos convertir el 6 (binario `110`).
 
 ```text
 Binario (6):       1   1   0
-                   |   |   |
                    |   |   |  
 Vecino (6>>1):     0   1   1   (RIGHT SHIFT )
                    ---------   

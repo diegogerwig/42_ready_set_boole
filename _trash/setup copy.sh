@@ -10,36 +10,14 @@ NC='\033[0m'
 # ==========================================
 # 0. LECTURA DE ARGUMENTOS
 # ==========================================
-
-# Validación 1: No admitir más de 2 argumentos
-if [ "$#" -gt 2 ]; then
-    echo -e "${B_RED}❌ Error: Demasiados argumentos ($#). Se esperaban máximo 2.${NC}"
-    echo -e "${B_YELLOW}Uso correcto:${NC}"
-    echo -e "  bash setup.sh test      -> Crea venv, ejecuta TODOS los tests y sale."
-    echo -e "  bash setup.sh test x    -> Ejecuta SOLO el test x (admite del 0 al 11)."
-    echo -e "  bash setup.sh venv      -> Crea venv y lo deja activado en la terminal."
-    exit 1
-fi
-
 MODE=${1:-test} # Si no se pasa argumento, por defecto se ejecuta en modo "test"
-SPECIFIC_TEST=$2 # Si se pasa un segundo argumento, filtraremos por ese número de test
 
-# Validación 2: Modos permitidos
 if [[ "$MODE" != "test" && "$MODE" != "venv" ]]; then
     echo -e "${B_RED}❌ Argumento inválido: $MODE${NC}"
     echo -e "${B_YELLOW}Uso correcto:${NC}"
-    echo -e "  bash setup.sh test      -> Crea venv, ejecuta TODOS los tests y sale."
-    echo -e "  bash setup.sh test 2    -> Ejecuta SOLO el test 02 (admite del 0 al 11)."
-    echo -e "  bash setup.sh venv      -> Crea venv y lo deja activado en la terminal."
+    echo -e "  bash setup.sh test  -> Crea venv, ejecuta tests y sale."
+    echo -e "  bash setup.sh venv  -> Crea venv y lo deja activado en la terminal."
     exit 1
-fi
-
-# Validación 3: Número de test estricto (solo de 0 a 11)
-if [[ -n "$SPECIFIC_TEST" ]]; then
-    if ! [[ "$SPECIFIC_TEST" =~ ^[0-9]+$ ]] || [ "$SPECIFIC_TEST" -lt 0 ] || [ "$SPECIFIC_TEST" -gt 11 ]; then
-        echo -e "${B_RED}❌ Error: El número de test debe ser un valor numérico entre 0 y 11.${NC}"
-        exit 1
-    fi
 fi
 
 # ==========================================
@@ -75,9 +53,6 @@ echo -e   "${B_BLUE}╚═══════════════════
 
 echo -e "\n${B_CYAN}📂 Ruta del entorno: ${NC}$VENV_PATH"
 echo -e "${B_CYAN}⚙️  Modo seleccionado: ${NC}$MODE"
-if [[ -n "$SPECIFIC_TEST" ]]; then
-    echo -e "${B_CYAN}🎯 Filtro de test: ${NC}Ejercicio $(printf "%02d" "$SPECIFIC_TEST")"
-fi
 
 # ==========================================
 # 2. LIMPIEZA
@@ -143,7 +118,7 @@ else
 fi
 
 # ==========================================
-# 4. RAMIFICACIÓN SEGÚN EL MODO ELEGIDO
+# RAMIFICACIÓN SEGÚN EL MODO ELEGIDO
 # ==========================================
 
 if [[ "$MODE" == "venv" ]]; then
@@ -152,11 +127,14 @@ if [[ "$MODE" == "venv" ]]; then
     echo -e "${B_CYAN}🚀 Entrando al entorno interactivo...${NC}"
     echo -e "${B_YELLOW}(Escribe 'exit' o presiona Ctrl+D para salir y desactivarlo)${NC}\n"
 
+    # Creamos un archivo temporal para cargar tu bashrc habitual + el entorno virtual
     TMP_RC=$(mktemp)
     cat ~/.bashrc > "$TMP_RC" 2>/dev/null
     echo "source '$VENV_PATH/bin/activate'" >> "$TMP_RC"
     echo "export PYTHONPATH=\"\$PYTHONPATH:$(pwd)/src\"" >> "$TMP_RC"
-    echo "rm -f '$TMP_RC'" >> "$TMP_RC"
+    echo "rm -f '$TMP_RC'" >> "$TMP_RC" # Autodestrucción del archivo temporal
+
+    # Reemplazamos el subproceso actual por una nueva terminal bash interactiva
     exec bash --rcfile "$TMP_RC"
 
 else
@@ -164,19 +142,7 @@ else
     export PYTHONPATH=$PYTHONPATH:$(pwd)/src
 
     if [ -d "tests" ]; then
-        # Lógica de filtrado
-        if [[ -n "$SPECIFIC_TEST" ]]; then
-            FORMATTED_NUM=$(printf "%02d" "$SPECIFIC_TEST")
-            TEST_FILES=$(ls tests/test_ex${FORMATTED_NUM}*.py 2>/dev/null)
-            if [[ -z "$TEST_FILES" ]]; then
-                echo -e "\n${B_RED}❌ Error: No se encontró ningún archivo de test para el ejercicio $FORMATTED_NUM en 'tests/'${NC}"
-                exit 1
-            fi
-        else
-            TEST_FILES=$(ls tests/test_*.py | sort)
-        fi
-
-        for file in $TEST_FILES; do
+        for file in $(ls tests/test_*.py | sort); do
             
             echo -e "\n${B_CYAN}▶️  Ejecutando: $(basename "$file")${NC}"
             python3 "$file"
@@ -188,31 +154,9 @@ else
                 ALL_TESTS_PASSED=false
             fi
 
-            # --- BUCLE INTERACTIVO PARA INTRODUCIR CASOS POR TERMINAL ---
-            # Extraemos el prefijo del test (ej: test_ex00.py -> ex00)
-            PREFIX=$(basename "$file" | grep -o 'ex[0-9]\{2\}')
-            # Buscamos el archivo fuente correspondiente en src/ (ej: src/ex00_adder.py)
-            SRC_FILE=$(ls src/${PREFIX}_*.py 2>/dev/null | head -n 1)
-
-            while true; do
-                echo -e "\n${B_CYAN}⌛ Esperando confirmación...${NC}"
-                echo -e "${B_YELLOW}Presiona [ENTER] para continuar al siguiente test, o introduce argumentos para probar manualmente:${NC}"
-                read -r user_input
-
-                # Si el usuario solo pulsó Enter, salimos del bucle interactivo y pasamos al siguiente test
-                if [[ -z "$user_input" ]]; then
-                    break
-                else
-                    # Si el usuario introdujo argumentos, ejecutamos el código fuente de src/
-                    if [[ -n "$SRC_FILE" && -f "$SRC_FILE" ]]; then
-                        echo -e "${B_BLUE}--- Ejecución manual: python3 $SRC_FILE $user_input ---${NC}"
-                        python3 "$SRC_FILE" $user_input
-                        echo -e "${B_BLUE}---------------------------------------------------------${NC}"
-                    else
-                        echo -e "${B_RED}❌ No se encontró un archivo fuente ejecutable para $PREFIX en src/${NC}"
-                    fi
-                fi
-            done
+            echo -e "\n${B_CYAN}⌛ Esperando confirmación...${NC}"
+            echo -e "${B_YELLOW}Presiona [ENTER] para continuar...${NC}"
+            read -r dummy_var
             
         done
     else
