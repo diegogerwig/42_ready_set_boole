@@ -50,9 +50,10 @@ def print_final(exercise_nb, all_ok):
         print(f"{BLUE}{'-' * 80}{NC}\n")
         sys.exit(1)
 
+
 def run_cases(ex_num: int, funcion_a_testear, casos: list, custom_desc_func=None):
     """
-    Motor universal: 
+    Motor universal:
     - Formato de cada caso: ( (inputs), esperado )
     - inputs: Debe ser una tupla (arg1, arg2, ...)
     - esperado: El valor que debe devolver o None si se espera un error.
@@ -62,7 +63,7 @@ def run_cases(ex_num: int, funcion_a_testear, casos: list, custom_desc_func=None
     for inputs, expected in casos:
         # Forzamos que inputs sea una tupla para poder usar *args
         args = inputs if isinstance(inputs, tuple) else (inputs,)
-        
+
         if custom_desc_func:
             desc = custom_desc_func(*args)
         else:

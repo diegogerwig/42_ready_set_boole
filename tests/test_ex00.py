@@ -22,10 +22,11 @@ def run():
     ]
 
     run_cases(
-        ex_num = 0,
-        funcion_a_testear = adder,
-        casos = cases,
+        ex_num=0,
+        funcion_a_testear=adder,
+        casos=cases,
     )
+
 
 if __name__ == "__main__":
     run()

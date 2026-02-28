@@ -92,8 +92,8 @@ def run():
 
         if expected is True and output.strip():
             print(f"\n{CYAN}┌──────────────────────────────────────────┐{NC}")
-            print(  f"{CYAN}│ Testing Formula: {YELLOW}{str(formula):<24}{CYAN}│{NC}")
-            print(  f"{CYAN}└──────────────────────────────────────────┘{NC}")
+            print(f"{CYAN}│ Testing Formula: {YELLOW}{str(formula):<24}{CYAN}│{NC}")
+            print(f"{CYAN}└──────────────────────────────────────────┘{NC}")
             print(output)
 
         is_error_printed = "Error" in output
