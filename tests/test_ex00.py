@@ -25,7 +25,6 @@ def run():
         ex_num = 0,
         funcion_a_testear = adder,
         casos = cases,
-        # custom_desc_func = lambda a, b: f"{a} + {b}"
     )
 
 if __name__ == "__main__":
