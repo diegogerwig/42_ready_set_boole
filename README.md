@@ -159,6 +159,16 @@ Aplicando la fórmula a los valores obligatorios (0-8) para demostrar que coinci
 Evaluamos fórmulas booleanas escritas en **RPN (Reverse Polish Notation)**.
 En esta notación, el operador va *después* de los números (ej. `10&` en vez de `1&0`). Esto es genial para los ordenadores porque **elimina la necesidad de paréntesis**.
 
+### 🔑 Claves de los Operadores
+* `0` (FALSE)
+* `1` (TRUE)
+* `!` (NEGATION): El valor contrario.
+* `&` (AND): Ambos deben ser verdaderos.
+* `|` (OR): Basta que uno sea verdadero.
+* `^` (XOR): Deben ser **diferentes**.
+* `>` (IMPLICACIÓN): La única forma de que sea falso es `True > False`. En el resto de casos es verdadero.
+* `=` (EQUIV): Deben ser **iguales**.
+
 ### 🧠 Lógica
 Imagina una pila de platos vacía (`stack`).
 
@@ -183,16 +193,6 @@ Al final, si la fórmula es correcta, **solo debe quedar un plato** en la pila. 
 | **\|** | Saca dos (`F`, `T`) -> Calcula `F \| T` = `T` -> Empuja | `[True]` |
 
 **Resultado Final:** `True`.
-
-### 🔑 Claves de los Operadores
-* `0` (FALSE)
-* `1` (TRUE)
-* `!` (NEGATION): El valor contrario.
-* `&` (AND): Ambos deben ser verdaderos.
-* `|` (OR): Basta que uno sea verdadero.
-* `^` (XOR): Deben ser **diferentes**.
-* `>` (IMPLICACIÓN): La única forma de que sea falso es `True > False`. En el resto de casos es verdadero.
-* `=` (EQUIV): Deben ser **iguales**.
 
 ---
 ---

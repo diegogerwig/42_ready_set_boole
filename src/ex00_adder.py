@@ -37,23 +37,19 @@ def adder(a: int, b: int) -> int:
 
 
 if __name__ == "__main__":
-    # 1. Verificamos que haya exactamente 2 argumentos (sys.argv[0] es el nombre del script)
     if len(sys.argv) != 3:
         print("❌ Error: Se esperaban 2 argumentos.")
         print("💡 Uso: python ex00_adder.py <num1> <num2>")
         sys.exit(1)
 
     try:
-        # 2. Convertimos el texto de la terminal a enteros
         a = int(sys.argv[1])
         b = int(sys.argv[2])
 
-        # 3. Llamamos a la función
         res = adder(a, b)
         print(f"✅ Resultado: {a} + {b} = {res}")
 
     except ValueError as e:
-        # Atrapa si el usuario escribe letras (falla el int()) o si pasa negativos (falla el adder())
         if "invalid literal" in str(e):
             print("❌ Error: Los argumentos por terminal deben ser números válidos.")
         else:
@@ -61,11 +57,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     except TypeError as e:
-        # Atrapa si la función se queja de los tipos
         print(f"❌ Error: {e}")
         sys.exit(1)
 
     except Exception as e:
-        # Por si ocurre algo catastrófico e inesperado
         print(f"💥 Error: {e}")
         sys.exit(1)
