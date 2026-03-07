@@ -29,7 +29,7 @@ if [[ "$MODE" != "test" && "$MODE" != "venv" ]]; then
     echo -e "${B_RED}❌ Argumento inválido: $MODE${NC}"
     echo -e "${B_YELLOW}Uso correcto:${NC}"
     echo -e "  bash setup.sh test      -> Crea venv, ejecuta TODOS los tests y sale."
-    echo -e "  bash setup.sh test 2    -> Ejecuta SOLO el test 02 (admite del 0 al 11)."
+    echo -e "  bash setup.sh test x    -> Ejecuta SOLO el test x (admite del 0 al 11)."
     echo -e "  bash setup.sh venv      -> Crea venv y lo deja activado en la terminal."
     exit 1
 fi

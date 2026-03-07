@@ -21,6 +21,10 @@ def eval_formula(formula: str) -> bool:
         elif char == "!":
             if len(stack) < 1:
                 raise ValueError("Formato inválido: Falta operando para '!'.")
+            
+            # El operador '!' invierte el valor lógico:
+            # True  → False
+            # False → True
             stack.append(not stack.pop())
 
         # Operadores Binarios (&, |, ^, >, =)
@@ -33,15 +37,24 @@ def eval_formula(formula: str) -> bool:
             left = stack.pop()
 
             if char == "&":
+                # AND lógico: solo es True si ambos operandos son True.
                 stack.append(left and right)
+
             elif char == "|":
+                # OR lógico: es True si al menos uno de los operandos es True.
                 stack.append(left or right)
+
             elif char == "^":
+                # XOR lógico: es True si los operandos son distintos.
                 stack.append(left != right)
+
             elif char == ">":
-                # Material Implication: False solo si T -> F. Equivale a (!A o B)
+                # Implicación material (A → B):
+                # Solo es falsa cuando A es True y B es False.
                 stack.append(not left or right)
+
             elif char == "=":
+                # Equivalencia lógica: True si ambos operandos tienen el mismo valor.
                 stack.append(left == right)
 
         # Caracteres desconocidos
