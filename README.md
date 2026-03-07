@@ -217,9 +217,10 @@ El reto principal es generar todas esas combinaciones de True/False dinámicamen
 4.  **Evaluación RPN**: Con las variables mapeadas (ej. `A=False, B=True`), usamos el mismo evaluador de pila (stack) que construimos en el EX03 para calcular el resultado final de esa fila y lo imprimimos.
 
 ### 📊 Ejemplo: `AB|` (A OR B)
+
 Variables detectadas: `A`, `B` ($n = 2$). Total de filas: $2^2 = 4$.
 
-| i (Decimal) | Bits | A | B | `AB|` (Resultado) |
+| Combinación | Bits | A | B | <code>AB&#124;</code> (Resultado) |
 | :---: | :---: | :---: | :---: | :---: |
 | 0 | `00` | 0 | 0 | **0** |
 | 1 | `01` | 0 | 1 | **1** |
