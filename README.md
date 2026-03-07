@@ -180,6 +180,8 @@ Imagina una pila de platos vacía (`stack`).
     * Ponemos el resultado (el nuevo plato) en la pila.
 4.  **Si vemos un negador (!):** Sacamos solo **un** plato, le cambiamos el valor, y lo devolvemos.
 
+El primer valor que extraemos es el operando de la derecha; el segundo, es el operando de la izquierda.
+
 Al final, si la fórmula es correcta, **solo debe quedar un plato** en la pila. Ese es el resultado final.
 
 ### 📊 Ejemplo: `10&1|` (Equivale a `(1 AND 0) OR 1`)

@@ -1,21 +1,28 @@
 import io
 from contextlib import redirect_stdout
 
-from ex04_truth_table import print_truth_table, eval_formula_with_vars
+from ex04_truth_table import truth_table
+from ex03_eval import eval_formula
 from utils import *
 
 
 def verify_printed_table(formula: str, output: str) -> tuple[bool, str]:
     """
-    Parsea y verifica la tabla. Retorna (True, "") si todo ok, o (False, "Motivo") si falla.
+    Parsea y verifica la tabla matemáticamente independientemente de los espacios.
     """
-    variables = sorted(list(set([c for c in formula if c.isalpha()])))
+    variables = []
+    for char in formula:
+        if "A" <= char <= "Z" and char not in variables:
+            variables.append(char)
+
     lines = output.strip().split("\n")
     data_rows_found = 0
 
     for line in lines:
-        if "---" in line or not line.strip():
+        # Ignoramos la cabecera, los separadores y la línea final vacía
+        if "---" in line or not line.strip() or "=" in line or line.endswith("||"):
             continue
+            
         parts = [p.strip() for p in line.split("|") if p.strip().isdigit()]
         if not parts:
             continue
@@ -27,22 +34,28 @@ def verify_printed_table(formula: str, output: str) -> tuple[bool, str]:
         if len(inputs) != len(variables):
             return False, f"Estructura incorrecta en fila: {line}"
 
-        var_values = {var: bool(val) for var, val in zip(variables, inputs)}
+        # Sustituimos las variables (A, B) por sus valores (0, 1) en el string
+        formula_verificacion = formula
+        for var, val in zip(variables, inputs):
+            formula_verificacion = formula_verificacion.replace(var, str(val))
+            
         try:
-            calculated_result = eval_formula_with_vars(formula, var_values)
+            calculated_result = eval_formula(formula_verificacion)
         except Exception:
             return False, "Error interno evaluando fórmula de verificación"
 
         if calculated_result != printed_result:
+            var_values = {var: bool(val) for var, val in zip(variables, inputs)}
             return (
                 False,
-                f"Error matemático. Entrada: {var_values} -> Tu Output: {int(printed_result)} != Real: {int(calculated_result)}",
+                f"Error matemático. Entrada {var_values} -> "
+                f"Tu Output: {int(printed_result)} != Real: {int(calculated_result)}"
             )
 
         data_rows_found += 1
 
-    if data_rows_found == 0:
-        return False, "No se encontraron datos en la tabla impresa"
+    if data_rows_found == 0 and len(variables) > 0:
+        return False, "No se encontraron datos en la tabla impresa."
 
     return True, ""
 
@@ -50,99 +63,51 @@ def verify_printed_table(formula: str, output: str) -> tuple[bool, str]:
 def run():
     print_header(4, "TRUTH TABLE")
 
+    def print_truth_table(formula):
+        f = io.StringIO()
+        with redirect_stdout(f):
+            truth_table(formula)
+        output = f.getvalue()
+        
+        is_valid, msg = verify_printed_table(formula, output)
+        if not is_valid:
+            print(f"    {RED}└── {msg}{NC}")
+            return False
+            
+        print(f"\n{CYAN}┌──────────────────────────────────────────┐{NC}")
+        print(f"{CYAN}│ Tabla de verdad: {YELLOW}{str(formula):<24}{CYAN}│{NC}")
+        print(f"{CYAN}└──────────────────────────────────────────┘{NC}")
+        print(output.strip())
+        print() 
+
+        return True
+
     cases = [
-        #   (formula, expected_validity)
-        #   True = Debe imprimir tabla válida | None = Debe dar error
-        ("A", True),
-        ("A!", True),
-        ("AB|", True),
-        ("AB&", True),
-        ("AB^", True),
-        ("AB>", True),
-        ("AB=", True),
-        ("AA=", True),
-        ("ABC==", True),
-        ("AB>C>", True),
-        ("AB>A>A>", True),
-        # --- Casos de Error ---
-        ("ABC====", None),
-        ("", None),
-        ("AB", None),
-        ("A+", None),
-        (123, None),
+        # ((formula), expected)
+        (("A",), True),
+        (("A!",), True),
+        (("AB|",), True),
+        (("AB&",), True),
+        (("AB^",), True),
+        (("AB>",), True),
+        (("AB=",), True),
+        (("AA=",), True),
+        (("ABC==",), True),
+        (("AB>C>",), True),
+        (("AB>A>A>",), True),
+        # Casos de Error
+        (("ABC====",), None),
+        (("",), None),
+        (("AB",), None),
+        (("A+",), None),
+        ((123,), None),
     ]
 
-    all_ok = True
-
-    for case in cases:
-        formula, expected = case
-        desc = f"Formula '{formula}'"
-
-        # Capturar STDOUT y Excepciones
-        f = io.StringIO()
-        exception_occurred = None
-
-        try:
-            with redirect_stdout(f):
-                print_truth_table(formula)
-        except Exception as e:
-            exception_occurred = e
-
-        output = f.getvalue()
-
-        if expected is True and output.strip():
-            print(f"\n{CYAN}┌──────────────────────────────────────────┐{NC}")
-            print(f"{CYAN}│ Testing Formula: {YELLOW}{str(formula):<24}{CYAN}│{NC}")
-            print(f"{CYAN}└──────────────────────────────────────────┘{NC}")
-            print(output)
-
-        is_error_printed = "Error" in output
-
-        # Verificar Resultados
-
-        if expected is None:
-            # CASO: ESPERAMOS ERROR (None)
-            if exception_occurred:
-                # Excepción capturada -> VAL ERROR
-                print_error(desc, "VAL ERROR", str(exception_occurred))
-            elif is_error_printed:
-                # Error impreso -> ERROR HANDLED (Variante válida de error)
-                print_error(
-                    desc,
-                    "ERROR MSG",
-                    "La función imprimió el mensaje de error esperado.",
-                )
-            else:
-                # Ni excepción ni mensaje de error -> FAIL
-                print(f" {YELLOW}•{NC} {desc:<70} [{RED}FAIL{NC}]")
-                print(
-                    f"    {RED}└── Se esperaba un error, pero la función continuó.{NC}"
-                )
-                all_ok = False
-
-        else:
-            # CASO: ESPERAMOS ÉXITO (True)
-            if exception_occurred:
-                print_error(desc, "CRASH", str(exception_occurred))
-                all_ok = False
-            elif is_error_printed:
-                print(f" {YELLOW}•{NC} {desc:<70} [{RED}FAIL{NC}]")
-                print(
-                    f"    {RED}└── La función imprimió un mensaje de error inesperado.{NC}"
-                )
-                all_ok = False
-            else:
-                # Verificación Dinámica de la Tabla
-                is_valid, msg = verify_printed_table(formula, output)
-
-                if is_valid:
-                    print(f" {YELLOW}•{NC} {desc:<70} [{GREEN} OK {NC}]")
-                else:
-                    print(f" {YELLOW}•{NC} {desc:<70} [{RED}FAIL{NC}]")
-                    print(f"    {RED}└── {msg}{NC}")
-                    all_ok = False
-
-    print_final(4, all_ok)
+    run_cases(
+        ex_num=4,
+        funcion_a_testear=print_truth_table,
+        casos=cases,
+    )
 
 
 if __name__ == "__main__":
