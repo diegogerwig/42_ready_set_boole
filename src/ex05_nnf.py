@@ -1,3 +1,6 @@
+import sys
+
+
 class Node:
     def __init__(self, value, left=None, right=None):
         self.value = value
@@ -48,9 +51,7 @@ def transform_nnf(node: Node, negated=False) -> Node:
         return Node(node.value + "!") if negated else node
 
     # 1. Caso Base B: Hojas temporales ya negadas (ej: 'A!')
-    # (Ocurre durante la expansión de = y ^)
     if len(node.value) == 2 and node.value[1] == "!":
-        # Si venimos negados, se cancela la negación !!A -> A
         return Node(node.value[0]) if negated else node
 
     # 2. Doble Negación explícita en el árbol: !!A -> A
@@ -98,8 +99,6 @@ def transform_nnf(node: Node, negated=False) -> Node:
         expansion = Node("|", term1, term2)
         if not negated:
             return expansion
-
-        # Si está negado, forzamos la transformación de la expansión
         dummy = Node("!", left=expansion)
         return transform_nnf(dummy, False)
 
@@ -114,7 +113,6 @@ def transform_nnf(node: Node, negated=False) -> Node:
         expansion = Node("|", term1, term2)
         if not negated:
             return expansion
-
         dummy = Node("!", left=expansion)
         return transform_nnf(dummy, False)
 
@@ -126,9 +124,35 @@ def negation_normal_form(formula: str) -> str:
     if not isinstance(formula, str):
         raise TypeError("El input debe ser un string.")
 
+    formula = formula.upper()
+
     try:
         ast = to_ast(formula)
         nnf_ast = transform_nnf(ast)
         return to_rpn(nnf_ast)
     except ValueError as e:
         raise ValueError(str(e))
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("❌ Error: Se esperaba 1 argumento.")
+        print('💡 Uso: python ex05_nnf.py "AB&!"')
+        sys.exit(1)
+
+    try:
+        formula = sys.argv[1]
+        res = negation_normal_form(formula)
+        print(f"✅ Resultado: NNF('{formula}') = {res}")
+
+    except ValueError as e:
+        print(f"❌ Error de Valor: {e}")
+        sys.exit(1)
+        
+    except TypeError as e:
+        print(f"❌ Error de Tipo: {e}")
+        sys.exit(1)
+        
+    except Exception as e:
+        print(f"💥 Error inesperado: {e}")
+        sys.exit(1)

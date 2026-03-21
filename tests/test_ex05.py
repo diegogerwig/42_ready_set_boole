@@ -1,122 +1,95 @@
+import io
+from contextlib import redirect_stdout
+
 from ex05_nnf import negation_normal_form
-from ex04_truth_table import eval_formula_with_vars
+from ex04_truth_table import truth_table
 from utils import *
 
 
-def check_nnf_logic(original, result):
-    """
-    Verifica 2 cosas:
-    1. Formato: '!' solo puede estar delante de variables (o constantes).
-    2. Lógica: La tabla de verdad de 'original' y 'result' debe ser idéntica.
-    """
-    # VERIFICAR FORMATO NNF
-    for i, char in enumerate(result):
-        if char == "!":
-            if i == 0:
-                return False, "Empieza por '!'"
-            prev = result[i - 1]
-            if not (prev.isalpha() or prev in "01"):
-                return False, f"'!' después de '{prev}' (no permitido)"
-
-    # VERIFICAR EQUIVALENCIA LÓGICA
-    # Extraemos variables de ambas fórmulas
-    vars_set = set(
-        [c for c in original if c.isalpha()] + [c for c in result if c.isalpha()]
-    )
-    variables = sorted(list(vars_set))
-    n = len(variables)
-
-    # Probamos todas las combinaciones (Tablas de verdad)
-    for i in range(1 << n):
-        values = {}
-        for j in range(n):
-            values[variables[j]] = bool((i >> j) & 1)
-
-        try:
-            res_orig = eval_formula_with_vars(original, values)
-            res_new = eval_formula_with_vars(result, values)
-            if res_orig != res_new:
-                return False, f"Difieren para {values}"
-        except Exception:
-            return False, "Error evaluando fórmula"
-
-    return True, "OK"
+def get_truth_table_string(formula: str) -> str:
+    f = io.StringIO()
+    with redirect_stdout(f):
+        truth_table(formula)
+    return f.getvalue()
 
 
 def run():
     print_header(5, "NEGATION NORMAL FORM (NNF)")
 
+    def nnf(formula):
+        res_nnf = negation_normal_form(formula)
+
+        tabla_orig = get_truth_table_string(formula)
+        tabla_nnf = get_truth_table_string(res_nnf)
+        tablas_iguales = (tabla_orig == tabla_nnf)
+
+        print(f"\n{CYAN}┌─────────────────────────────────────────────────┐{NC}")
+        print(f"{CYAN}│ Fórmula original : {YELLOW}{formula:<30}{CYAN}│{NC}")
+        print(f"{CYAN}│ NNF generada     : {YELLOW}{res_nnf:<30}{CYAN}│{NC}")
+        print(f"{CYAN}│ Tablas de verdad : {GREEN if tablas_iguales else RED}{'IDÉNTICAS ✓' if tablas_iguales else 'DIFERENTES ✗':<30}{CYAN}│{NC}")
+        print(f"{CYAN}└──────────────────────────────────────────────────┘{NC}")
+
+        if tablas_iguales:
+            print(tabla_orig.strip())
+            print(tabla_nnf.strip())
+        else:
+            print(f"{RED}--- Tabla Original ({formula}) ---{NC}")
+            print(tabla_orig.strip())
+            print(f"\n{RED}--- Tabla NNF Fallida ({res_nnf}) ---{NC}")
+            print(tabla_nnf.strip())
+            
+        print()
+
+        if not tablas_iguales:
+            return "FAIL: La lógica cambió (tablas diferentes)"
+
+        for i, char in enumerate(res_nnf):
+            if char == "!":
+                if i == 0 or not (res_nnf[i-1].isalpha() or res_nnf[i-1] in "01"):
+                    return f"FAIL: Símbolo '!' mal posicionado después de '{res_nnf[i-1]}'"
+
+        return res_nnf
+
     cases = [
-        #   (formula, expected)
-        #   expected = String exacto O True (para validación lógica automática)
-        ("A", "A"),
-        ("A!", "A!"),
-        ("AB&!", "A!B!|"),  # !(A & B) -> !A | !B
-        ("AB|!", "A!B!&"),  # !(A | B) -> !A & !B
-        ("AB>!", "AB!&"),  # !(A > B) -> A & !B
-        ("AB=!", "A!B!|AB|&"),  # !(A = B) -> (!A|!B) & (A|B) (XOR logic)
-        ("ABC||", True),
-        ("ABC||!", True),
-        ("ABC|&", True),
-        ("ABC&|", True),
-        ("ABC&|!", True),
-        ("ABC^^", True),
-        ("ABC>>", True),
-        # --- Casos de error ---
-        ("", None),  # Vacío
-        ("AB", None),  # Falta operador
-        ("&", None),  # Faltan operandos
-        ("A+", None),  # Carácter inválido
+        # (expected)
+        (("A",), "A"),
+        (("A!",), "A!"),
+        (("AB&!",), "A!B!|"),  # !(A & B) -> !A | !B
+        (("AB|!",), "A!B!&"),  # !(A | B) -> !A & !B
+        (("AB>!",), "AB!&"),   # !(A > B) -> A & !B
+        (("AB=!",), "A!B!|AB|&"),  # !(A = B) -> (!A|!B) & (A|B)
+        
+        # Validación Dinámica (Dejamos que decida De Morgan y comprobamos la tabla)
+        (("ABC||",), True),
+        (("ABC||!",), True),
+        (("ABC|&",), True),
+        (("ABC&|",), True),
+        (("ABC&|!",), True),
+        (("ABC^^",), True),
+        (("ABC>>",), True),
+        
+        # Casos de error
+        (("",), None),     
+        (("AB",), None),   
+        (("&",), None),    
+        (("A+",), None),   
     ]
 
-    all_ok = True
+    # Transformador invisible para el motor run_cases
+    cases_for_engine = []
+    for args, expected in cases:
+        if expected is True:
+            try:
+                expected = negation_normal_form(args[0])
+            except Exception:
+                pass
+        cases_for_engine.append((args, expected))
 
-    for case in cases:
-        try:
-            formula, expected = case
-            res = negation_normal_form(formula)
-            desc = f"NNF('{formula}')"
-
-            # Esperamos Error (None)
-            if expected is None:
-                content = f"{desc}: {res}"
-                print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{RED}FAIL{NC}]")
-                print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
-                all_ok = False
-
-            # Verificación Automática (True)
-            elif expected is True:
-                is_valid, msg = check_nnf_logic(formula, res)
-
-                disp_res = (res[:40] + "...") if len(res) > 40 else res
-                content = f"{desc}: {disp_res}"
-
-                if is_valid:
-                    print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{GREEN} OK {NC}]")
-                else:
-                    print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{RED}FAIL{NC}]")
-                    print(f"    {RED}└── {msg}{NC}")
-                    all_ok = False
-
-            # Comparación Exacta de String
-            else:
-                if not print_result(desc, res, expected):
-                    all_ok = False
-
-        except (ValueError, TypeError) as e:
-            desc = f"Formula '{formula}'"
-            if expected is None:
-                print_error(desc, "VAL ERROR", str(e))
-            else:
-                print_error(desc, "CRASH", str(e))
-                all_ok = False
-
-        except Exception as e:
-            desc = f"Formula '{formula}'"
-            print_error(desc, "UNKNOWN CRASH", str(e))
-            all_ok = False
-
-    print_final(5, all_ok)
+    run_cases(
+        ex_num=5,
+        funcion_a_testear=nnf,
+        casos=cases_for_engine,
+    )
 
 
 if __name__ == "__main__":
