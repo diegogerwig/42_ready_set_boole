@@ -15,7 +15,7 @@ NC='\033[0m'
 if [ "$#" -gt 2 ]; then
     echo -e "${B_RED}❌ Error: Demasiados argumentos ($#). Se esperaban máximo 2.${NC}"
     echo -e "${B_YELLOW}Uso correcto:${NC}"
-    echo -e "  bash setup.sh test      -> Crea venv, ejecuta TODOS los tests y sale."
+    echo -e "  bash setup.sh test      -> Crea venv, ejecuta TODOS los tests."
     echo -e "  bash setup.sh test x    -> Ejecuta SOLO el test x (admite del 0 al 11)."
     echo -e "  bash setup.sh venv      -> Crea venv y lo deja activado en la terminal."
     exit 1

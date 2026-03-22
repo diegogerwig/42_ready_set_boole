@@ -87,6 +87,7 @@ def run():
         return res_cnf
 
     user_cases = [
+        # ((formula), expected)
         (("A",), True),
         (("A!",), True),
         (("AB&!",), True),

@@ -53,7 +53,7 @@ def run():
         return res_nnf
 
     cases = [
-        # (expected)
+        # ((formula), expected)
         (("A",), "A"),
         (("A!",), "A!"),
         (("AB&!",), "A!B!|"),  # !(A & B) -> !A | !B
