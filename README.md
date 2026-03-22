@@ -329,7 +329,7 @@ La regla matemática de oro aquí es la cardinalidad (el tamaño). Si tu conjunt
 * Ejemplo: Si tienes 3 elementos, habrá $2^3 = 8$ subconjuntos.
 
 ### 🧠 Lógica
-El algoritmo iterativo es la forma más elegante y eficiente de resolver esto (con complejidad $O(2^n)$ real). 
+El algoritmo iterativo es la forma más eficiente de resolver esto (con complejidad $O(2^n)$ real). 
 
 En lugar de generar combinaciones complejas, usamos la lógica de **"duplicar y añadir"**:
 
