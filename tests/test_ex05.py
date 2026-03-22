@@ -31,10 +31,12 @@ def run():
 
         if tablas_iguales:
             print(tabla_orig.strip())
+            print()
             print(tabla_nnf.strip())
         else:
             print(f"{RED}--- Tabla Original ({formula}) ---{NC}")
             print(tabla_orig.strip())
+            print()
             print(f"\n{RED}--- Tabla NNF Fallida ({res_nnf}) ---{NC}")
             print(tabla_nnf.strip())
             
@@ -58,8 +60,6 @@ def run():
         (("AB|!",), "A!B!&"),  # !(A | B) -> !A & !B
         (("AB>!",), "AB!&"),   # !(A > B) -> A & !B
         (("AB=!",), "A!B!|AB|&"),  # !(A = B) -> (!A|!B) & (A|B)
-        
-        # Validación Dinámica (Dejamos que decida De Morgan y comprobamos la tabla)
         (("ABC||",), True),
         (("ABC||!",), True),
         (("ABC|&",), True),
@@ -75,7 +75,6 @@ def run():
         (("A+",), None),   
     ]
 
-    # Transformador invisible para el motor run_cases
     cases_for_engine = []
     for args, expected in cases:
         if expected is True:
