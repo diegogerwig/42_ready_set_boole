@@ -364,7 +364,7 @@ En este ejercicio, en lugar de evaluar si una variable es verdadera o falsa, eva
 * Un **True lógico** equivale al **Universo** (la unión de todos los elementos únicos introducidos).
 
 ### 🧠 Lógica
-Reutilizamos nuestro evaluador RPN del `EX03`, pero con algunas modificaciones clave:
+Utilizamos el método de RPN, pero con algunas modificaciones clave:
 
 1. **Definir el Universo:** Antes de empezar, iteramos por todas las listas de entrada y metemos todos los números en un conjunto (`set()`). Esto representará nuestro "True" absoluto.
 2. **Mapeo de Variables:** Las variables (`A`, `B`, `C`...) se asocian a las listas en el orden en el que se introducen (`A` es la lista 0, `B` la 1...).
