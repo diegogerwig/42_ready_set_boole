@@ -1,38 +1,57 @@
-def map_coords(x: int, y: int) -> float:
+import sys
+
+
+def map_to_curve(x: int, y: int) -> float:
     """
-    Mapea coordenadas (x, y) de 16-bits a un valor continuo en el rango [0, 1]
-    usando la Curva de Hilbert. El espacio total es de 2^16 x 2^16 = 2^32 celdas.
+    Mapea coordenadas 2D (x, y) a un único valor entre 0.0 y 1.0 (Z-order curve).
     """
     if not isinstance(x, int) or not isinstance(y, int):
-        raise TypeError("Las coordenadas x e y deben ser enteros.")
+        raise TypeError("Las coordenadas deben ser números enteros.")
+    if x < 0 or y < 0:
+        raise ValueError("Las coordenadas no pueden ser negativas.")
+    if x > 0xFFFF or y > 0xFFFF:
+        raise ValueError("Coordenadas demasiado grandes (máximo 65535).")
 
-    if x < 0 or x > 65535 or y < 0 or y > 65535:
-        raise ValueError(
-            "Las coordenadas deben estar en el rango [0, 65535] (16-bits)."
-        )
+    res_int = 0
+    # 1. Entrelazamos los 16 bits de 'x' e 'y' en un entero de 32 bits
+    for i in range(16):
+        bit_x = (x >> i) & 1
+        bit_y = (y >> i) & 1
 
-    d = 0
-    s = 1 << 15  # Empezamos con la mitad del tamaño máximo (32768)
+        res_int |= bit_x << (2 * i)
+        res_int |= bit_y << (2 * i + 1)
 
-    # Iteramos desde el bit más significativo hasta el bit 0
-    while s > 0:
-        # Verificamos en qué cuadrante de tamaño 's' caen las coordenadas actuales
-        rx = 1 if (x & s) > 0 else 0
-        ry = 1 if (y & s) > 0 else 0
+    # 2. Normalizamos el entero a un float entre 0.0 y 1.0
+    # El valor máximo posible con 32 bits es 0xFFFFFFFF (4294967295)
+    max_val = float(0xFFFFFFFF)
+    
+    return res_int / max_val
 
-        # Fórmula matemática de la curva de Hilbert para acumular distancia
-        d += s * s * ((3 * rx) ^ ry)
 
-        # Rotar y voltear el cuadrante si caemos en la región inferior
-        if ry == 0:
-            if rx == 1:
-                x = s - 1 - x
-                y = s - 1 - y
-            # Intercambiar x, y
-            x, y = y, x
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("❌ Error: Se esperaban 2 argumentos (x e y).")
+        print("💡 Uso: python ex10_curve.py 2 3")
+        sys.exit(1)
 
-        s //= 2
+    try:
+        x_arg = int(sys.argv[1])
+        y_arg = int(sys.argv[2])
+        
+        resultado = map_to_curve(x_arg, y_arg)
+        print(f"✅ Resultado: map_to_curve({x_arg}, {y_arg}) = {resultado:.10f}")
 
-    # Normalizamos el entero de 32 bits resultante a un float en [0.0, 1.0]
-    # Dividimos por el máximo valor posible (2^32 - 1)
-    return d / 4294967295
+    except ValueError as e:
+        if "invalid literal" in str(e):
+            print("❌ Error de Valor: Los argumentos deben ser números enteros.")
+        else:
+            print(f"❌ Error de Valor: {e}")
+        sys.exit(1)
+        
+    except TypeError as e:
+        print(f"❌ Error de Tipo: {e}")
+        sys.exit(1)
+        
+    except Exception as e:
+        print(f"💥 Error inesperado: {e}")
+        sys.exit(1)
