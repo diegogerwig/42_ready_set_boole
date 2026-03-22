@@ -1,143 +1,130 @@
+import io
+from contextlib import redirect_stdout
+
 from ex06_cnf import conjunctive_normal_form
 from ex05_nnf import to_ast
-from ex04_truth_table import eval_formula_with_vars
+from ex04_truth_table import truth_table
 from utils import *
 
 
-def check_cnf_logic(original, result):
-    """Verifica Formato NNF, Formato CNF y Equivalencia Lógica."""
+def get_truth_table_string(formula: str) -> str:
+    f = io.StringIO()
+    with redirect_stdout(f):
+        truth_table(formula)
+    return f.getvalue()
 
-    # 1. VERIFICAR FORMATO NNF ('!' solo tras variables)
-    for i, char in enumerate(result):
-        if char == "!":
-            if i == 0:
-                return False, "Empieza por '!'"
-            prev = result[i - 1]
-            if not (prev.isalpha() or prev in "01"):
-                return False, f"'!' después de '{prev}' (no permitido)"
 
-    # 2. VERIFICAR FORMATO CNF
-    # Regla: Ningún operador '&' puede estar debajo de un operador '|' en el AST.
-    try:
-        ast = to_ast(result)
+def check_cnf_structure(ast_node):
+    """
+    Verifica la regla CNF: Ningún operador '&' puede estar debajo de un '|'.
+    """
+    def check_no_and(node):
+        if not node:
+            return True
+        if node.value == "&":
+            return False
+        return check_no_and(node.left) and check_no_and(node.right)
 
-        def check_no_and(node):
-            if not node:
-                return True
-            if node.value == "&":
+    def check_cnf(node):
+        if not node:
+            return True
+        if node.value == "|":
+            if not check_no_and(node.left) or not check_no_and(node.right):
                 return False
-            return check_no_and(node.left) and check_no_and(node.right)
+        return check_cnf(node.left) and check_cnf(node.right)
 
-        def check_cnf(node):
-            if not node:
-                return True
-            if node.value == "|":
-                if not check_no_and(node.left) or not check_no_and(node.right):
-                    return False
-            return check_cnf(node.left) and check_cnf(node.right)
-
-        if not check_cnf(ast):
-            return False, "Regla CNF rota (Hay un '&' operando dentro de un '|')"
-
-    except Exception as e:
-        return False, f"Error parseando resultado CNF: {e}"
-
-    # 3. VERIFICAR EQUIVALENCIA LÓGICA (Tabla de verdad)
-    vars_set = set(
-        [c for c in original if c.isalpha()] + [c for c in result if c.isalpha()]
-    )
-    variables = sorted(list(vars_set))
-    n = len(variables)
-
-    for i in range(1 << n):
-        values = {}
-        for j in range(n):
-            values[variables[j]] = bool((i >> j) & 1)
-
-        try:
-            res_orig = eval_formula_with_vars(original, values)
-            res_new = eval_formula_with_vars(result, values)
-            if res_orig != res_new:
-                return False, f"Lógica rota para {values}"
-        except Exception:
-            return False, "Error evaluando fórmula internamente"
-
-    return True, "OK"
+    return check_cnf(ast_node)
 
 
 def run():
     print_header(6, "CONJUNCTIVE NORMAL FORM (CNF)")
 
-    cases = [
-        #   (formula, expected value)
-        ("A", True),
-        ("A!", True),
-        ("AB&!", True),
-        ("AB|!", True),
-        ("AB>!", True),
-        ("AB=!", True),
-        ("ABC||", True),
-        ("ABC||!", True),
-        ("ABC|&", True),
-        ("ABC&|", True),
-        ("ABC&|!", True),
-        ("ABC^^", True),
-        ("ABC>>", True),
-        # --- Casos de error ---
-        ("", None),
-        ("AB", None),
-        ("&", None),
-        ("A+", None),
+    def wrapper_cnf(formula):
+        res_cnf = conjunctive_normal_form(formula)
+
+        tabla_orig = get_truth_table_string(formula)
+        tabla_cnf = get_truth_table_string(res_cnf)
+        tablas_iguales = (tabla_orig == tabla_cnf)
+
+        print(f"\n{CYAN}┌─────────────────────────────────────────────────┐{NC}")
+        print(f"{CYAN}│ Fórmula original : {YELLOW}{formula:<30}{CYAN}│{NC}")
+        print(f"{CYAN}│ CNF generada     : {YELLOW}{res_cnf:<30}{CYAN}│{NC}")
+        print(f"{CYAN}│ Tablas de verdad : {GREEN if tablas_iguales else RED}{'IDÉNTICAS ✓' if tablas_iguales else 'DIFERENTES ✗':<30}{CYAN}│{NC}")
+        print(f"{CYAN}└─────────────────────────────────────────────────┘{NC}")
+
+        if tablas_iguales:
+            print(tabla_orig.strip())
+            print()
+            print(tabla_cnf.strip())
+        else:
+            print(f"{RED}--- Tabla Original ({formula}) ---{NC}")
+            print(tabla_orig.strip())
+            Print()
+            print(f"\n{RED}--- Tabla CNF Fallida ({res_cnf}) ---{NC}")
+            print(tabla_cnf.strip())
+            
+        print() 
+
+        # 4. Validaciones estrictas
+        if not tablas_iguales:
+            return "FAIL: La lógica cambió (tablas diferentes)"
+
+        # 4.1 Validar posiciones de '!'
+        for i, char in enumerate(res_cnf):
+            if char == "!":
+                if i == 0 or not (res_cnf[i-1].isalpha() or res_cnf[i-1] in "01"):
+                    return f"FAIL: Símbolo '!' mal posicionado después de '{res_cnf[i-1]}'"
+
+        # 4.2 Validar estructura de árbol CNF
+        try:
+            ast_res = to_ast(res_cnf)
+            if not check_cnf_structure(ast_res):
+                return "FAIL: Regla CNF rota (Hay un '&' operando dentro de un '|')"
+        except Exception as e:
+            return f"FAIL: Error parseando AST del resultado: {e}"
+
+        # 5. Devolvemos la fórmula para que el motor run_cases haga el match de strings
+        return res_cnf
+
+    user_cases = [
+        # Formato: ((formula,), esperado)
+        (("A",), True),
+        (("A!",), True),
+        (("AB&!",), True),
+        (("AB|!",), True),
+        (("AB>!",), True),
+        (("AB=!",), True),
+        (("ABC||",), True),
+        (("ABC||!",), True),
+        (("ABC|&",), True),
+        (("ABC&|",), True),
+        (("ABC&|!",), True),
+        (("ABC^^",), True),
+        (("ABC>>",), True),
+        
+        # Casos de error 
+        (("",), None),
+        (("AB",), None),
+        (("&",), None),
+        (("A+",), None),
     ]
 
-    all_ok = True
+    # Transformador invisible para el motor run_cases
+    cases_for_engine = []
+    for args, expected in user_cases:
+        if expected is True:
+            try:
+                expected = conjunctive_normal_form(args[0])
+            except Exception:
+                pass
+        cases_for_engine.append((args, expected))
 
-    for case in cases:
-        try:
-            formula, expected = case
-            res = conjunctive_normal_form(formula)
-            desc = f"CNF('{formula}')"
-
-            # Esperamos Error (None)
-            if expected is None:
-                content = f"{desc}: {res}"
-                print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{RED}FAIL{NC}]")
-                print(f"    {RED}└── Se esperaba un error, pero devolvió: {res}{NC}")
-                all_ok = False
-
-            # Verificación Automática (True)
-            elif expected is True:
-                is_valid, msg = check_cnf_logic(formula, res)
-
-                disp_res = (res[:40] + "...") if len(res) > 40 else res
-                content = f"{desc}: {disp_res}"
-
-                if is_valid:
-                    print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{GREEN} OK {NC}]")
-                else:
-                    print(f" {YELLOW}•{NC} {content:<{PAD_LENGTH}} [{RED}FAIL{NC}]")
-                    print(f"    {RED}└── {msg}{NC}")
-                    all_ok = False
-
-            # Comparación Exacta de String
-            else:
-                if not print_result(desc, res, expected):
-                    all_ok = False
-
-        except (ValueError, TypeError) as e:
-            desc = f"Formula '{formula}'"
-            if expected is None:
-                print_error(desc, "VAL ERROR", str(e))
-            else:
-                print_error(desc, "CRASH", str(e))
-                all_ok = False
-
-        except Exception as e:
-            desc = f"Formula '{formula}'"
-            print_error(desc, "UNKNOWN CRASH", str(e))
-            all_ok = False
-
-    print_final(6, all_ok)
+    run_cases(
+        ex_num=6,
+        funcion_a_testear=wrapper_cnf,
+        casos=cases_for_engine,
+        custom_desc_func=lambda *args: f"CNF de '{args[0]}'"
+    )
 
 
 if __name__ == "__main__":
