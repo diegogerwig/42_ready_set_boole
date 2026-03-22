@@ -12,7 +12,6 @@ def eval_set(formula: str, sets: list[list[int]]) -> list[int]:
     if not isinstance(sets, list):
         raise TypeError("Los sets deben ser una lista de listas.")
 
-    # Convertimos a mayúsculas para aceptar inputs amigables
     formula = formula.upper()
 
     if not formula:
@@ -71,13 +70,12 @@ def eval_set(formula: str, sets: list[list[int]]) -> list[int]:
     if len(stack) != 1:
         raise ValueError("Fórmula inválida (sobran operandos o faltan operadores)")
 
-    # Devolvemos lista ordenada para facilitar la comparación y legibilidad
     return sorted(list(stack[0]))
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("❌ Error: Se esperaba al menos 1 argumento.")
+    if len(sys.argv) < 3:
+        print("❌ Error: Se esperaba al menos 2 argumentos.")
         print('💡 Uso: python ex09_eval_set.py "AB&" "[0, 1, 2]" "[2, 3, 4]"')
         sys.exit(1)
 
