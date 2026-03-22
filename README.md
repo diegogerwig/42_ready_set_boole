@@ -292,7 +292,9 @@ Para implementarlo utilizamos un enfoque **puramente funcional**:
 ## EX07 - SAT (Satisfiability)
 
 ### 💡 Descripción
-El problema de satisfacibilidad booleana (SAT) es la clave de todos los problemas en Ciencias de la Computación (es el primer problema demostrado como **NP-Completo**). 
+El problema de satisfacibilidad booleana (SAT) es uno de los pilares fundamentales de las Ciencias de la Computación. Fue el primer problema demostrado como NP-Completo.
+
+Un problema NP-Completo tiene dos características: es muy difícil (y lento) encontrar la solución desde cero, pero es rapidísimo comprobar si una solución dada es correcta (es difícil montar un puzzle de 10.000 piezas, pero es fácil ver si está bien montado). El SAT actúa como una verdadera "llave maestra": si algún día alguien lograra crear un algoritmo capaz de resolver el SAT de forma rápida, podríamos usar esa misma lógica para resolver instantáneamente miles de los problemas más complejos del mundo.
 
 La pregunta que responde es simple: **¿Existe al menos una combinación de entradas (`True`/`False`) que haga que esta fórmula devuelva `True`?**
 * Si existe, la fórmula es **Satisfacible** (`True`).
