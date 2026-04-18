@@ -206,10 +206,7 @@ else
                     # Si el usuario introdujo argumentos, ejecutamos el código fuente de src/
                     if [[ -n "$SRC_FILE" && -f "$SRC_FILE" ]]; then
                         echo -e "${B_BLUE}--- Ejecución manual: python3 $SRC_FILE $user_input ---${NC}"
-                        
-                        # AQUÍ ESTÁ LA MAGIA DEL EVAL
-                        eval python3 "$SRC_FILE" $user_input
-                        
+                        python3 "$SRC_FILE" $user_input
                         echo -e "${B_BLUE}---------------------------------------------------------${NC}"
                     else
                         echo -e "${B_RED}❌ No se encontró un archivo fuente ejecutable para $PREFIX en src/${NC}"

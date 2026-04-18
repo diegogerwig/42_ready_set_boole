@@ -22,11 +22,6 @@ def truth_table(formula: str):
         if "A" <= char <= "Z" and char not in variables:
             variables.append(char)
 
-    dummy_formula = formula
-    for v in variables:
-        dummy_formula = dummy_formula.replace(v, "0")
-    eval_formula(dummy_formula)
-
     if not variables:
         res = eval_formula(formula)
         print("|   |")
@@ -35,10 +30,7 @@ def truth_table(formula: str):
         return
 
     header = "| " + " | ".join(variables) + " |   |"
-    
     separator = "|" + "|".join(["---"] * (len(variables) + 1)) + "|"
-    print(header)
-    print(separator)
 
     n_vars = len(variables)
     total_filas = 1 << n_vars 
@@ -53,6 +45,10 @@ def truth_table(formula: str):
             current_formula = current_formula.replace(var_name, str(bit))
 
         resultado = eval_formula(current_formula)
+
+        if i == 0:
+            print(header)
+            print(separator)
 
         str_bits = " | ".join(str(b) for b in bits)
         print(f"| {str_bits} | {int(resultado)} |")
