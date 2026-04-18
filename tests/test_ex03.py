@@ -38,6 +38,7 @@ def run():
         (("11"), None),      # Sobra operando (falta operador)
         (("12&"), None),     # Carácter inválido ('2')
         (("ABC"), None),     # Basura
+        (("01 &"), None),    # Sobra espacio
     ]
 
     run_cases(
