@@ -44,7 +44,6 @@ Tabla de referencia rápida con las operaciones bit a bit (*bitwise*) fundamenta
 | **AND** | `&` | `0 & 0 = 0`<br>`0 & 1 = 0`<br>`1 & 0 = 0`<br>`1 & 1 = 1` | Detectar acarreos / Intersección. |
 | **OR** | `\|` | `0 \| 0 = 0`<br>`0 \| 1 = 1`<br>`1 \| 0 = 1`<br>`1 \| 1 = 1` | Juntar bits / Unión booleana. |
 | **XOR** | `^` | `0 ^ 0 = 0`<br>`0 ^ 1 = 1`<br>`1 ^ 0 = 1`<br>`1 ^ 1 = 0` | Suma sin acarreo / Diferencia simétrica. |
-| **NOT** | `~` | `~0 = 1`<br>`~1 = 0` | Complemento lógico (Inversión). |
 | **L-SHIFT**| `<< n` | `001 << 1 = 010`<br>`010 << 1 = 100` | Desplazar izquierda (Multiplicar por $2^n$). |
 | **R-SHIFT**| `>> n` | `100 >> 1 = 010`<br>`010 >> 1 = 001` | Desplazar derecha (Dividir entre $2^n$). |
 
