@@ -37,16 +37,16 @@ python3 src/ex03_eval.py "10&1|"
 
 ## ⚡ Guía Rápida de Operadores a Nivel de Bits
 
-Antes de sumergirnos en el código, aquí tienes una tabla de referencia rápida con las operaciones bit a bit (*bitwise*) fundamentales que construyen la lógica de todos estos ejercicios:
+Tabla de referencia rápida con las operaciones bit a bit (*bitwise*) fundamentales:
 
-| Operador | Símbolo | Regla Básica | Ejemplo Binario | Resultado | Efecto Matemático / Lógico |
-| :--- | :---: | :--- | :--- | :--- | :--- |
-| **AND** | `&` | Devuelve `1` solo si **ambos** bits son `1`. | `1010 & 1100` | `1000` | Detectar acarreos / Intersección. |
-| **OR** | `|` | Devuelve `1` si **al menos un** bit es `1`. | `1010 \| 1100` | `1110` | Juntar bits / Unión booleana. |
-| **XOR** | `^` | Devuelve `1` solo si los bits son **diferentes**. | `1010 ^ 1100` | `0110` | Suma sin acarreo / Diferencia simétrica. |
-| **NOT** | `~` | **Invierte** todos los bits (`0` a `1`, `1` a `0`). | `~1010` | `0101` | Complemento lógico. |
-| **L-SHIFT**| `<< n` | Desplaza los bits a la **izquierda** `n` veces. | `0011 << 1` | `0110` | Multiplicar por $2^n$. |
-| **R-SHIFT**| `>> n` | Desplaza los bits a la **derecha** `n` veces. | `0110 >> 1` | `0011` | Dividir entre $2^n$. |
+| Operador | Símbolo | Combinaciones Básicas (Bits) | Efecto Matemático / Lógico |
+| :--- | :---: | :--- | :--- |
+| **AND** | `&` | `0 & 0 = 0`<br>`0 & 1 = 0`<br>`1 & 0 = 0`<br>`1 & 1 = 1` | Detectar acarreos / Intersección. |
+| **OR** | `\|` | `0 \| 0 = 0`<br>`0 \| 1 = 1`<br>`1 \| 0 = 1`<br>`1 \| 1 = 1` | Juntar bits / Unión booleana. |
+| **XOR** | `^` | `0 ^ 0 = 0`<br>`0 ^ 1 = 1`<br>`1 ^ 0 = 1`<br>`1 ^ 1 = 0` | Suma sin acarreo / Diferencia simétrica. |
+| **NOT** | `~` | `~0 = 1`<br>`~1 = 0` | Complemento lógico (Inversión). |
+| **L-SHIFT**| `<< n` | `001 << 1 = 010`<br>`010 << 1 = 100` | Desplazar izquierda (Multiplicar por $2^n$). |
+| **R-SHIFT**| `>> n` | `100 >> 1 = 010`<br>`010 >> 1 = 001` | Desplazar derecha (Dividir entre $2^n$). |
 
 ---
 ---
