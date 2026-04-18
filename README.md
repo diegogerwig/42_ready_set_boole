@@ -34,6 +34,21 @@ python3 src/ex03_eval.py "10&1|"
 ```
 
 ---
+
+## ⚡ Guía Rápida de Operadores a Nivel de Bits
+
+Antes de sumergirnos en el código, aquí tienes una tabla de referencia rápida con las operaciones bit a bit (*bitwise*) fundamentales que construyen la lógica de todos estos ejercicios:
+
+| Operador | Símbolo | Regla Básica | Ejemplo Binario | Resultado | Efecto Matemático / Lógico |
+| :--- | :---: | :--- | :--- | :--- | :--- |
+| **AND** | `&` | Devuelve `1` solo si **ambos** bits son `1`. | `1010 & 1100` | `1000` | Detectar acarreos / Intersección. |
+| **OR** | `|` | Devuelve `1` si **al menos un** bit es `1`. | `1010 \| 1100` | `1110` | Juntar bits / Unión booleana. |
+| **XOR** | `^` | Devuelve `1` solo si los bits son **diferentes**. | `1010 ^ 1100` | `0110` | Suma sin acarreo / Diferencia simétrica. |
+| **NOT** | `~` | **Invierte** todos los bits (`0` a `1`, `1` a `0`). | `~1010` | `0101` | Complemento lógico. |
+| **L-SHIFT**| `<< n` | Desplaza los bits a la **izquierda** `n` veces. | `0011 << 1` | `0110` | Multiplicar por $2^n$. |
+| **R-SHIFT**| `>> n` | Desplaza los bits a la **derecha** `n` veces. | `0110 >> 1` | `0011` | Dividir entre $2^n$. |
+
+---
 ---
 
 ## EX00 - Adder (Sumar a nivel de bits)
