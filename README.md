@@ -216,7 +216,7 @@ Al final, si la fórmula es correcta, **solo debe quedar un plato** en la pila. 
 | **`0`** | `PUSH` de `False` | `[` `True`, `False` `]` |
 | **`&`** | `POP` de dos (`True`, `False`) → Calcula `True & False` = `False` → `PUSH` de `False` | `[` `False` `]` |
 | **`1`** | `PUSH` de `True` | `[` `False`, `True` `]` |
-| **`\|`** | `POP` de dos (`False`, `True`) → Calcula `False | True` = `True` → `PUSH` de `True` | `[` `True` `]` |
+| **`\|`** | `POP` de dos (`False`, `True`) → Calcula `False &#124; True` = `True` → `PUSH` de `True` | `[` `True` `]` |
 
 **Resultado Final:** `True`
 
