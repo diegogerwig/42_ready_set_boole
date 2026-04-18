@@ -210,15 +210,15 @@ Al final, si la fórmula es correcta, **solo debe quedar un plato** en la pila. 
 
 ### 📊 Ejemplo: `10&1|` (Equivale a `(1 AND 0) OR 1`)
 
-| Carácter | Acción | Estado de la Pila `[]` |
-| :--- | :--- | :--- |
-| **1** | Empuja True | `[True]` |
-| **0** | Empuja False | `[True, False]` |
-| **&** | Saca dos (`T`, `F`) -> Calcula `T & F` = `F` -> Empuja | `[False]` |
-| **1** | Empuja True | `[False, True]` |
-| **\|** | Saca dos (`F`, `T`) -> Calcula `F \| T` = `T` -> Empuja | `[True]` |
+| Carácter | Acción | STACK |
+| :---: | :--- | :--- |
+| **`1`** | `PUSH` de `True` | `[` `True` `]` |
+| **`0`** | `PUSH` de `False` | `[` `True`, `False` `]` |
+| **`&`** | `POP` de dos (`True`, `False`) → Calcula `True & False` = `False` → `PUSH` de `False` | `[` `False` `]` |
+| **`1`** | `PUSH` de `True` | `[` `False`, `True` `]` |
+| **`\|`** | `POP` de dos (`False`, `True`) → Calcula `False | True` = `True` → `PUSH` de `True` | `[` `True` `]` |
 
-**Resultado Final:** `True`.
+**Resultado Final:** `True`
 
 ---
 ---
