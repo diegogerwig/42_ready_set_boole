@@ -272,12 +272,12 @@ Dado que modificar una cadena RPN directamente con expresiones regulares es frá
 ### 📖 Reglas Estrictas de Traducción Matemática
 El algoritmo se basa en un diccionario estricto de equivalencias lógicas que el árbol aplica automáticamente:
 
-**Fase 2: Traducción de Operadores Complejos**
+**Traducción de Operadores Complejos**
 * **Implicación (`>`):** `A > B` ➔ <code>!A &#124; B</code>
 * **Equivalencia (`=`):** `A = B` ➔ <code>(A & B) &#124; (!A & !B)</code>
 * **XOR (`^`):** `A ^ B` ➔ <code>(!A & B) &#124; (A & !B)</code>
 
-**Fase 3: Leyes de De Morgan y Negación**
+**Leyes de De Morgan y Negación**
 * **Inversión de AND:** `!(A & B)` ➔ <code>!A &#124; !B</code>
 * **Inversión de OR:** <code>!(A &#124; B)</code> ➔ `!A & !B`
 * **Doble Negación:** `!!A` ➔ `A`
