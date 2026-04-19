@@ -12,7 +12,7 @@ def to_ast(formula: str) -> Node:
     """Convierte una fórmula RPN en un Árbol de Sintaxis Abstracta (AST)."""
     stack = []
     for char in formula:
-        if char.isalpha() or char in "01":
+        if char.isalpha():
             stack.append(Node(char))
         elif char == "!":
             if not stack:
@@ -43,80 +43,67 @@ def to_rpn(node: Node) -> str:
     return to_rpn(node.left) + to_rpn(node.right) + node.value
 
 
-def transform_nnf(node: Node, negated=False) -> Node:
-    """Aplica las leyes de De Morgan para bajar la negación a las hojas."""
+def traducir_operadores(node: Node) -> Node:
+    """Paso 1: Convierte >, =, ^ en combinaciones de &, |, !"""
+    if not node: 
+        return None
+        
+    # Si es una hoja (letra), la devolvemos tal cual
+    if not node.left and not node.right: 
+        return node
 
-    # 1. Caso Base A: Hojas normales (Variables/Constantes como 'A')
-    if len(node.value) == 1 and (node.value.isalpha() or node.value in "01"):
-        return Node(node.value + "!") if negated else node
+    # Primero traducimos las ramas de abajo (Post-order)
+    izq = traducir_operadores(node.left)
+    der = traducir_operadores(node.right)
 
-    # 1. Caso Base B: Hojas temporales ya negadas (ej: 'A!')
-    if len(node.value) == 2 and node.value[1] == "!":
-        return Node(node.value[0]) if negated else node
+    # Si ya es un operador básico, lo dejamos igual
+    if node.value in "!&|":
+        return Node(node.value, izq, der)
 
-    # 2. Doble Negación explícita en el árbol: !!A -> A
+    # Traducciones directas de los libros de matemáticas:
+    # A > B  ==  !A | B
+    if node.value == ">":
+        return Node("|", Node("!", left=izq), der)
+
+    # A = B  ==  (A & B) | (!A & !B)
+    if node.value == "=":
+        parte1 = Node("&", izq, der)
+        parte2 = Node("&", Node("!", left=izq), Node("!", left=der))
+        return Node("|", parte1, parte2)
+
+    # A ^ B  ==  (!A & B) | (A & !B)
+    if node.value == "^":
+        parte1 = Node("&", Node("!", left=izq), der)
+        parte2 = Node("&", izq, Node("!", left=der))
+        return Node("|", parte1, parte2)
+
+
+def aplicar_de_morgan(node: Node, negated=False) -> Node:
+    """Paso 2: Empuja las negaciones hacia las hojas."""
+    if not node: 
+        return None
+
+    # 1. Si es una hoja (letra)
+    if not node.left and not node.right:
+        if negated:
+            return Node(node.value + "!") # Le pegamos la negación
+        return node
+
+    # 2. Doble negación (!!A -> A)
     if node.value == "!":
-        return transform_nnf(node.left, not negated)
+        return aplicar_de_morgan(node.left, not negated)
 
     # 3. AND
     if node.value == "&":
-        if negated:
-            return Node(
-                "|", transform_nnf(node.left, True), transform_nnf(node.right, True)
-            )
-        return Node(
-            "&", transform_nnf(node.left, False), transform_nnf(node.right, False)
-        )
+        if negated: # !(A & B) -> !A | !B
+            return Node("|", aplicar_de_morgan(node.left, True), aplicar_de_morgan(node.right, True))
+        return Node("&", aplicar_de_morgan(node.left, False), aplicar_de_morgan(node.right, False))
 
     # 4. OR
     if node.value == "|":
-        if negated:
-            return Node(
-                "&", transform_nnf(node.left, True), transform_nnf(node.right, True)
-            )
-        return Node(
-            "|", transform_nnf(node.left, False), transform_nnf(node.right, False)
-        )
-
-    # 5. Implicación: A > B -> !A | B
-    if node.value == ">":
-        if not negated:
-            return Node(
-                "|", transform_nnf(node.left, True), transform_nnf(node.right, False)
-            )
-        return Node(
-            "&", transform_nnf(node.left, False), transform_nnf(node.right, True)
-        )
-
-    # 6. Equivalencia: A = B -> (A & B) | (!A & !B)
-    if node.value == "=":
-        term1 = Node(
-            "&", transform_nnf(node.left, False), transform_nnf(node.right, False)
-        )
-        term2 = Node(
-            "&", transform_nnf(node.left, True), transform_nnf(node.right, True)
-        )
-        expansion = Node("|", term1, term2)
-        if not negated:
-            return expansion
-        dummy = Node("!", left=expansion)
-        return transform_nnf(dummy, False)
-
-    # 7. XOR: A ^ B -> (!A & B) | (A & !B)
-    if node.value == "^":
-        term1 = Node(
-            "&", transform_nnf(node.left, True), transform_nnf(node.right, False)
-        )
-        term2 = Node(
-            "&", transform_nnf(node.left, False), transform_nnf(node.right, True)
-        )
-        expansion = Node("|", term1, term2)
-        if not negated:
-            return expansion
-        dummy = Node("!", left=expansion)
-        return transform_nnf(dummy, False)
-
-    return node
+        if negated: # !(A | B) -> !A & !B
+            return Node("&", aplicar_de_morgan(node.left, True), aplicar_de_morgan(node.right, True))
+        return Node("|", aplicar_de_morgan(node.left, False), aplicar_de_morgan(node.right, False))
 
 
 def negation_normal_form(formula: str) -> str:
@@ -127,12 +114,18 @@ def negation_normal_form(formula: str) -> str:
     formula = formula.upper()
 
     try:
-        ast = to_ast(formula)
-        nnf_ast = transform_nnf(ast)
-        return to_rpn(nnf_ast)
+        arbol_original = to_ast(formula)
+        
+        # 1. Limpiamos el árbol de operadores complejos
+        arbol_traducido = traducir_operadores(arbol_original)
+        
+        # 2. Aplicamos De Morgan para bajar las negaciones
+        arbol_nnf = aplicar_de_morgan(arbol_traducido, False)
+        
+        return to_rpn(arbol_nnf)
+        
     except ValueError as e:
         raise ValueError(str(e))
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

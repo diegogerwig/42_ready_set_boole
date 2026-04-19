@@ -11,7 +11,6 @@ NC='\033[0m'
 # 0. LECTURA DE ARGUMENTOS
 # ==========================================
 
-# Validación 1: No admitir más de 2 argumentos
 if [ "$#" -gt 2 ]; then
     echo -e "${B_RED}❌ Error: Demasiados argumentos ($#). Se esperaban máximo 2.${NC}"
     echo -e "${B_YELLOW}Uso correcto:${NC}"
@@ -26,7 +25,6 @@ fi
 MODE=${1:-test} # Si no se pasa argumento, por defecto se ejecuta en modo "test"
 SPECIFIC_TEST=$2 # Si se pasa un segundo argumento, filtraremos por ese número de test
 
-# Validación 2: Modos permitidos
 if [[ "$MODE" != "test" && "$MODE" != "venv" && "$MODE" != "clean" ]]; then
     echo -e "${B_RED}❌ Argumento inválido: $MODE${NC}"
     echo -e "${B_YELLOW}Uso correcto:${NC}"
@@ -38,7 +36,6 @@ if [[ "$MODE" != "test" && "$MODE" != "venv" && "$MODE" != "clean" ]]; then
     exit 1
 fi
 
-# Validación 3: Número de test estricto (solo de 0 a 11)
 if [[ -n "$SPECIFIC_TEST" ]]; then
     if ! [[ "$SPECIFIC_TEST" =~ ^[0-9]+$ ]] || [ "$SPECIFIC_TEST" -lt 0 ] || [ "$SPECIFIC_TEST" -gt 11 ]; then
         echo -e "${B_RED}❌ Error: El número de test debe ser un valor numérico entre 0 y 11.${NC}"
@@ -49,11 +46,11 @@ fi
 # ==========================================
 # 1. DETECCIÓN DE ENTORNO Y RUTA DEL VENV
 # ==========================================
+
 OS_NAME=$(uname -s)
 KERNEL_RELEASE=$(uname -r)
 USER_HOME=$HOME
 
-# Lógica para decidir dónde crear el entorno
 if [[ "$KERNEL_RELEASE" == *"Microsoft"* || "$KERNEL_RELEASE" == *"WSL"* ]]; then
     TARGET_DIR="$USER_HOME"
     VENV_NAME=".ready_set_boole_venv"
@@ -80,6 +77,7 @@ echo -e   "${B_BLUE}╚═══════════════════
 # ==========================================
 # 2. MODO CLEAN (LIMPIEZA EXPRESA Y SALIDA)
 # ==========================================
+
 if [[ "$MODE" == "clean" ]]; then
     echo -e "\n${B_CYAN}⚙️  Modo seleccionado: ${NC}clean"
     echo -ne "${B_CYAN}🧹 Limpiando cachés...${NC}"
@@ -97,7 +95,6 @@ if [[ "$MODE" == "clean" ]]; then
     exit 0
 fi
 
-# (Si no estamos en modo clean, continuamos con el flujo normal)
 echo -e "\n${B_CYAN}📂 Ruta del entorno: ${NC}$VENV_PATH"
 echo -e "${B_CYAN}⚙️  Modo seleccionado: ${NC}$MODE"
 if [[ -n "$SPECIFIC_TEST" ]]; then
@@ -185,7 +182,6 @@ else
     export PYTHONPATH=$PYTHONPATH:$(pwd)/src
 
     if [ -d "tests" ]; then
-        # Lógica de filtrado
         if [[ -n "$SPECIFIC_TEST" ]]; then
             FORMATTED_NUM=$(printf "%02d" "$SPECIFIC_TEST")
             TEST_FILES=$(ls tests/test_ex${FORMATTED_NUM}*.py 2>/dev/null)
@@ -199,7 +195,9 @@ else
 
         for file in $TEST_FILES; do
             
-            echo -e "\n${B_CYAN}▶️  Ejecutando: $(basename "$file")${NC}"
+            echo -e "\n${B_BLUE}────────────────────────────────────────────────────────────────${NC}"
+            echo -e "${B_YELLOW} 🚀 EJECUTANDO ARCHIVO: ${B_CYAN}$(basename "$file")${NC}"
+            echo -e "${B_BLUE}────────────────────────────────────────────────────────────────${NC}"
             python3 "$file"
             
             if [ $? -eq 0 ]; then
@@ -209,27 +207,28 @@ else
                 ALL_TESTS_PASSED=false
             fi
 
-            # --- BUCLE INTERACTIVO PARA INTRODUCIR CASOS POR TERMINAL ---
-            # Extraemos el prefijo del test (ej: test_ex00.py -> ex00)
             PREFIX=$(basename "$file" | grep -o 'ex[0-9]\{2\}')
-            # Buscamos el archivo fuente correspondiente en src/ (ej: src/ex00_adder.py)
             SRC_FILE=$(ls src/${PREFIX}_*.py 2>/dev/null | head -n 1)
 
             while true; do
-                echo -e "\n${B_CYAN}⌛ Esperando confirmación...${NC}"
-                echo -e "${B_YELLOW}Presiona [ENTER] para continuar al siguiente test, o introduce argumentos para probar manualmente:${NC}"
+                echo -e "\n${B_CYAN}╭────────────────────────────────────────────────────────╮${NC}"
+                echo -e "${B_CYAN}│ ⌛ ESPERANDO CONFIRMACIÓN...                           │${NC}"
+                echo -e "${B_CYAN}╰────────────────────────────────────────────────────────╯${NC}"
+                echo -e "${B_YELLOW} ↳ Presiona [ENTER] para avanzar al siguiente test.${NC}"
+                echo -e "${B_YELLOW} ↳ Escribe una fórmula para probar a mano.${NC}"
+                echo -e "${B_RED}   ⚠️  OBLIGATORIO: Usa comillas para &, |, > (ej: 'AB&')${NC}\n"
+                
+                echo -ne "${B_GREEN} > ${NC}"
                 read -r user_input
 
-                # Si el usuario solo pulsó Enter, salimos del bucle interactivo y pasamos al siguiente test
                 if [[ -z "$user_input" ]]; then
                     break
                 else
-                    # Si el usuario introdujo argumentos, ejecutamos el código fuente de src/
                     if [[ -n "$SRC_FILE" && -f "$SRC_FILE" ]]; then
                         echo -e "${B_BLUE}--- Ejecución manual: python3 $SRC_FILE $user_input ---${NC}"
                         
-                        # Usamos eval para que respete las comillas del input
                         eval python3 "$SRC_FILE" $user_input
+                        # python3 "$SRC_FILE" $user_input
                         
                         echo -e "${B_BLUE}---------------------------------------------------------${NC}"
                     else
@@ -243,9 +242,10 @@ else
         echo -e "${B_RED}❌ Error: No existe el directorio 'tests/'${NC}"
     fi
 
-    # ==========================================
-    # 5. RESUMEN FINAL
-    # ==========================================
+# ==========================================
+# 5. RESUMEN FINAL
+# ==========================================
+
     echo -e "\n${B_BLUE}╔═══════════════════════════════════╗${NC}"
     echo -e "${B_BLUE}║          RESUMEN FINAL            ║${NC}"
     echo -e "${B_BLUE}╚═══════════════════════════════════╝${NC}\n"

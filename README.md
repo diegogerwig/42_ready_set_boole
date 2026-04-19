@@ -268,7 +268,7 @@ Dado que modificar una cadena RPN directamente con expresiones regulares es frá
     * Por ejemplo, `AB&!` se convierte en un nodo `!` en la raíz, que tiene como hijo un nodo `&`, el cual tiene como hojas a `A` y `B`.
 2.  **Transformar (Recursión):** Recorremos el árbol desde la raíz hacia las hojas, aplicando las reglas lógicas para bajar el `!`.
     * **Doble Negación:** `!!A` se convierte simplemente en `A`.
-    * **Leyes de De Morgan:** * `!(A & B)` se transforma en `!A | !B`. (La AND se vuelve OR y la negación se divide).
+    * **Leyes de De Morgan:** `!(A & B)` se transforma en `!A | !B`. (La AND se vuelve OR y la negación se divide).
         * `!(A | B)` se transforma en `!A & !B`. (La OR se vuelve AND).
     * **Implicación y Equivalencia:** Transformamos operaciones complejas a básicas. Por ejemplo, `A > B` se reescribe como `!A | B`.
 3.  **Serializar a RPN:** Una vez que el árbol está en formato NNF, lo recorremos en "post-orden" (izquierda, derecha, raíz) para reconstruir la cadena RPN final.
