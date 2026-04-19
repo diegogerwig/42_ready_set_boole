@@ -278,8 +278,8 @@ Dado que modificar una cadena RPN directamente con expresiones regulares es frá
 | Estado | Fórmula Visual | Explicación |
 | :--- | :--- | :--- |
 | **Original** | `!(A & B)` | La negación afecta a toda la operación AND. |
-| **De Morgan**| `!A | !B` | Invertimos `&` por `|` y bajamos la negación a las variables. |
-| **Final RPN**| `A!B!|` | Ya cumple con NNF (los `!` están junto a las letras). |
+| **De Morgan**| <code>!A &#124; !B</code> | Invertimos `&` por <code>&#124;</code> y bajamos la negación a las variables. |
+| **Final RPN**| <code>A!B!&#124;</code> | Ya cumple con NNF (los `!` están junto a las letras). |
 
 ---
 ---
