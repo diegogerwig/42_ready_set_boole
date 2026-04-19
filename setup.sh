@@ -104,7 +104,7 @@ if [[ -n "$SPECIFIC_TEST" ]]; then
     echo -e "${B_CYAN}🎯 Filtro de test: ${NC}Ejercicio $(printf "%02d" "$SPECIFIC_TEST")"
 fi
 
-echo -ne "${B_CYAN}🧹 Limpiando cachés de Python...${NC}"
+echo -ne "${B_CYAN}🧹 Limpiando cachés...${NC}"
 find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null
 echo -e " ${B_GREEN}Hecho.${NC}"
 

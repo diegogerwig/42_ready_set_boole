@@ -22,36 +22,55 @@ def truth_table(formula: str):
         if "A" <= char <= "Z" and char not in variables:
             variables.append(char)
 
-    if not variables:
-        res = eval_formula(formula)
-        print("|   |")
-        print("|---|")
-        print(f"| {int(res)} |")
-        return
-
     header = "| " + " | ".join(variables) + " |   |"
     separator = "|" + "|".join(["---"] * (len(variables) + 1)) + "|"
 
     n_vars = len(variables)
-    total_filas = 1 << n_vars 
+    
+    total_filas = 2 ** n_vars 
 
     for i in range(total_filas):
-        bits = []
-        current_formula = formula
-        for j in range(n_vars - 1, -1, -1):
-            bit = (i >> j) & 1
-            bits.append(bit)
-            var_name = variables[n_vars - 1 - j]
-            current_formula = current_formula.replace(var_name, str(bit))
+        
+        # Convertir la fila actual (i) en binario paso a paso
+        numero_actual = i
+        bits_al_reves = []
+        
+        # Dividimos entre 2 y guardamos el resto (0 o 1)
+        for _ in range(n_vars):
+            resto = numero_actual % 2
+            bits_al_reves.append(str(resto))
+            numero_actual = numero_actual // 2
+            
+        # Como el método matemático saca los bits de derecha a izquierda, 
+        # le damos la vuelta a la lista para que queden en el orden correcto.
+        bits_ordenados = []
+        for bit in reversed(bits_al_reves):
+            bits_ordenados.append(bit)
 
-        resultado = eval_formula(current_formula)
+        # Sustituir las letras de la fórmula por los bits
+        formula_lista_para_evaluar = formula
+        
+        for indice in range(n_vars):
+            letra = variables[indice]
+            numero = bits_ordenados[indice]
+            
+            # Cambiamos esa letra por su número correspondiente
+            formula_lista_para_evaluar = formula_lista_para_evaluar.replace(letra, numero)
+
+        resultado_booleano = eval_formula(formula_lista_para_evaluar)
+
+        if resultado_booleano == True:
+            resultado_final = "1"
+        else:
+            resultado_final = "0"
 
         if i == 0:
             print(header)
             print(separator)
 
-        str_bits = " | ".join(str(b) for b in bits)
-        print(f"| {str_bits} | {int(resultado)} |")
+        texto_de_bits = " | ".join(bits_ordenados)
+        
+        print(f"| {texto_de_bits} | {resultado_final} |")
 
 
 if __name__ == "__main__":
