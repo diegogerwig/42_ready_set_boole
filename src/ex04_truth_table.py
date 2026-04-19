@@ -27,7 +27,7 @@ def truth_table(formula: str):
 
     n_vars = len(variables)
     
-    total_filas = 2 ** n_vars 
+    total_filas = 2 ** n_vars
 
     for i in range(total_filas):
         
@@ -48,16 +48,16 @@ def truth_table(formula: str):
             bits_ordenados.append(bit)
 
         # Sustituir las letras de la fórmula por los bits
-        formula_lista_para_evaluar = formula
+        formula_bits = formula
         
         for indice in range(n_vars):
             letra = variables[indice]
             numero = bits_ordenados[indice]
             
             # Cambiamos esa letra por su número correspondiente
-            formula_lista_para_evaluar = formula_lista_para_evaluar.replace(letra, numero)
+            formula_bits = formula_bits.replace(letra, numero)
 
-        resultado_booleano = eval_formula(formula_lista_para_evaluar)
+        resultado_booleano = eval_formula(formula_bits)
 
         if resultado_booleano == True:
             resultado_final = "1"
