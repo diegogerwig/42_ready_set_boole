@@ -262,12 +262,16 @@ La Forma Normal Negativa (NNF) es una manera de reescribir una fórmula lógica 
 Es como "empujar" las negaciones hacia adentro hasta que tocan fondo.
 
 ### 🧠 Lógica
-Dado que modificar una cadena RPN directamente con expresiones regulares es frágil, la forma correcta y matemática de hacerlo es usando un **Árbol de Sintaxis Abstracta (AST)** dividiendo el proceso en 4 fases:
+Dado que modificar una cadena RPN directamente con manipulaciones de texto es frágil y muy complejo, la forma matemática y profesional de resolverlo es usando un **Árbol de Sintaxis Abstracta (AST)**, dividiendo el proceso en 4 fases exactas:
 
-1.  **Parsear a Árbol (AST):** Convertimos la cadena RPN en una estructura de nodos jerárquicos para saber exactamente qué operandos pertenecen a la izquierda y derecha de cada operador.
-2.  **Eliminar Operadores Complejos:** Destruimos los operadores matemáticos avanzados (`>`, `=`, `^`) y los sustituimos por sus equivalentes básicos.
-3.  **Aplicar De Morgan:** Recorremos el árbol de arriba a abajo empujando los `!` hacia las ramas inferiores mediante recursión, hasta que la negación se pega a las hojas (variables) o se anula.
-4.  **Serializar a RPN:** Una vez que el árbol está en formato NNF, lo leemos en "post-orden" (izquierda, derecha, raíz) para reconstruir la cadena RPN final.
+1.  **Parsear a Árbol (AST):** Convertimos la cadena RPN en una estructura de nodos jerárquicos. Esto nos permite saber con precisión matemática qué operandos pertenecen a la rama izquierda y derecha de cada operador.
+2.  **Eliminar Operadores Complejos:** Destruimos los operadores matemáticos avanzados (`>`, `=`, `^`) y los sustituimos por sus equivalentes básicos (`&`, <code>&#124;</code>, `!`).
+3.  **Aplicar De Morgan (Recursión):** Recorremos el árbol de arriba a abajo empujando los `!` hacia las ramas inferiores. Si la orden es negar, los `&` giran a <code>&#124;</code> (y viceversa), hasta que la negación se pega a las hojas (variables) o se anula por doble negación.
+4.  **Serializar a RPN (Recorrido en Post-orden):** Para aplastar el árbol de vuelta a una línea de texto plano y que sea un RPN válido, aplicamos la regla estricta del **Post-orden**. En cada nodo que visitamos, hacemos estas tres cosas en este orden exacto:
+    * **1º Izquierda:** Leemos todo el sub-árbol del hijo izquierdo.
+    * **2º Derecha:** Leemos todo el sub-árbol del hijo derecho.
+    * **3º Raíz:** Nos imprimimos a nosotros mismos (el operador).
+    * *(Esto garantiza que los ingredientes/operandos siempre se impriman antes que la instrucción/operador).*
 
 ### 📖 Reglas Estrictas de Traducción Matemática
 El algoritmo se basa en un diccionario estricto de equivalencias lógicas que el árbol aplica automáticamente:
@@ -291,7 +295,7 @@ El siguiente ejemplo muestra cómo una fórmula fluye a través de nuestra caden
 | **1. Traducción**| `traducir_operadores` | <code>!(!A &#124; B)</code> | El operador `>` se traduce como <code>!A &#124; B</code>. |
 | **2. De Morgan**| `aplicar_de_morgan` | `!!A & !B` | El `!` principal baja: el <code>&#124;</code> gira a `&`, `A` recibe un segundo `!`, `B` se niega. |
 | **3. Limpieza**| `aplicar_de_morgan` | `A & !B` | La doble negación `!!A` se anula dejando la `A` limpia. |
-| **4. Salida**| `to_rpn` | **`AB!&`** | Aplastamos el árbol a formato RPN final. |
+| **4. Salida**| `to_rpn` | **`AB!&`** | Aplastamos el árbol usando Post-orden: Izquierda (`A`) + Derecha (`B!`) + Raíz (`&`). |
 
 ---
 ---
