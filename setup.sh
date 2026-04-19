@@ -15,9 +15,11 @@ NC='\033[0m'
 if [ "$#" -gt 2 ]; then
     echo -e "${B_RED}❌ Error: Demasiados argumentos ($#). Se esperaban máximo 2.${NC}"
     echo -e "${B_YELLOW}Uso correcto:${NC}"
-    echo -e "  bash setup.sh test      -> Crea venv, ejecuta TODOS los tests."
+    echo -e "  bash setup.sh           -> [Default] Crea/usa venv y ejecuta TODOS los tests."
+    echo -e "  bash setup.sh test      -> Crea/usa venv, ejecuta TODOS los tests y sale."
     echo -e "  bash setup.sh test x    -> Ejecuta SOLO el test x (admite del 0 al 11)."
-    echo -e "  bash setup.sh venv      -> Crea venv y lo deja activado en la terminal."
+    echo -e "  bash setup.sh venv      -> Crea/usa venv y lo deja activado en la terminal."
+    echo -e "  bash setup.sh clean     -> Borra el entorno virtual y limpia las cachés."
     exit 1
 fi
 
@@ -25,12 +27,14 @@ MODE=${1:-test} # Si no se pasa argumento, por defecto se ejecuta en modo "test"
 SPECIFIC_TEST=$2 # Si se pasa un segundo argumento, filtraremos por ese número de test
 
 # Validación 2: Modos permitidos
-if [[ "$MODE" != "test" && "$MODE" != "venv" ]]; then
+if [[ "$MODE" != "test" && "$MODE" != "venv" && "$MODE" != "clean" ]]; then
     echo -e "${B_RED}❌ Argumento inválido: $MODE${NC}"
     echo -e "${B_YELLOW}Uso correcto:${NC}"
-    echo -e "  bash setup.sh test      -> Crea venv, ejecuta TODOS los tests y sale."
+    echo -e "  bash setup.sh           -> [Default] Crea/usa venv y ejecuta TODOS los tests."
+    echo -e "  bash setup.sh test      -> Crea/usa venv, ejecuta TODOS los tests y sale."
     echo -e "  bash setup.sh test x    -> Ejecuta SOLO el test x (admite del 0 al 11)."
-    echo -e "  bash setup.sh venv      -> Crea venv y lo deja activado en la terminal."
+    echo -e "  bash setup.sh venv      -> Crea/usa venv y lo deja activado en la terminal."
+    echo -e "  bash setup.sh clean     -> Borra el entorno virtual y limpia las cachés."
     exit 1
 fi
 
@@ -73,50 +77,67 @@ echo -e "\n${B_BLUE}╔═══════════════════
 echo -e   "${B_BLUE}║        READY, SET, BOOLE!         ║${NC}"
 echo -e   "${B_BLUE}╚═══════════════════════════════════╝${NC}"
 
+# ==========================================
+# 2. MODO CLEAN (LIMPIEZA EXPRESA Y SALIDA)
+# ==========================================
+if [[ "$MODE" == "clean" ]]; then
+    echo -e "\n${B_CYAN}⚙️  Modo seleccionado: ${NC}clean"
+    echo -ne "${B_CYAN}🧹 Limpiando cachés...${NC}"
+    find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null
+    echo -e " ${B_GREEN}Hecho.${NC}"
+
+    if [ -d "$VENV_PATH" ]; then
+        echo -ne "${B_YELLOW}⚙️  Borrando entorno virtual en $VENV_PATH...${NC}"
+        rm -rf "$VENV_PATH"
+        echo -e " ${B_GREEN}Hecho.${NC}"
+    else
+        echo -e "${B_CYAN}ℹ️  El entorno virtual no existe. Nada que borrar.${NC}"
+    fi
+    echo -e "\n${B_GREEN}✅ Limpieza completada. ¡Hasta pronto!${NC}\n"
+    exit 0
+fi
+
+# (Si no estamos en modo clean, continuamos con el flujo normal)
 echo -e "\n${B_CYAN}📂 Ruta del entorno: ${NC}$VENV_PATH"
 echo -e "${B_CYAN}⚙️  Modo seleccionado: ${NC}$MODE"
 if [[ -n "$SPECIFIC_TEST" ]]; then
     echo -e "${B_CYAN}🎯 Filtro de test: ${NC}Ejercicio $(printf "%02d" "$SPECIFIC_TEST")"
 fi
 
-# ==========================================
-# 2. LIMPIEZA
-# ==========================================
-echo -ne "${B_CYAN}🧹 Limpiando cachés...${NC}"
+echo -ne "${B_CYAN}🧹 Limpiando cachés de Python...${NC}"
 find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null
 echo -e " ${B_GREEN}Hecho.${NC}"
-
-if [ -d "$VENV_PATH" ]; then
-    echo -ne "${B_YELLOW}⚙️  Borrando entorno virtual antiguo...${NC}"
-    rm -rf "$VENV_PATH"
-    echo -e " ${B_GREEN}Hecho.${NC}"
-fi
 
 # ==========================================
 # 3. CREACIÓN Y ACTIVACIÓN DEL VENV
 # ==========================================
-echo -ne "${B_YELLOW}⚙️  Buscando Python moderno...${NC}"
 
-# Buscar desde la versión más nueva a la más vieja
-PYTHON_BIN="python3"
-for py_ver in python3.13 python3.12 python3.11 python3.10 python3.9; do
-    if command -v $py_ver >/dev/null 2>&1; then
-        PYTHON_BIN=$py_ver
-        break
+if [ ! -d "$VENV_PATH" ]; then
+    echo -ne "${B_YELLOW}⚙️  Buscando Python moderno...${NC}"
+
+    # Buscar desde la versión más nueva a la más vieja
+    PYTHON_BIN="python3"
+    for py_ver in python3.13 python3.12 python3.11 python3.10 python3.9; do
+        if command -v $py_ver >/dev/null 2>&1; then
+            PYTHON_BIN=$py_ver
+            break
+        fi
+    done
+
+    echo -e " ${B_GREEN}Seleccionado: $PYTHON_BIN${NC}"
+
+    echo -ne "${B_YELLOW}⚙️  Creando entorno virtual...${NC}"
+    mkdir -p "$TARGET_DIR"
+    $PYTHON_BIN -m venv "$VENV_PATH"
+
+    if [ ! -f "$VENV_PATH/bin/activate" ]; then
+        echo -e "\n${B_RED}❌ Error crítico: No se pudo crear el entorno virtual en $VENV_PATH.${NC}"
+        exit 1
     fi
-done
-
-echo -e " ${B_GREEN}Seleccionado: $PYTHON_BIN${NC}"
-
-echo -ne "${B_YELLOW}⚙️  Creando entorno virtual...${NC}"
-mkdir -p "$TARGET_DIR"
-$PYTHON_BIN -m venv "$VENV_PATH"
-
-if [ ! -f "$VENV_PATH/bin/activate" ]; then
-    echo -e "\n${B_RED}❌ Error crítico: No se pudo crear el entorno virtual en $VENV_PATH.${NC}"
-    exit 1
+    echo -e " ${B_GREEN}Hecho.${NC}"
+else
+    echo -e "${B_CYAN}⚙️  Entorno virtual detectado. Omitiendo creación...${NC}"
 fi
-echo -e " ${B_GREEN}Hecho.${NC}"
 
 source "$VENV_PATH/bin/activate"
 
@@ -125,17 +146,17 @@ PY_LOC=$(which python3)
 echo -e "${B_GREEN}🐍 Python Activo:${NC} $PY_VER"
 echo -e "   └── $PY_LOC"
 
-echo -ne "${B_CYAN}🔄 Actualizando pip...${NC}"
+echo -ne "${B_CYAN}🔄 Verificando pip...${NC}"
 python3 -m pip install --upgrade pip > /dev/null 2>&1
 echo -e " ${B_GREEN}Hecho.${NC}"
 
 if [ -f "requirements.txt" ]; then
-    echo -ne "${B_YELLOW}📦 Instalando dependencias (requirements.txt)...${NC}"
+    echo -ne "${B_YELLOW}📦 Verificando dependencias (requirements.txt)...${NC}"
     python3 -m pip install -r requirements.txt > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         echo -e " ${B_GREEN}Hecho.${NC}"
     else
-        echo -e "\n${B_RED}❌ Error instalando dependencias. Revisa los permisos.${NC}"
+        echo -e "\n${B_RED}❌ Error instalando/verificando dependencias. Revisa los permisos.${NC}"
         exit 1
     fi
 else
@@ -206,7 +227,10 @@ else
                     # Si el usuario introdujo argumentos, ejecutamos el código fuente de src/
                     if [[ -n "$SRC_FILE" && -f "$SRC_FILE" ]]; then
                         echo -e "${B_BLUE}--- Ejecución manual: python3 $SRC_FILE $user_input ---${NC}"
-                        python3 "$SRC_FILE" $user_input
+                        
+                        # Usamos eval para que respete las comillas del input
+                        eval python3 "$SRC_FILE" $user_input
+                        
                         echo -e "${B_BLUE}---------------------------------------------------------${NC}"
                     else
                         echo -e "${B_RED}❌ No se encontró un archivo fuente ejecutable para $PREFIX en src/${NC}"
