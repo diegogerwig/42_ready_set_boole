@@ -101,6 +101,7 @@ def run():
         (("AB",), None),
         (("A+",), None),
         ((123,), None),
+        (("A1="), None),
     ]
 
     run_cases(

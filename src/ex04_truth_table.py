@@ -12,7 +12,7 @@ def truth_table(formula: str):
     
     formula = formula.upper()
 
-    caracteres_validos = set("ABCDEFGHIJKLMNOPQRSTUVWXYZ01!&|^>=")
+    caracteres_validos = set("ABCDEFGHIJKLMNOPQRSTUVWXYZ!&|^>=")
     for char in formula:
         if char not in caracteres_validos:
             raise ValueError(f"Carácter inválido en la fórmula: '{char}'")
