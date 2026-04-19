@@ -262,24 +262,36 @@ La Forma Normal Negativa (NNF) es una manera de reescribir una fórmula lógica 
 Es como "empujar" las negaciones hacia adentro hasta que tocan fondo.
 
 ### 🧠 Lógica
-Dado que modificar una cadena RPN directamente con expresiones regulares es frágil, la forma correcta y matemática de hacerlo es usando un **Árbol de Sintaxis Abstracta (AST)**.
+Dado que modificar una cadena RPN directamente con expresiones regulares es frágil, la forma correcta y matemática de hacerlo es usando un **Árbol de Sintaxis Abstracta (AST)** dividiendo el proceso en 4 fases:
 
-1.  **Parsear a Árbol (AST):** Convertimos la cadena RPN en una estructura de nodos jerárquicos. 
-    * Por ejemplo, `AB&!` se convierte en un nodo `!` en la raíz, que tiene como hijo un nodo `&`, el cual tiene como hojas a `A` y `B`.
-2.  **Transformar (Recursión):** Recorremos el árbol desde la raíz hacia las hojas, aplicando las reglas lógicas para bajar el `!`.
-    * **Doble Negación:** `!!A` se convierte simplemente en `A`.
-    * **Leyes de De Morgan:** `!(A & B)` se transforma en `!A | !B`. (La AND se vuelve OR y la negación se divide).
-        * `!(A | B)` se transforma en `!A & !B`. (La OR se vuelve AND).
-    * **Implicación y Equivalencia:** Transformamos operaciones complejas a básicas. Por ejemplo, `A > B` se reescribe como `!A | B`.
-3.  **Serializar a RPN:** Una vez que el árbol está en formato NNF, lo recorremos en "post-orden" (izquierda, derecha, raíz) para reconstruir la cadena RPN final.
+1.  **Parsear a Árbol (AST):** Convertimos la cadena RPN en una estructura de nodos jerárquicos para saber exactamente qué operandos pertenecen a la izquierda y derecha de cada operador.
+2.  **Eliminar Operadores Complejos:** Destruimos los operadores matemáticos avanzados (`>`, `=`, `^`) y los sustituimos por sus equivalentes básicos.
+3.  **Aplicar De Morgan:** Recorremos el árbol de arriba a abajo empujando los `!` hacia las ramas inferiores mediante recursión, hasta que la negación se pega a las hojas (variables) o se anula.
+4.  **Serializar a RPN:** Una vez que el árbol está en formato NNF, lo leemos en "post-orden" (izquierda, derecha, raíz) para reconstruir la cadena RPN final.
 
-### 📊 Ejemplo: `AB&!` (equivale a `!(A & B)`)
+### 📖 Reglas Estrictas de Traducción Matemática
+El algoritmo se basa en un diccionario estricto de equivalencias lógicas que el árbol aplica automáticamente:
 
-| Estado | Fórmula Visual | Explicación |
-| :--- | :--- | :--- |
-| **Original** | `!(A & B)` | La negación afecta a toda la operación AND. |
-| **De Morgan**| <code>!A &#124; !B</code> | Invertimos `&` por <code>&#124;</code> y bajamos la negación a las variables. |
-| **Final RPN**| <code>A!B!&#124;</code> | Ya cumple con NNF (los `!` están junto a las letras). |
+**Fase 2: Traducción de Operadores Complejos**
+* **Implicación (`>`):** `A > B` ➔ <code>!A &#124; B</code>
+* **Equivalencia (`=`):** `A = B` ➔ <code>(A & B) &#124; (!A & !B)</code>
+* **XOR (`^`):** `A ^ B` ➔ <code>(!A & B) &#124; (A & !B)</code>
+
+**Fase 3: Leyes de De Morgan y Negación**
+* **Inversión de AND:** `!(A & B)` ➔ <code>!A &#124; !B</code>
+* **Inversión de OR:** <code>!(A &#124; B)</code> ➔ `!A & !B`
+* **Doble Negación:** `!!A` ➔ `A`
+
+### 📊 Ejemplo Práctico: `AB>!` (equivale a `!(A > B)`)
+El siguiente ejemplo muestra cómo una fórmula fluye a través de nuestra cadena de montaje, traduciendo una implicación y luego bajando la negación a las hojas.
+
+| Fase | Función Ejecutada | Estado del Árbol (Humano) | Explicación |
+| :--- | :--- | :--- | :--- |
+| **0. Inicio** | - | `!(A > B)` | La negación afecta a toda la implicación. |
+| **1. Traducción**| `traducir_operadores` | <code>!(!A &#124; B)</code> | El operador `>` se traduce como <code>!A &#124; B</code>. |
+| **2. De Morgan**| `aplicar_de_morgan` | `!!A & !B` | El `!` principal baja: el <code>&#124;</code> gira a `&`, `A` recibe un segundo `!`, `B` se niega. |
+| **3. Limpieza**| `aplicar_de_morgan` | `A & !B` | La doble negación `!!A` se anula dejando la `A` limpia. |
+| **4. Salida**| `to_rpn` | **`AB!&`** | Aplastamos el árbol a formato RPN final. |
 
 ---
 ---
