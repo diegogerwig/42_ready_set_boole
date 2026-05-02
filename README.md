@@ -365,9 +365,9 @@ Existen algoritmos extremadamente complejos para resolver esto en la industria (
 
 | Fórmula (RPN) | Fórmula Matemática | SAT | Explicación |
 | :--- | :--- | :---: | :--- |
-| `AB|` | $A \lor B$ | **True** | Es satisfacible. Basta con que A o B valgan `1`. |
+| <code>AB&#124;</code> | $A \lor B$ | **True** | Es satisfacible. Basta con que A o B valgan `1`. |
 | `AA!&` | $A \land \neg A$ | **False** | Es una contradicción pura. $A$ no puede valer `1` y `0` al mismo tiempo. |
-| `AA!|`| $A \lor \neg A$ | **True** | Es una tautología. Siempre es verdad, pase lo que pase. |
+| <code>AA!&#124;</code>| $A \lor \neg A$ | **True** | Es una tautología. Siempre es verdad, pase lo que pase. |
 
 ---
 ---
