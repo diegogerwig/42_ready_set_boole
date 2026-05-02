@@ -1,70 +1,69 @@
 import sys
-from ex05_nnf import to_ast, to_rpn, transform_nnf, Node
+
+# Importamos las herramientas de nuestra cadena de montaje del EX05
+from ex05_nnf import Node, to_ast, to_rpn, traducir_operadores, aplicar_de_morgan
 
 
-def distribute(node: Node) -> Node:
+def aplicar_distributiva(nodo: Node) -> Node:
     """
-    Aplica la regla de distributividad de forma puramente funcional:
-    A | (B & C) -> (A | B) & (A | C)
+    Paso 3 (CNF): Aplica la propiedad distributiva para forzar los OR (|) hacia abajo
+    y subir los AND (&) hacia la raíz.
     """
-    if not node:
+    if not nodo:
         return None
 
-    # Las hojas (variables o constantes) se devuelven tal cual.
-    if node.value.isalpha() or node.value in "01" or node.value == "!":
-        return node
+    # Primero, procesamos los hijos (Post-orden)
+    nodo.left = aplicar_distributiva(nodo.left)
+    nodo.right = aplicar_distributiva(nodo.right)
 
-    # 1. Distribuir de abajo hacia arriba (Bottom-Up)
-    left = distribute(node.left)
-    right = distribute(node.right)
+    # Si el nodo actual es un OR (|), revisamos si alguno de sus hijos es un AND (&)
+    if nodo.value == "|":
+        
+        # Caso 1: El hijo izquierdo es un AND -> (A & B) | C  ==>  (A | C) & (B | C)
+        if nodo.left and nodo.left.value == "&":
+            A = nodo.left.left
+            B = nodo.left.right
+            C = nodo.right
+            
+            # Volvemos a aplicar distributiva por si se generan nuevos conflictos
+            nueva_rama_izq = aplicar_distributiva(Node("|", A, C))
+            nueva_rama_der = aplicar_distributiva(Node("|", B, C))
+            return Node("&", nueva_rama_izq, nueva_rama_der)
 
-    if node.value == "|":
-        # Caso 1: A | (B & C)
-        if right and right.value == "&":
-            a = left
-            b = right.left
-            c = right.right
+        # Caso 2: El hijo derecho es un AND -> A | (B & C)  ==>  (A | B) & (A | C)
+        elif nodo.right and nodo.right.value == "&":
+            A = nodo.left
+            B = nodo.right.left
+            C = nodo.right.right
+            
+            nueva_rama_izq = aplicar_distributiva(Node("|", A, B))
+            nueva_rama_der = aplicar_distributiva(Node("|", A, C))
+            return Node("&", nueva_rama_izq, nueva_rama_der)
 
-            # (A | B) & (A | C)
-            new_left = distribute(Node("|", a, b))
-            new_right = distribute(Node("|", a, c))
-
-            return Node("&", new_left, new_right)
-
-        # Caso 2: (A & B) | C
-        if left and left.value == "&":
-            a = left.left
-            b = left.right
-            c = right
-
-            # (A | C) & (B | C)
-            new_left = distribute(Node("|", a, c))
-            new_right = distribute(Node("|", b, c))
-
-            return Node("&", new_left, new_right)
-
-    return Node(node.value, left, right)
+    return nodo
 
 
 def conjunctive_normal_form(formula: str) -> str:
-    """
-    Transforma una fórmula a su Forma Normal Conjuntiva (CNF).
-    """
+    """Transforma una fórmula a su Forma Normal Conjuntiva (CNF)."""
     if not isinstance(formula, str):
         raise TypeError("El input debe ser un string.")
 
     formula = formula.upper()
 
-    if not formula:
-        raise ValueError("La fórmula no puede estar vacía.")
-
     try:
-        ast = to_ast(formula)
-        nnf_ast = transform_nnf(ast)
-
-        cnf_ast = distribute(nnf_ast)
-
-        return to_rpn(cnf_ast)
+        # FASE 1: Texto a Árbol
+        arbol_original = to_ast(formula)
+        
+        # FASE 2: NNF (Usando nuestras herramientas limpias del ex05)
+        arbol_traducido = traducir_operadores(arbol_original)
+        arbol_nnf = aplicar_de_morgan(arbol_traducido, False)
+        
+        # FASE 3: Aplicar ley distributiva para forzar el CNF
+        arbol_cnf = aplicar_distributiva(arbol_nnf)
+        
+        # FASE 4: Árbol a Texto
+        return to_rpn(arbol_cnf)
+        
     except ValueError as e:
         raise ValueError(str(e))
 

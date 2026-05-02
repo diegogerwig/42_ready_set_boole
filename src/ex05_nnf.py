@@ -127,6 +127,7 @@ def negation_normal_form(formula: str) -> str:
     except ValueError as e:
         raise ValueError(str(e))
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("❌ Error: Se esperaba 1 argumento.")
