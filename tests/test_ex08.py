@@ -2,13 +2,18 @@ from ex08_powerset import powerset
 from utils import *
 
 
-def canonical_sort(ps: list[list[int]]) -> list[list[int]]:
+def sort(ps: list[list[int]]) -> list[list[int]]:
     if not isinstance(ps, list):
         return ps
     
+    def sort_criteria(sublist):
+        return len(sublist), sublist
+    
     internal_sorted = [sorted(list(sub)) for sub in ps]
     
-    return sorted(internal_sorted, key=lambda x: (len(x), x))
+    final_list = sorted(internal_sorted, key=sort_criteria)
+    
+    return final_list
 
 
 def run():
@@ -26,7 +31,7 @@ def run():
             return f"FAIL: Cardinalidad incorrecta. Esperada {expected_len}, obtenida {len(res)}"
         
         # Devolvemos la lista agrupada por tamaño para que el test la imprima bonita
-        return canonical_sort(res)
+        return sort(res)
 
     raw_cases = [
         # ((Input,), Expected_Output)
@@ -45,7 +50,7 @@ def run():
     cases_for_engine = []
     for args, expected in raw_cases:
         if expected is not None:
-            expected = canonical_sort(expected)
+            expected = sort(expected)
         cases_for_engine.append((args, expected))
 
     def get_desc(s):
