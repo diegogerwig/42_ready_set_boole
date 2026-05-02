@@ -9,22 +9,14 @@ def powerset(s: list[int]) -> list[list[int]]:
     if not isinstance(s, (list, set, tuple)):
         raise TypeError("El input debe ser un iterable (lista, conjunto, tupla).")
 
-    # 1. Un conjunto real no tiene duplicados.
-    unique_s = []
-    for x in s:
-        if x not in unique_s:
-            unique_s.append(x)
+    if len(s) != len(set(s)):
+        raise ValueError("El conjunto no es válido: contiene elementos duplicados.")
 
-    # 2. Inicializamos el conjunto potencia con el conjunto vacío
     power_set = [[]]
 
-    # 3. Construcción iterativa O(2^n)
-    for elem in unique_s:
-        # Por cada elemento, tomamos todos los subconjuntos que ya tenemos,
-        # los duplicamos, y a esa copia le añadimos el nuevo elemento.
+    for elem in s:
         new_subsets = [subset + [elem] for subset in power_set]
 
-        # Unimos los viejos y los nuevos
         power_set.extend(new_subsets)
 
     return power_set

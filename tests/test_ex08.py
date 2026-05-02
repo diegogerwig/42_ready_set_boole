@@ -19,7 +19,7 @@ def sort(ps: list[list[int]]) -> list[list[int]]:
 def run():
     print_header(8, "POWERSET (CONJUNTO POTENCIA)")
 
-    def wrapper_powerset(s):
+    def test_powerset(s):
         # Calculamos
         res = powerset(s)
         
@@ -40,9 +40,8 @@ def run():
         (([0, 1],), [[], [0], [1], [0, 1]]),
         (([0, 1, 2],), [[], [0], [1], [2], [0, 1], [0, 2], [1, 2], [0, 1, 2]]),
         
-        (([1, 1],), [[], [1]]), 
-        
         # Casos de error
+        (([1, 1],), None), # Valores duplicados
         ((None,), None),
         (("123",), None),
     ]
@@ -61,7 +60,7 @@ def run():
 
     run_cases(
         ex_num=8,
-        funcion_a_testear=wrapper_powerset,
+        funcion_a_testear=test_powerset,
         casos=cases_for_engine,
     )
 

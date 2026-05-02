@@ -216,7 +216,7 @@ else
                 echo -e "${B_CYAN}╰────────────────────────────────────────────────────────╯${NC}"
                 echo -e "${B_YELLOW} ↳ Presiona [ENTER] para avanzar al siguiente test.${NC}"
                 echo -e "${B_YELLOW} ↳ Escribe una fórmula para probar a mano.${NC}"
-                echo -e "${B_RED}   ⚠️  OBLIGATORIO: Usa comillas para &, |, > (ej: 'AB&')${NC}\n"
+                echo -e "   ⚠️  Usa comillas para &, |, > (ej: 'AB&') ⚠️\n"
                 
                 echo -ne "${B_GREEN} > ${NC}"
                 read -r user_input

@@ -389,22 +389,22 @@ El algoritmo iterativo es la forma más eficiente de resolver esto (con compleji
 En lugar de generar combinaciones complejas, usamos la lógica de **"duplicar y añadir"**:
 
 1. **Empezamos con la base:** Nuestro conjunto potencia inicial solo contiene el conjunto vacío: `[ [] ]`.
-2. **Iteramos sobre el input:** Cogemos el primer elemento del input (ej: `1`).
-3. **Duplicamos lo que tenemos:** Cogemos todo lo que hay en nuestro conjunto potencia actual (`[]`), hacemos una copia, y a esa copia le inyectamos el nuevo elemento `1` -> `[1]`.
-4. **Unimos:** Guardamos los originales y los nuevos: `[ [], [1] ]`.
-5. **Siguiente iteración:** Cogemos el siguiente elemento (ej: `2`). Duplicamos lo que tenemos e inyectamos el `2`:
-   * Copia de `[]` + `2` = `[2]`
-   * Copia de `[1]` + `2` = `[1, 2]`
-   * Total acumulado: `[ [], [1], [2], [1, 2] ]`.
+2. **Iteramos sobre el input:** Cogemos el primer elemento del input (ej: `0`).
+3. **Duplicamos lo que tenemos:** Cogemos todo lo que hay en nuestro conjunto potencia actual (`[]`), hacemos una copia, y a esa copia le inyectamos el nuevo elemento `0` -> `[0]`.
+4. **Unimos:** Guardamos los originales y los nuevos: `[ [], [0] ]`.
+5. **Siguiente iteración:** Cogemos el siguiente elemento (ej: `1`). Duplicamos lo que tenemos e inyectamos el `1`:
+   * Copia de `[]` + `1` = `[1]`
+   * Copia de `[0]` + `1` = `[0, 1]`
+   * Total acumulado: `[ [], [0], [1], [0, 1] ]`.
 
-### 📊 Ejemplo: `powerset([1, 2, 3])`
+### 📊 Ejemplo: `powerset([0, 1, 2])`
 
 | Iteración (Elemento) | Subconjuntos Previos (A) | Nuevos (A + elemento) | Total Acumulado |
 | :---: | :--- | :--- | :--- |
 | **Inicio** | `[ [] ]` | - | `[ [] ]` |
-| **1** | `[ [] ]` | `[ [1] ]` | `[ [], [1] ]` |
-| **2** | `[ [], [1] ]` | `[ [2], [1, 2] ]` | `[ [], [1], [2], [1, 2] ]` |
-| **3** | `[ [], [1], [2], [1, 2] ]`| `[ [3], [1, 3], [2, 3], [1, 2, 3] ]` | `[ [], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3] ]`<br>**(Total: 8 subconjuntos)** |
+| **0** | `[ [] ]` | `[ [0] ]` | `[ [], [0] ]` |
+| **1** | `[ [], [0] ]` | `[ [1], [0, 1] ]` | `[ [], [0], [1], [0, 1] ]` |
+| **2** | `[ [], [0], [1], [0, 1] ]`| `[ [2], [0, 2], [1, 2], [0, 1, 2] ]` | `[ [], [0], [1], [2], [0, 1], [0, 2], [1, 2], [0, 1, 2] ]`<br>**(Total: 8 subconjuntos)** |
 
 ---
 ---
