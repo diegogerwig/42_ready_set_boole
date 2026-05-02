@@ -380,7 +380,7 @@ Existen algoritmos extremadamente complejos para resolver esto en la industria (
 ### 💡 Descripción
 En la teoría de conjuntos, el **Conjunto Potencia** de un conjunto $S$, denotado como $P(S)$, es el conjunto que contiene **absolutamente todos los subconjuntos posibles** de $S$, incluyendo el conjunto vacío (`[]`) y el propio conjunto $S$.
 
-La regla matemática de oro aquí es la cardinalidad (el tamaño). Si tu conjunto original tiene $n$ elementos, tu conjunto potencia tendrá exactamente **$2^n$** elementos. 
+La regla matemática principal es la cardinalidad (el tamaño). Si tu conjunto original tiene $n$ elementos, tu conjunto potencia tendrá exactamente **$2^n$** elementos. 
 * Ejemplo: Si tienes 3 elementos, habrá $2^3 = 8$ subconjuntos.
 
 ### 🧠 Lógica
@@ -404,7 +404,7 @@ En lugar de generar combinaciones complejas, usamos la lógica de **"duplicar y 
 | **Inicio** | `[ [] ]` | - | `[ [] ]` |
 | **1** | `[ [] ]` | `[ [1] ]` | `[ [], [1] ]` |
 | **2** | `[ [], [1] ]` | `[ [2], [1, 2] ]` | `[ [], [1], [2], [1, 2] ]` |
-| **3** | `[ [], [1], [2], [1, 2] ]`| `[ [3], [1, 3], [2, 3], [1, 2, 3] ]` | **Total: 8 subconjuntos** |
+| **3** | `[ [], [1], [2], [1, 2] ]`| `[ [3], [1, 3], [2, 3], [1, 2, 3] ]` | `[ [], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3] ]`<br>**(Total: 8 subconjuntos)** |
 
 ---
 ---
