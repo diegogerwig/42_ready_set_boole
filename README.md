@@ -326,6 +326,43 @@ Para implementarlo utilizamos un enfoque **puramente funcional**:
 3. Creamos una nueva raíz `&`. Su hijo izquierdo será el nuevo nodo `A | C` y su hijo derecho será el nuevo nodo `B | C`.
 4. Al serializarlo de nuevo a RPN, esto se lee como `AC|BC|&`. ¡El `&` ha subido al final, operando sobre las cláusulas!
 
+
+## EX06 - Conjunctive Normal Form (CNF)
+
+### 💡 Descripción
+La Forma Normal Conjuntiva (CNF) es un formato estandarizado donde una fórmula se representa exclusivamente como un **"AND de ORs"**. 
+Es decir, son grupos de variables unidas por <code>&#124;</code> (cláusulas), y todos esos grupos se unen entre sí mediante `&`. 
+
+Esta forma es un pilar en ciencias de la computación porque la inmensa mayoría de los solucionadores booleanos (SAT Solvers) y algoritmos de Inteligencia Artificial exigen que el input esté en este formato estricto.
+
+### 🧠 Lógica (La Cadena de Montaje ampliada)
+Para convertir cualquier fórmula a CNF, no partimos de cero, sino que construimos sobre los cimientos del NNF. Usamos nuestro **Árbol de Sintaxis Abstracta (AST)** y añadimos un paso crucial:
+
+1.  **Reutilización de NNF (Fases 1 a 3):** Parseamos el texto a AST, eliminamos operadores complejos (`>`, `=`, `^`) y aplicamos las leyes de De Morgan para bajar todos los `!` a las hojas.
+2.  **Fase 4: Aplicar Ley Distributiva:** Recorremos el árbol buscando un patrón "ilegal" en CNF: un operador OR (<code>&#124;</code>) que tenga como hijo a un operador AND (`&`). El CNF exige que los `&` estén arriba y los <code>&#124;</code> abajo. Para solucionarlo, forzamos al `&` a subir a la raíz aplicando distributividad.
+3.  **Fase 5: Serializar a RPN:** Usamos nuevamente el recorrido en **Post-orden** para aplastar el árbol en texto.
+
+*(Nota: Este algoritmo utiliza la vía algebraica expansiva. Aunque existen métodos visuales/algorítmicos para simplificar el CNF resultante, como los Mapas de Karnaugh, esta implementación prioriza la precisión estructural matemática del árbol).*
+
+### 📖 Reglas Estrictas de Traducción Matemática
+Además del diccionario lógico del NNF, nuestro árbol aplica automáticamente la **Ley Distributiva** siempre que detecta un conflicto de jerarquía:
+
+**Distribución del OR sobre el AND:**
+* **Conflicto por la Izquierda:** <code>(A & B) &#124; C</code> ➔ <code>(A &#124; C) & (B &#124; C)</code>
+* **Conflicto por la Derecha:** <code>A &#124; (B & C)</code> ➔ <code>(A &#124; B) & (A &#124; C)</code>
+
+*El árbol clona las hojas (como la `C` o la `A`) para repartirlas en las nuevas ramas, creando nodos completamente nuevos para evitar referencias cruzadas (enfoque puramente funcional).*
+
+### 📊 Ejemplo Práctico: `AB&C|` (equivale a `(A & B) | C`)
+El siguiente ejemplo muestra cómo un árbol que ya está en NNF sufre una transformación distributiva para forzar el `&` hacia la cima.
+
+| Fase | Función Ejecutada | Estado del Árbol (Humano) | Explicación |
+| :--- | :--- | :--- | :--- |
+| **0. Inicio** | `conjunctive_normal_form`| <code>(A & B) &#124; C</code> | El <code>&#124;</code> es la raíz. El `&` está atrapado debajo. ¡Ilegal en CNF! |
+| **1. NNF**| `aplicar_de_morgan` | <code>(A & B) &#124; C</code> | La fórmula ya cumple NNF, no hay negaciones que bajar. |
+| **2. Distributiva**| `aplicar_distributiva` | <code>(A &#124; C) & (B &#124; C)</code> | Detectamos el conflicto por la izquierda. El `&` sube a la raíz. Se clona la `C`. |
+| **3. Salida**| `to_rpn` | **`AC|BC|&`** | Aplastamos el árbol usando Post-orden: <code>A &#124; C</code> + <code>B &#124; C</code> + `&`. |
+
 ---
 ---
 
