@@ -353,21 +353,21 @@ A nuestro nivel, la pregunta que el algoritmo debe responder es directa: **¿Exi
 * Si da `False` sin importar la combinación que probemos (una contradicción lógica), es **Insatisfacible** (`False`).
 
 ### 🧠 Lógica
-Existen algoritmos extremadamente complejos para resolver esto en la industria (los famosos *SAT Solvers*), pero la forma algorítmicamente correcta de abordarlo en este punto del proyecto es mediante un ataque de **Fuerza Bruta**, apoyándonos en el motor de evaluación que construimos en el EX03.
+Existen algoritmos extremadamente complejos para resolver esto en la industria (los famosos *SAT Solvers*), pero la forma algorítmicamente correcta de abordarlo en este punto del proyecto es mediante un ataque de **Fuerza Bruta**.
 
 1. **Identificación de Variables ($n$):** Escaneamos la fórmula para aislar las variables únicas. Esto nos indica que existen exactamente $2^n$ combinaciones posibles.
-2. **Generación de Universos (Bitwise):** Usamos manipulación de bits (el operador *shift* `>>`) iterando desde $0$ hasta $(2^n)-1$ para generar todas las combinaciones de `1`s y `0`s imaginables de forma hiperrápida.
+2. **Generación de Universos (Bitwise):** Usamos manipulación de bits (el operador *shift* `>>`) iterando desde $0$ hasta $(2^n)-1$ para generar todas las combinaciones de `1`s y `0`s.
 3. **Evaluación:** Le inyectamos cada combinación a nuestra función `eval_formula` para resolver el árbol lógico.
-4. **Optimización por Cortocircuito (Short-circuit):** ¡No necesitamos calcular la tabla de verdad completa! En el milisegundo exacto en el que una sola evaluación nos devuelve `True`, sabemos que la respuesta global es afirmativa. **Cortamos el bucle y devolvemos `True` inmediatamente**, ahorrando millones de cálculos inútiles en fórmulas largas.
+4. **Optimización por Cortocircuito (Short-circuit):** No necesitamos calcular la tabla de verdad completa. En el milisegundo exacto en el que una sola evaluación nos devuelve `True`, sabemos que la respuesta global es afirmativa. **Cortamos el bucle y devolvemos `True` inmediatamente**.
 5. **Veredicto Final:** Si agotamos los $2^n$ intentos sin ver ni un solo `True`, confirmamos que es matemáticamente imposible y devolvemos `False`.
 
 ### 📊 Ejemplos Prácticos
 
-| Fórmula (RPN) | Fórmula Matemática | SAT | Explicación |
-| :--- | :--- | :---: | :--- |
-| <code>AB&#124;</code> | $A \lor B$ | **True** | Es satisfacible. Basta con que A o B valgan `1`. |
-| `AA!&` | $A \land \neg A$ | **False** | Es una contradicción pura. $A$ no puede valer `1` y `0` al mismo tiempo. |
-| <code>AA!&#124;</code>| $A \lor \neg A$ | **True** | Es una tautología. Siempre es verdad, pase lo que pase. |
+| Fórmula (RPN) | SAT | Explicación de la Lógica |
+| :--- | :---: | :--- |
+| <code>AB&#124;</code> | **True** | Es **satisfacible**. La operación OR (<code>&#124;</code>) solo necesita que $A$ o $B$ valgan `1`. Con la combinación $A=1, B=0$, la fórmula ya devuelve `True`. |
+| `AA!&` | **False** | Es **insatisfacible** (contradicción pura). El AND (`&`) requiere que ambos lados sean verdad, pero es imposible que $A$ valga `1` y `0` (por el `!`) al mismo tiempo. |
+| <code>AA!&#124;</code> | **True** | Es una **tautología** (siempre satisfacible). El OR (<code>&#124;</code>) garantiza que, si $A$ es `1`, la primera parte es verdad; y si $A$ es `0`, la negación (`!`) la hace verdad. Siempre devuelve `True`. |
 
 ---
 ---
