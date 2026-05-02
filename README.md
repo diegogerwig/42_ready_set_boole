@@ -368,6 +368,10 @@ Existen algoritmos extremadamente complejos para resolver esto en la industria (
 | <code>AB&#124;</code> | **True** | Es **satisfacible**. La operación OR (<code>&#124;</code>) solo necesita que $A$ o $B$ valgan `1`. Con la combinación $A=1, B=0$, la fórmula ya devuelve `True`. |
 | `AA!&` | **False** | Es **insatisfacible** (contradicción pura). El AND (`&`) requiere que ambos lados sean verdad, pero es imposible que $A$ valga `1` y `0` (por el `!`) al mismo tiempo. |
 | <code>AA!&#124;</code> | **True** | Es una **tautología** (siempre satisfacible). El OR (<code>&#124;</code>) garantiza que, si $A$ es `1`, la primera parte es verdad; y si $A$ es `0`, la negación (`!`) la hace verdad. Siempre devuelve `True`. |
+| `AA^` | **False** | Es **insatisfacible**. La operación XOR (`^`) exige que los valores sean distintos. Como $A$ siempre es igual a sí misma (ya sea `0^0` o `1^1`), el resultado nunca puede ser `1`. |
+| `AB^` | **True** | Es **satisfacible**. Al ser variables distintas, basta con que tomen valores opuestos (ej: $A=1, B=0$) para que el XOR devuelva `True`. |
+| `AB>` | **True** | Es **satisfacible**. La implicación ($A \implies B$) solo es falsa en un único caso: cuando la premisa ($A$) es `1` y la conclusión ($B$) es `0`. Cualquier otra combinación (como $A=0, B=0$) devuelve `True`. |
+| `AB&C!` | **False** | Es **insatisfacible**. ¡Cuidado! Aunque la fórmula empiece con `AB&`, el último operador es un `!`, que en RPN se aplica a *todo* lo anterior si no hay más operadores. Es decir, falta un operador principal que una `(A & B)` con la `C`. La fórmula es **inválida**, por lo que el algoritmo debe fallar o devolver `False` según la implementación. *(Nota: Asegúrate de cómo maneja tu código los errores de sintaxis en el input)*.
 
 ---
 ---
