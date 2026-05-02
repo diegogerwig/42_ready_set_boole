@@ -342,30 +342,32 @@ El siguiente ejemplo muestra cómo un árbol que ya está en NNF sufre una trans
 ## EX07 - SAT (Satisfiability)
 
 ### 💡 Descripción
-El problema de satisfacibilidad booleana (SAT) es uno de los pilares fundamentales de las Ciencias de la Computación. Fue el primer problema demostrado como NP-Completo.
+El problema de satisfacibilidad booleana (SAT) es la "piedra roseta" de las Ciencias de la Computación. De hecho, fue el primer problema de la historia demostrado matemáticamente como **NP-Completo** (Teorema de Cook-Levin).
 
-Un problema NP-Completo tiene dos características: es muy difícil (y lento) encontrar la solución desde cero, pero es rapidísimo comprobar si una solución dada es correcta (es difícil montar un puzzle de 10.000 piezas, pero es fácil ver si está bien montado). El SAT actúa como una verdadera "llave maestra": si algún día alguien lograra crear un algoritmo capaz de resolver el SAT de forma rápida, podríamos usar esa misma lógica para resolver instantáneamente miles de los problemas más complejos del mundo.
+Para entender qué significa NP-Completo, **imagina un Sudoku gigante**: resolverlo desde cero puede llevarte horas de probar y borrar números (es muy difícil calcular la solución), pero si alguien te da el Sudoku ya relleno, tardas apenas unos segundos en comprobar que no hay números repetidos (es rapidísimo verificar la respuesta). 
 
-La pregunta que responde es simple: **¿Existe al menos una combinación de entradas (`True`/`False`) que haga que esta fórmula devuelva `True`?**
-* Si existe, la fórmula es **Satisfacible** (`True`).
-* Si sin importar lo que hagamos siempre da `False` (una contradicción lógica), es **Insatisfacible** (`False`).
+El SAT actúa como una llave maestra universal: si algún día alguien inventara un algoritmo capaz de resolver el SAT de forma rápida sin usar la fuerza bruta, podría usar esa misma lógica para resolver instantáneamente problemas mundiales como el plegamiento de proteínas, la logística global o romper toda la criptografía bancaria.
+
+A nuestro nivel, la pregunta que el algoritmo debe responder es directa: **¿Existe al menos una combinación de variables (`True`/`False`) que haga que esta fórmula devuelva `True`?**
+* Si existe (al menos una), la fórmula es **Satisfacible** (`True`).
+* Si da `False` sin importar la combinación que probemos (una contradicción lógica), es **Insatisfacible** (`False`).
 
 ### 🧠 Lógica
-Existen algoritmos súper complejos para resolver esto eficientemente (los famosos "SAT Solvers"), pero para este nivel, la forma más robusta es el ataque de **Fuerza Bruta**, evaluando la Tabla de Verdad completa que creamos en el EX04.
+Existen algoritmos extremadamente complejos para resolver esto en la industria (los famosos *SAT Solvers*), pero la forma algorítmicamente correcta de abordarlo en este punto del proyecto es mediante un ataque de **Fuerza Bruta**, apoyándonos en el motor de evaluación que construimos en el EX03.
 
-1. Identificamos cuántas variables únicas hay ($n$) para saber que existen $2^n$ combinaciones posibles.
-2. Usamos el truco de manipulación de bits (shift `>>`) iterando desde $0$ hasta $(2^n)-1$ para generar todas las combinaciones imaginables.
-3. Le pasamos cada combinación a la función `eval_formula` (reutilizada del EX04).
-4. **Short-circuit (Cortocircuito):** ¡No necesitamos generar la tabla completa! En el mismo milisegundo en el que la función nos devuelva un `True`, sabemos que la respuesta es afirmativa, por lo que **cortamos el bucle y devolvemos `True` inmediatamente**.
-5. Si agotamos los $2^n$ intentos sin ver ni un solo `True`, entonces confirmamos que es matemáticamente imposible y devolvemos `False`.
+1. **Identificación de Variables ($n$):** Escaneamos la fórmula para aislar las variables únicas. Esto nos indica que existen exactamente $2^n$ combinaciones posibles.
+2. **Generación de Universos (Bitwise):** Usamos manipulación de bits (el operador *shift* `>>`) iterando desde $0$ hasta $(2^n)-1$ para generar todas las combinaciones de `1`s y `0`s imaginables de forma hiperrápida.
+3. **Evaluación:** Le inyectamos cada combinación a nuestra función `eval_formula` para resolver el árbol lógico.
+4. **Optimización por Cortocircuito (Short-circuit):** ¡No necesitamos calcular la tabla de verdad completa! En el milisegundo exacto en el que una sola evaluación nos devuelve `True`, sabemos que la respuesta global es afirmativa. **Cortamos el bucle y devolvemos `True` inmediatamente**, ahorrando millones de cálculos inútiles en fórmulas largas.
+5. **Veredicto Final:** Si agotamos los $2^n$ intentos sin ver ni un solo `True`, confirmamos que es matemáticamente imposible y devolvemos `False`.
 
-### 📊 Ejemplos
+### 📊 Ejemplos Prácticos
 
-| Fórmula (RPN) | Fórmula Matemática | SAT | Razón |
+| Fórmula (RPN) | Fórmula Matemática | SAT | Explicación |
 | :--- | :--- | :---: | :--- |
-| `AB|` | $A \lor B$ | **True** | Basta con poner A=1 para que sea verdad. |
-| `AA!&` | $A \land \neg A$ | **False** | Es una contradicción pura. $A$ no puede ser 1 y 0 a la vez. |
-| `AA!|`| $A \lor \neg A$ | **True** | Es una tautología. Siempre es verdad pase lo que pase. |
+| `AB|` | $A \lor B$ | **True** | Es satisfacible. Basta con que A o B valgan `1`. |
+| `AA!&` | $A \land \neg A$ | **False** | Es una contradicción pura. $A$ no puede valer `1` y `0` al mismo tiempo. |
+| `AA!|`| $A \lor \neg A$ | **True** | Es una tautología. Siempre es verdad, pase lo que pase. |
 
 ---
 ---
