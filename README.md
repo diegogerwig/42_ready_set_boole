@@ -334,7 +334,6 @@ El siguiente ejemplo muestra cómo un árbol que ya está en NNF sufre una trans
 | **0. Inicio** | `conjunctive_normal_form`| <code>(A & B) &#124; C</code> | El <code>&#124;</code> es la raíz. El `&` está atrapado debajo. ¡Ilegal en CNF! |
 | **1. NNF**| `aplicar_de_morgan` | <code>(A & B) &#124; C</code> | La fórmula ya cumple NNF, no hay negaciones que bajar. |
 | **2. Distributiva**| `aplicar_distributiva` | <code>(A &#124; C) & (B &#124; C)</code> | Detectamos el conflicto por la izquierda. El `&` sube a la raíz. Se clona la `C`. |
-| **3. Salida**| `to_rpn` | **`AC|BC|&`** | Aplastamos el árbol usando Post-orden: <code>A &#124; C</code> + <code>B &#124; C</code> + `&`. |
 | **3. Salida**| `to_rpn` | **<code>AC&#124;BC&#124;&</code>** | Aplastamos el árbol usando Post-orden: <code>A &#124; C</code> + <code>B &#124; C</code> + `&`. |
 
 ---
