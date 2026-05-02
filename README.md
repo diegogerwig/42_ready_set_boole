@@ -264,7 +264,7 @@ Es como "empujar" las negaciones hacia adentro hasta que tocan fondo.
 ### 🧠 Lógica
 Dado que modificar una cadena RPN directamente con manipulaciones de texto es frágil y muy complejo, la forma matemática y profesional de resolverlo es usando un **Árbol de Sintaxis Abstracta (AST)**, dividiendo el proceso en 4 fases exactas:
 
-1.  **Parsear a Árbol (AST):** Convertimos la cadena RPN en una estructura de nodos jerárquicos. Esto nos permite saber con precisión matemática qué operandos pertenecen a la rama izquierda y derecha de cada operador.
+1.  **Parsear a Árbol (AST Abstract Syntax Tree):** Convertimos la cadena RPN en una estructura de nodos jerárquicos. Esto nos permite saber con precisión matemática qué operandos pertenecen a la rama izquierda y derecha de cada operador.
 2.  **Eliminar Operadores Complejos:** Destruimos los operadores matemáticos avanzados (`>`, `=`, `^`) y los sustituimos por sus equivalentes básicos (`&`, <code>&#124;</code>, `!`).
 3.  **Aplicar De Morgan (Recursión):** Recorremos el árbol de arriba a abajo empujando los `!` hacia las ramas inferiores. Si la orden es negar, los `&` giran a <code>&#124;</code> (y viceversa), hasta que la negación se pega a las hojas (variables) o se anula por doble negación.
 4.  **Serializar a RPN (Recorrido en Post-orden):** Para aplastar el árbol de vuelta a una línea de texto plano y que sea un RPN válido, aplicamos la regla estricta del **Post-orden**. En cada nodo que visitamos, hacemos estas tres cosas en este orden exacto:

@@ -9,7 +9,7 @@ class Node:
 
 
 def to_ast(formula: str) -> Node:
-    """Convierte una fórmula RPN en un Árbol de Sintaxis Abstracta (AST)."""
+    """Convierte una fórmula RPN en un Árbol de Sintaxis Abstracta AST (Abstract Syntax Tree)."""
     stack = []
     for char in formula:
         if char.isalpha():
