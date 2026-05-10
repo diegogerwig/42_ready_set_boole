@@ -454,7 +454,7 @@ Leemos la fórmula de izquierda a derecha y usamos una pila (*stack*) para ir gu
 ### 💡 Descripción
 Imagina que tienes una cuadrícula 2D llena de píxeles y necesitas asignarles un número de orden lineal (1D) para guardarlos en la memoria del ordenador. Si los guardas fila por fila (como si leyeras un libro), los píxeles que están arriba y abajo quedarían muy lejos en la memoria.
 
-Para solucionar esto se usan las **Curvas de llenado de espacio (Space-Filling Curves)**. Este código implementa la famosa **Curva Z (Z-Order Curve o Código Morton)**, conocida por su **preservación de la localidad espacial** (puntos que están cerca en el tablero 2D tendrán valores lineales muy cercanos en el hilo 1D). 
+Para solucionar esto se usan las **Curvas de llenado de espacio (Space-Filling Curves)**. Este código implementa la **Curva Z (Z-Order Curve o Código Morton)**, conocida por su **preservación de la localidad espacial** (puntos que están cerca en el tablero 2D tendrán valores lineales muy cercanos en el hilo 1D). 
 
 Esta función mapea unas coordenadas `(X, Y)` en un espacio $2^{16} \times 2^{16}$ y nos dice exactamente **en qué porcentaje de recorrido** (de 0.0 a 1.0) está ese punto en el hilo unidimensional.
 
