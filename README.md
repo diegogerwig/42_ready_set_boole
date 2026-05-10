@@ -459,7 +459,7 @@ Para solucionar esto se usan las **Curvas de llenado de espacio (Space-Filling C
 Esta función mapea unas coordenadas `(X, Y)` en un espacio $2^{16} \times 2^{16}$ y nos dice exactamente **en qué porcentaje de recorrido** (de 0.0 a 1.0) está ese punto en el hilo unidimensional.
 
 ![Evolución de la Curva Z](./doc/Four-level_Z.png)  
-*[Fuente y más información: Wikipedia - Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)*
+*[Wikipedia - Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)*
 
 ### 🧠 Lógica
 Visualmente, la curva va uniendo los puntos dibujando la letra "Z" en bloques de $2 \times 2$, y se vuelve recursiva. Computacionalmente, es increíblemente rápida porque no requiere matemáticas complejas; basta con intercalar los bits como si fueran una cremallera.
@@ -478,7 +478,7 @@ Vamos a mapear la coordenada $X=1$ e $Y=3$. Para que sea fácil de visualizar, m
 | :--- | :--- | :--- | :--- |
 | **1. Coordenadas** | Convertimos a binario. | $X = 01_2$<br>$Y = 11_2$ | - |
 | **2. Entrelazado** | Colocamos los bits alternados (`Y₁ X₁ Y₀ X₀`). | **`1`** `0` **`1`** `1` | Entero: **`11`** |
-| **3. Normalización**| Dividimos la distancia entre el máximo absoluto. | `11 / 4294967295` | **`0.0000000025...`** |
+| **3. Normalización**| Dividimos la distancia entre el máximo absoluto. | `11 / 4294967295` | **`0.000000002561137`** |
 
 **Casos Extremos:**
 * **Inicio `(0, 0)`** $\rightarrow$ Distancia `0` $\rightarrow$ Devuelve `0.0`.
@@ -487,28 +487,31 @@ Vamos a mapear la coordenada $X=1$ e $Y=3$. Para que sea fácil de visualizar, m
 ---
 ---
 
-## EX11 - Inverse (Hilbert Unmap)
+## EX11 - Inverse (Z-Order Unmap / Morton Decode)
 
 ### 💡 Descripción
-Si en el ejercicio anterior (Curve) convertíamos una coordenada 2D en una distancia 1D, aquí hacemos exactamente lo contrario: **dada una distancia `d` a lo largo de la Curva de Hilbert (entre 0.0 y 1.0), ¿cuáles son las coordenadas `(x, y)` exactas en la cuadrícula 2D?**
+Si en el ejercicio anterior (Curve) convertíamos unas coordenadas 2D en una distancia 1D entrelazando sus bits, aquí hacemos exactamente lo contrario: **dada una distancia `d` a lo largo de la Curva Z (entre 0.0 y 1.0), recuperamos las coordenadas `(X, Y)` exactas en la cuadrícula 2D.**
 
-Esta operación es vital en bases de datos espaciales y gráficos por computadora porque nos permite recuperar información de ubicación bidimensional a partir de un índice unidimensional súper rápido.
+Esta operación es vital en bases de datos espaciales y gráficos por computadora porque nos permite recuperar información de ubicación bidimensional a partir de un índice unidimensional súper rápido, completando el viaje de ida y vuelta.
 
-### 🧠 Lógica
-El algoritmo de decodificación de Hilbert funciona al revés que el de codificación. En lugar de dividir el espacio de mayor a menor, reconstruimos el punto **de menor a mayor (Fine to Coarse)**.
+### 🧠 Lógica (Desentrelazado de Bits)
+El algoritmo de decodificación funciona exactamente al revés que el de codificación. Si antes cerrábamos la cremallera, **ahora la abrimos separando los bits en dos variables distintas**.
 
-1. **Desnormalización:** Tomamos el `float` que va de `0.0` a `1.0` y lo multiplicamos por el máximo valor de celdas ($2^{32} - 1$). Usamos `round()` para proteger la precisión flotante de Python y obtenemos un entero de 32 bits que representa la distancia absoluta `d`.
-2. **Reconstrucción Bottom-Up:** Iniciamos un bucle que representa el tamaño del cuadrante, empezando por $s = 1$ (el píxel más pequeño) y subiendo hasta $s = 32768$.
-3. **Decodificación de Bits:** * Tomamos `d` y extraemos los 2 últimos bits usando lógica binaria (`rx = 1 & (d // 2)`).
-    * Estos dos bits nos indican en cuál de los 4 sub-cuadrantes relativos nos encontrábamos en ese nivel de recursión.
-4. **Deshacer la Rotación:** Si la curva había rotado o se había invertido en ese nivel, aplicamos la transformación geométrica opuesta (`x = s - 1 - x`, y un *swap* `x, y = y, x`).
-5. **Acumular:** Desplazamos nuestras coordenadas `x` e `y` basándonos en el cuadrante actual.
-6. **Subir de nivel:** Tiramos a la basura los 2 bits de distancia que acabamos de leer (`d //= 4`) y duplicamos el tamaño de nuestro lienzo (`s *= 2`).
+1. **Desnormalización:** Tomamos el porcentaje `float` (de `0.0` a `1.0`) y lo multiplicamos por el máximo valor de celdas ($2^{32} - 1$). Usamos `round()` para protegernos de los minúsculos errores de precisión flotante de Python y obtenemos el entero original de 32 bits (la distancia absoluta).
+2. **Abrir la Cremallera:** Iniciamos un bucle de 16 iteraciones para reconstruir los 16 bits de cada eje.
+3. **Recuperar `X` (Posiciones Pares):** Leemos los bits que están en las posiciones pares de nuestro entero gigante ($0, 2, 4...$). Los extraemos desplazándolos a la derecha (`>> 2*i`) y los vamos colocando en la variable `X`.
+4. **Recuperar `Y` (Posiciones Impares):** Leemos los bits que están en las posiciones impares ($1, 3, 5...$). Los extraemos desplazándolos (`>> 2*i + 1`) y los colocamos en la variable `Y`.
 
-Al terminar el ciclo, las variables `x` e `y` contienen la coordenada exacta y perfecta de 16 bits original.
+Al terminar el ciclo, las variables `X` e `Y` contendrán las coordenadas exactas de 16 bits originales.
 
-### 📊 Ejemplo: Round-Trip
-La evaluación de 42 requiere que verifiquemos esto matemáticamente:
-`reverse_map(map_coords(x, y)) == (x, y)`
+### 📊 Ejemplo Práctico: `inverse_curve(0.0000000025...)`
+Vamos a hacer el viaje inverso del ejemplo del EX10. Supongamos que recibimos ese `float` minúsculo. Al desnormalizarlo multiplicando por `4294967295`, recuperamos el entero **`11`** (que en binario es **`1011`**). Vamos a extraer sus últimos 2 pares de bits:
 
-Gracias a que hemos evitado la pérdida de precisión flotante en Python usando `round()`, nuestro test genera **10,000 coordenadas aleatorias**, las codifica en `d`, las vuelve a decodificar, y garantiza un 100% de exactitud en la recuperación para cada una de ellas.
+| Bit del Entero | Posición | Valor | Destino (X par / Y impar) | Resultado Parcial |
+| :---: | :---: | :---: | :--- | :--- |
+| `1`**`0`**`1`**`1`** | **0** (Par) | **`1`** | Va al bit 0 de `X`. | `X = 1` |
+| `1`**`0`**`1`**`1`** | **1** (Impar) | **`1`** | Va al bit 0 de `Y`. | `Y = 1` |
+| `1`**`0`**`1`**`1`** | **2** (Par) | **`0`** | Va al bit 1 de `X`. | `X = 01` (Decimal: 1) |
+| `1`**`0`**`1`**`1`** | **3** (Impar) | **`1`** | Va al bit 1 de `Y`. | `Y = 11` (Decimal: 3) |
+
+**Resultado Final:** Hemos recuperado mágicamente `X = 1` e `Y = 3`, demostrando que el *round-trip* (viaje de ida y vuelta) es matemáticamente perfecto.

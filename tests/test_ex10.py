@@ -34,7 +34,6 @@ def run():
         ((65536, 0), None),
     ]
 
-
     run_cases(
         ex_num=10,
         funcion_a_testear=wrapper_curve,

@@ -47,6 +47,7 @@ def run():
         ex_num=9,
         funcion_a_testear=eval_set,
         casos=cases,
+        custom_desc_func=format_desc
     )
 
 

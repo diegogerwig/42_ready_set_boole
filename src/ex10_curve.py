@@ -39,7 +39,7 @@ if __name__ == "__main__":
         y_arg = int(sys.argv[2])
         
         resultado = map_to_curve(x_arg, y_arg)
-        print(f"✅ Resultado: map_to_curve({x_arg}, {y_arg}) = {resultado:.10f}")
+        print(f"✅ Resultado: map_to_curve({x_arg}, {y_arg}) = {resultado:.15f}")
 
     except ValueError as e:
         if "invalid literal" in str(e):
