@@ -462,7 +462,8 @@ Una pregunta clásica es por qué usamos esta curva. La Curva Z es famosa por su
 
 Visualmente, la curva va uniendo los puntos dibujando la letra "Z" en bloques de $2 \times 2$, luego hace otra "Z" gigante uniendo 4 bloques, y así recursivamente. Computacionalmente es increíblemente rápida porque no requiere matemáticas complejas, **solo entrelazar los bits de las coordenadas**.
 
-http://googleusercontent.com/image_collection/image_retrieval/7857787311688688783
+![Evolución de la Curva Z](./doc/Four-level_Z.png)
+https://en.wikipedia.org/wiki/Z-order_curve
 
 ### 📊 Lógica (Bit Interleaving)
 Para convertir `(X, Y)` a una distancia unidimensional `d`, intercalamos sus bits como si fuera una cremallera.
