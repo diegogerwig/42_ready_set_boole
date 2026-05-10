@@ -431,17 +431,20 @@ Utilizamos el método de RPN, pero con algunas modificaciones clave:
     * **`^` (XOR)** -> **Diferencia Simétrica (`a ^ b`)**: Números que están en `a` o en `b`, pero *no en ambos*.
     * **`>` (IMPLIES)** -> Usamos la equivalencia lógica `!A | B` para traducirlo a conjuntos: `(U - a) | b`.
 
-### 📊 Ejemplo: `A!B&` con `A=[1,2,3]` y `B=[2,3,4]`
+### 📊 Ejemplo Práctico: `A!B&` 
+**Entradas:** `A = [1, 2, 3]` y `B = [2, 3, 4]`  
+**Paso 0 (Universo):** Juntamos todos los elementos únicos para formar nuestro "True" absoluto: **`U = [1, 2, 3, 4]`**.
 
-1.  **Universo (U):** `[1, 2, 3, 4]` (La combinación única de todos los elementos).
-2.  Leemos `A`: Metemos en la pila `[1, 2, 3]`.
-3.  Leemos `!`: Reemplazamos `A` por su complemento (U - A).
-    * `[1, 2, 3, 4] - [1, 2, 3] = [4]`.
-    * En la pila queda: `[4]`.
-4.  Leemos `B`: Metemos en la pila `[2, 3, 4]`.
-5.  Leemos `&`: Hacemos la intersección de `[4]` y `[2, 3, 4]`.
-    * El único elemento en común es el `4`.
-6.  **Resultado final:** `[4]`.
+Al igual que en el evaluador booleano (EX03), leemos la fórmula de izquierda a derecha y usamos una pila (*stack*) para ir guardando y operando los conjuntos:
+
+| Carácter | Acción Matemática | Estado de la Pila (Stack) |
+| :---: | :--- | :--- |
+| **`A`** | `PUSH` del conjunto A. | `[ [1, 2, 3] ]` |
+| **`!`** | `POP` de A. Calculamos su complemento ($U - A$).<br>`[1, 2, 3, 4] - [1, 2, 3] = [4]`. Hacemos `PUSH`. | `[ [4] ]` |
+| **`B`** | `PUSH` del conjunto B. | `[ [4], [2, 3, 4] ]` |
+| **`&`** | `POP` de ambos conjuntos. Calculamos su intersección.<br>`[4] ∩ [2, 3, 4] = [4]`. Hacemos `PUSH`. | `[ [4] ]` |
+
+**Resultado Final:** Al terminar de leer la fórmula, el único elemento que sobrevive en la pila es `[4]`.
 
 ---
 ---
