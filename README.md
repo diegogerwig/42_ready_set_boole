@@ -435,7 +435,7 @@ Utilizamos el método de RPN, pero con algunas modificaciones clave:
 **Entradas:** `A = [1, 2, 3]` y `B = [2, 3, 4]`  
 **Paso 0 (Universo):** Juntamos todos los elementos únicos para formar nuestro "True" absoluto: **`U = [1, 2, 3, 4]`**.
 
-Al igual que en el evaluador booleano (EX03), leemos la fórmula de izquierda a derecha y usamos una pila (*stack*) para ir guardando y operando los conjuntos:
+Leemos la fórmula de izquierda a derecha y usamos una pila (*stack*) para ir guardando y operando los conjuntos:
 
 | Carácter | Acción Matemática | Estado de la Pila (Stack) |
 | :---: | :--- | :--- |
