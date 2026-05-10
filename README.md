@@ -454,30 +454,35 @@ Leemos la fórmula de izquierda a derecha y usamos una pila (*stack*) para ir gu
 ### 💡 Descripción
 Imagina que tienes una cuadrícula 2D llena de píxeles y necesitas asignarles un número de orden lineal (1D) para guardarlos en la memoria del ordenador. Si los guardas fila por fila (como si leyeras un libro), los píxeles que están arriba y abajo quedarían muy lejos en la memoria.
 
-Para solucionar esto se usan las **Curvas de llenado de espacio (Space-Filling Curves)**. Este código implementa la famosa **Curva Z (Z-Order Curve o Código Morton)**. 
+Para solucionar esto se usan las **Curvas de llenado de espacio (Space-Filling Curves)**. Este código implementa la famosa **Curva Z (Z-Order Curve o Código Morton)**, conocida por su **preservación de la localidad espacial** (puntos que están cerca en el tablero 2D tendrán valores lineales muy cercanos en el hilo 1D). 
+
 Esta función mapea unas coordenadas `(X, Y)` en un espacio $2^{16} \times 2^{16}$ y nos dice exactamente **en qué porcentaje de recorrido** (de 0.0 a 1.0) está ese punto en el hilo unidimensional.
 
-### 🧠 Justificación: ¿Por qué Entrelazar Bits?
-Una pregunta clásica es por qué usamos esta curva. La Curva Z es famosa por su **preservación de la localidad espacial**. Esto significa que dos coordenadas `(X, Y)` que estén muy juntas en el tablero 2D tendrán valores lineales muy cercanos entre sí. 
+![Evolución de la Curva Z](./doc/Four-level_Z.png)  
+*[Fuente y más información: Wikipedia - Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)*
 
-Visualmente, la curva va uniendo los puntos dibujando la letra "Z" en bloques de $2 \times 2$, luego hace otra "Z" gigante uniendo 4 bloques, y así recursivamente. Computacionalmente es increíblemente rápida porque no requiere matemáticas complejas, **solo entrelazar los bits de las coordenadas**.
+### 🧠 Lógica
+Visualmente, la curva va uniendo los puntos dibujando la letra "Z" en bloques de $2 \times 2$, y se vuelve recursiva. Computacionalmente, es increíblemente rápida porque no requiere matemáticas complejas; basta con intercalar los bits como si fueran una cremallera.
 
-![Evolución de la Curva Z](./doc/Four-level_Z.png)
-https://en.wikipedia.org/wiki/Z-order_curve
-
-### 📊 Lógica (Bit Interleaving)
-Para convertir `(X, Y)` a una distancia unidimensional `d`, intercalamos sus bits como si fuera una cremallera.
-
-1. **Espacio inicial:** Operamos en un tablero de $65536 \times 65536$ celdas (16 bits de ancho).
+1. **Espacio inicial:** Operamos en un tablero de $65536 \times 65536$ celdas (16 bits de ancho por eje).
 2. **Entrelazado de Bits (La Cremallera):** Leemos los 16 bits de la `X` y los 16 bits de la `Y`. 
    * Los bits de la `X` se colocan en las **posiciones pares** del nuevo número ($0, 2, 4...$).
    * Los bits de la `Y` se colocan en las **posiciones impares** del nuevo número ($1, 3, 5...$).
-   * *Ejemplo simple:* Si $X = 01_2$ y $Y = 11_2$, el resultado entrelazado es $1011_2$.
-3. **Generación del Entero:** Ahora tenemos un único número de 32 bits que representa la distancia absoluta a lo largo de la curva. Su máximo posible es el $2^{32} - 1$ (4294967295).
+3. **Generación del Entero:** Al terminar, obtenemos un único número de 32 bits que representa la distancia absoluta recorrida a lo largo de la curva. Su máximo posible es el $2^{32} - 1$ (4294967295).
 4. **Normalización:** Dividimos ese entero gigante entre el valor máximo para obtener un elegante porcentaje `float` entre 0.0 y 1.0.
 
-* **Inicio `(0, 0)`** $\rightarrow$ Devuelve `0.0`.
-* **Final `(65535, 65535)`** $\rightarrow$ Devuelve `1.0`.
+### 📊 Ejemplo Práctico: `map_to_curve(1, 3)`
+Vamos a mapear la coordenada $X=1$ e $Y=3$. Para que sea fácil de visualizar, miramos solo sus últimos 2 bits ($X = 01_2$ e $Y = 11_2$).
+
+| Paso | Acción | Resultado (Binario) | Valor Resultante |
+| :--- | :--- | :--- | :--- |
+| **1. Coordenadas** | Convertimos a binario. | $X = 01_2$<br>$Y = 11_2$ | - |
+| **2. Entrelazado** | Colocamos los bits alternados (`Y₁ X₁ Y₀ X₀`). | **`1`** `0` **`1`** `1` | Entero: **`11`** |
+| **3. Normalización**| Dividimos la distancia entre el máximo absoluto. | `11 / 4294967295` | **`0.0000000025...`** |
+
+**Casos Extremos:**
+* **Inicio `(0, 0)`** $\rightarrow$ Distancia `0` $\rightarrow$ Devuelve `0.0`.
+* **Final `(65535, 65535)`** $\rightarrow$ Distancia `4294967295` $\rightarrow$ Devuelve `1.0`.
 
 ---
 ---
