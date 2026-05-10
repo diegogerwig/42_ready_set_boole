@@ -22,7 +22,6 @@ def eval_set(formula: str, sets: list[list[int]]) -> list[int]:
         if char not in caracteres_validos:
             raise ValueError(f"Carácter inválido en la fórmula: '{char}'")
 
-    # 1. Definir el Universo (U) con todos los elementos únicos
     universe = set()
     for s in sets:
         universe.update(s)

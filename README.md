@@ -449,28 +449,34 @@ Leemos la fórmula de izquierda a derecha y usamos una pila (*stack*) para ir gu
 ---
 ---
 
-## EX10 - Curve (Space-Filling Curve / Hilbert Curve)
+## EX10 - Curve (Z-Order Curve / Morton Code)
 
 ### 💡 Descripción
-Imagina que tienes una pantalla cuadrada de 2D llena de píxeles, y tienes un solo hilo muy largo que debe pasar por **todos y cada uno de los píxeles** sin cruzar sobre sí mismo, hasta llenar completamente el cuadrado.
+Imagina que tienes una cuadrícula 2D llena de píxeles y necesitas asignarles un número de orden lineal (1D) para guardarlos en la memoria del ordenador. Si los guardas fila por fila (como si leyeras un libro), los píxeles que están arriba y abajo quedarían muy lejos en la memoria.
 
-Eso es una **Curva que llena el espacio** (Space-Filling Curve). La más famosa es la **Curva de Hilbert**. 
-Esta función mapea unas coordenadas `(X, Y)` en un espacio $2^{16} \times 2^{16}$ y nos dice exactamente **en qué porcentaje de recorrido** (de 0.0 a 1.0) está ese punto en la curva.
+Para solucionar esto se usan las **Curvas de llenado de espacio (Space-Filling Curves)**. Este código implementa la famosa **Curva Z (Z-Order Curve o Código Morton)**. 
+Esta función mapea unas coordenadas `(X, Y)` en un espacio $2^{16} \times 2^{16}$ y nos dice exactamente **en qué porcentaje de recorrido** (de 0.0 a 1.0) está ese punto en el hilo unidimensional.
 
-### 🧠 Justificación: ¿Por qué es Continua?
-Una pregunta clásica en la evaluación es justificar su continuidad.
-La curva de Hilbert es continua porque **preserva la localidad de los datos**. Esto significa que dos coordenadas `(X, Y)` que estén muy pegadas en el tablero 2D, tendrán valores `[0, 1]` extremadamente cercanos en la línea 1D.
+### 🧠 Justificación: ¿Por qué Entrelazar Bits?
+Una pregunta clásica es por qué usamos esta curva. La Curva Z es famosa por su **preservación de la localidad espacial**. Esto significa que dos coordenadas `(X, Y)` que estén muy juntas en el tablero 2D tendrán valores lineales muy cercanos entre sí. 
 
-El algoritmo lo consigue dividiendo el espacio en 4 cuadrantes grandes, luego divide cada cuadrante en otros 4, y así sucesivamente (de forma recursiva). Cuando la curva pasa de un cuadrante al siguiente, la rotación de los ejes garantiza que el salto se haga entre los píxeles limítrofes directos, por lo que **jamás da saltos bruscos ("teletransportes")**, asegurando la continuidad matemática.
+Visualmente, la curva va uniendo los puntos dibujando la letra "Z" en bloques de $2 \times 2$, luego hace otra "Z" gigante uniendo 4 bloques, y así recursivamente. Computacionalmente es increíblemente rápida porque no requiere matemáticas complejas, **solo entrelazar los bits de las coordenadas**.
 
-### 📊 Lógica
-1. **Espacio inicial:** Operamos en un tablero de $65536 \times 65536$ celdas (16 bits). El máximo valor posible del hilo sería $2^{32} - 1$ (4294967295).
-2. **Desplazamiento a nivel de Bit (`s`):** Empezamos inspeccionando el cuadrante más grande (el bit 15: `s = 32768`) y vamos bajando hasta 0.
-3. **Rotación:** Con los operadores bit a bit (`&`, `^`) calculamos en qué sub-cuadrante está nuestro punto. Si el recorrido requiere cambiar de dirección (para no cruzarse), aplicamos una transformación matemática intercambiando e invirtiendo `x` e `y`.
-4. **Normalización:** Al terminar el bucle, tenemos una variable `d` que nos dice la posición exacta del punto en la línea (entre 0 y 4294967295). Lo dividimos entre el máximo y obtenemos un elegante `float` de 0.0 a 1.0.
+http://googleusercontent.com/image_collection/image_retrieval/7857787311688688783
+
+### 📊 Lógica (Bit Interleaving)
+Para convertir `(X, Y)` a una distancia unidimensional `d`, intercalamos sus bits como si fuera una cremallera.
+
+1. **Espacio inicial:** Operamos en un tablero de $65536 \times 65536$ celdas (16 bits de ancho).
+2. **Entrelazado de Bits (La Cremallera):** Leemos los 16 bits de la `X` y los 16 bits de la `Y`. 
+   * Los bits de la `X` se colocan en las **posiciones pares** del nuevo número ($0, 2, 4...$).
+   * Los bits de la `Y` se colocan en las **posiciones impares** del nuevo número ($1, 3, 5...$).
+   * *Ejemplo simple:* Si $X = 01_2$ y $Y = 11_2$, el resultado entrelazado es $1011_2$.
+3. **Generación del Entero:** Ahora tenemos un único número de 32 bits que representa la distancia absoluta a lo largo de la curva. Su máximo posible es el $2^{32} - 1$ (4294967295).
+4. **Normalización:** Dividimos ese entero gigante entre el valor máximo para obtener un elegante porcentaje `float` entre 0.0 y 1.0.
 
 * **Inicio `(0, 0)`** $\rightarrow$ Devuelve `0.0`.
-* **Final `(65535, 0)`** $\rightarrow$ Devuelve `1.0`.
+* **Final `(65535, 65535)`** $\rightarrow$ Devuelve `1.0`.
 
 ---
 ---
