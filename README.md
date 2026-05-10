@@ -494,7 +494,7 @@ Si en el ejercicio anterior (Curve) convertíamos unas coordenadas 2D en una dis
 
 Esta operación es vital en bases de datos espaciales y gráficos por computadora porque nos permite recuperar información de ubicación bidimensional a partir de un índice unidimensional súper rápido, completando el viaje de ida y vuelta.
 
-### 🧠 Lógica (Desentrelazado de Bits)
+### 🧠 Lógica
 El algoritmo de decodificación funciona exactamente al revés que el de codificación. Si antes cerrábamos la cremallera, **ahora la abrimos separando los bits en dos variables distintas**.
 
 1. **Desnormalización:** Tomamos el porcentaje `float` (de `0.0` a `1.0`) y lo multiplicamos por el máximo valor de celdas ($2^{32} - 1$). Usamos `round()` para protegernos de los minúsculos errores de precisión flotante de Python y obtenemos el entero original de 32 bits (la distancia absoluta).
@@ -504,7 +504,7 @@ El algoritmo de decodificación funciona exactamente al revés que el de codific
 
 Al terminar el ciclo, las variables `X` e `Y` contendrán las coordenadas exactas de 16 bits originales.
 
-### 📊 Ejemplo Práctico: `inverse_curve(0.0000000025...)`
+### 📊 Ejemplo Práctico: `inverse_curve(0.000000002561137)`
 Vamos a hacer el viaje inverso del ejemplo del EX10. Supongamos que recibimos ese `float` minúsculo. Al desnormalizarlo multiplicando por `4294967295`, recuperamos el entero **`11`** (que en binario es **`1011`**). Vamos a extraer sus últimos 2 pares de bits:
 
 | Bit del Entero | Posición | Valor | Destino (X par / Y impar) | Resultado Parcial |
