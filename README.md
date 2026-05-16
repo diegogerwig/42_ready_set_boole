@@ -6,7 +6,7 @@
 
 Este proyecto utiliza un entorno automatizado para gestionar dependencias y garantizar que las pruebas se ejecuten de forma idéntica en cualquier sistema (WSL, Linux 42, etc.).
 
-### 1. El Script Maestro: `setup.sh`
+### 1. Script MASTER: `setup.sh`
 El archivo `setup.sh` detecta automáticamente tu sistema operativo y la versión de Python más reciente disponible para configurar el entorno virtual.
 
 | Comando | Descripción |
